@@ -1,0 +1,16 @@
+# git artifacts
+.gitignore
+.git
+
+# Python cache files
+**.pyc
+**/__pycache__
+.dockerignore
+
+# Docker artifacts
+docker-compose.yaml
+Dockerfile
+ui/Dockerfile
+
+# Documentation
+**/*.md

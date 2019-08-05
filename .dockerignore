@@ -1,0 +1,29 @@
+# git artifacts
+.gitignore
+.git
+
+# Python cache files
+**.pyc
+**/__pycache__
+.dockerignore
+
+# Docker artifacts
+docker-compose.yaml
+Dockerfile
+ui/Dockerfile
+
+# Skiff artifacts
+.skiff/
+skiff.json
+
+# Documentation
+**/*.md
+
+# UI dependencies
+ui/node_modules/
+
+# UI build output
+ui/build/
+
+# UI package manager debug output
+ui/*.log
