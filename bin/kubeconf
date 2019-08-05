@@ -6,7 +6,7 @@ from os import path, getlogin, devnull
 from argparse import ArgumentParser
 from subprocess import check_call, check_output
 
-def configure(env, api, proxy, message, silent = False):
+def configure(env, ui, api, proxy, message, silent = False):
     builder_image = "gcr.io/ai2-reviz/jsonnet"
     stdout = open(devnull) if silent == True else None
     check_call(["docker", "pull", builder_image ], stdout=stdout)
@@ -24,6 +24,7 @@ def configure(env, api, proxy, message, silent = False):
         "-y",
         "--output-file", "/workspace/.skiff/webapp.json",
         "--tla-str", "proxyImage=%s" % proxy,
+        "--tla-str", "uiImage=%s" % ui,
         "--tla-str", "apiImage=%s" % api,
         "--tla-str", "cause=%s" % message,
         "--tla-str", "env=%s" % env,
@@ -45,23 +46,26 @@ if __name__ == "__main__":
         description="Utility for generating the kubernetes manifest for a given environment")
     parser.add_argument("--env", "-e", default="staging", type=str,
         help="The value of the $_ENV cloudbuild variable")
+    parser.add_argument("--ui", "-u", type=str,
+        help="The target UI image.", required=True)
     parser.add_argument("--api", "-a", type=str,
         help="The target API image.", required=True)
-    parser.add_argument("--proxy", "-p", type=str, 
+    parser.add_argument("--proxy", "-p", type=str,
         help="The target Proxy image.", required=True)
     parser.add_argument("--message", "-m", type=str,
         help="The reason behind the deployment", required=True)
     formats = set([ "text", "json" ])
-    parser.add_argument("--output", "-o", type=str, choices=formats, 
+    parser.add_argument("--output", "-o", type=str, choices=formats,
         help="The output format.", default="text")
     parser.add_argument("-s", "--silent", action="store_true", default=False,
         help="If specified verbose output is disabled.")
     args = parser.parse_args()
     output = configure(
-        args.env, 
-        args.api, 
-        args.proxy, 
-        args.message, 
+        args.env,
+        args.ui,
+        args.api,
+        args.proxy,
+        args.message,
         args.silent
     )
     if args.output == "text":

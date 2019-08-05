@@ -22,7 +22,12 @@ services:
             - './ui/public:/usr/local/src/skiff/app/ui/public'
             - './ui/package.json:/usr/local/src/skiff/app/ui/package.json'
             - './ui/tsconfig.json:/usr/local/src/skiff/app/ui/tsconfig.json'
+            - './ui/next.config.js:/usr/local/src/skiff/app/ui/next.config.js'
             - './ui/yarn.lock:/usr/local/src/skiff/app/ui/yarn.lock'
+            - './ui/.babelrc:/usr/local/src/skiff/app/ui/.babelrc'
+            - './ui/pages:/usr/local/src/skiff/app/ui/pages'
+        command:
+            - 'dev'
     proxy:
         build: ./proxy
         ports:
