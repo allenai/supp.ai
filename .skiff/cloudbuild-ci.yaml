@@ -94,8 +94,3 @@ steps:
   ]
   dir: 'ui'
   waitFor: [ 'api.build' ]
-images: [
-  'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA',
-]
