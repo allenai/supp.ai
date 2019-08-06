@@ -62,7 +62,7 @@ steps:
     '.',
     '--build-arg', 'CONF_FILE=prod.conf'
   ]
-  waitFor: [ proxy.pull' ]
+  waitFor: [ 'proxy.pull' ]
   dir: 'proxy'
 - id: 'api.push'
   name: 'gcr.io/cloud-builders/docker'
