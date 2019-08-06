@@ -17,39 +17,30 @@ def build(image_prefix = None, tag = None, silent = False):
 
     api_image = "%s-api:%s" % (image_prefix, tag)
     ui_image = "%s-ui:%s" % (image_prefix, tag)
-    proxy_image = "%s-proxy:%s" % (image_prefix, tag) 
-    
-    # Build the UI / API images
+    proxy_image = "%s-proxy:%s" % (image_prefix, tag)
+
+    # Build the required Docker images
     check_call([ "docker", "build", "-t",
         ui_image, "ui/",
-        "--build-arg", "NODE_ENV=production", "--build-arg", "BABEL_ENV=production"],
+        "--build-arg", "NODE_ENV=production" ],
         stdout=stdout)
     check_call([ "docker", "build", "-t",
-        api_image, "api/", 
+        api_image, "api/",
         "--build-arg", "FLASK_ENV=production" ], stdout=stdout)
-   
-    # Copy the compiled UI assets into the local filesystem
-    container_id = check_output([ "docker", "create", ui_image ]).decode("utf-8").strip()
-    check_call([ "docker", "cp", 
-        "%s:/usr/local/src/skiff/app/ui/build" % container_id,
-        "%s/proxy/dist/" % root ], stdout=stdout)
-    check_call([ "docker", "rm", "-v", container_id ], stdout=stdout)
-   
-    # Build the proxy, which will include the compiled UI assets
     check_call([ "docker", "build", "-t",
         proxy_image, "--build-arg", "CONF_FILE=prod.conf", "proxy/" ],
         stdout=stdout)
-    
-    return { "api": api_image, "ui": ui_image, "proxy": proxy_image }; 
+
+    return { "api": api_image, "ui": ui_image, "proxy": proxy_image };
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--image", "-i", help="The image name prefix.", 
+    parser.add_argument("--image", "-i", help="The image name prefix.",
         type=str, default=None)
     parser.add_argument("--tag", "-t", help="The image tag.", default=None,
         type=str)
     formats = set([ "text", "json" ])
-    parser.add_argument("--output", "-o", choices=formats, type=str, 
+    parser.add_argument("--output", "-o", choices=formats, type=str,
         help="The output format.", default="text")
     parser.add_argument("--silent", "-s", help="Disable verbose output.",
         default=False, action="store_true")

@@ -11,8 +11,8 @@
 local config = import '../skiff.json';
 
 function(
-    apiImage, proxyImage, cause, sha, env='staging', branch='', repo='',
-    buildId='' 
+    uiImage, apiImage, proxyImage, cause, sha, env='staging', branch='', repo='',
+    buildId=''
 )
     // We only allow registration of hostnames attached to '*.apps.allenai.org'
     // at this point. If you need a custom domain, contact us: reviz@allenai.org.
@@ -72,6 +72,9 @@ function(
     // The port the API (Python Flask application) is bound to.
     local apiPort = 8000;
 
+    // The port the UI (NextJS application) is bound to
+    local uiPort = 3000;
+
     // This is used to verify that the proxy (and thereby the UI portion of the
     // application) is healthy. If this fails the application won't receive traffic,
     // and may be restarted.
@@ -86,6 +89,12 @@ function(
         initialDelaySeconds: 30,  // Use a longer delay if your app loads a large model.
         tcpSocket: {
             port: apiPort
+        }
+    };
+
+    local uiHealthCheck = apiHealthCheck + {
+        tcpSocket: {
+            port: uiPort
         }
     };
 
@@ -161,6 +170,22 @@ function(
                 spec: {
                     containers: [
                         {
+                            name: fullyQualifiedName + '-ui',
+                            image: uiImage,
+                            readinessProbe: uiHealthCheck,
+                            livenessProbe: uiHealthCheck,
+                            env: [{
+                                name: 'NODE_ENV',
+                                value: 'production'
+                            }],
+                            resources: {
+                                requests: {
+                                    cpu: '0.3',
+                                    memory: '1Gi'
+                                }
+                            }
+                        },
+                        {
                             name: fullyQualifiedName + '-api',
                             image: apiImage,
                             args: [ 'app/start.py', '--prod' ],
@@ -171,7 +196,7 @@ function(
                                     cpu: '0.3',
                                     memory: '2Gi'
                                 }
-                            },
+                            }
                         },
                         {
                             name: fullyQualifiedName + '-proxy',

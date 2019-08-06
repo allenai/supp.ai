@@ -65,6 +65,7 @@ def deploy(env, sha, user, force=False):
     manifest = json.loads(check_output([
         "%s/bin/kubeconf" % root,
         "--env", env,
+        "--ui", images["ui"],
         "--api", images["api"],
         "--proxy", images["proxy"],
         "--message", "Adhoc deploy by %s of SHA %s" % (user, sha),

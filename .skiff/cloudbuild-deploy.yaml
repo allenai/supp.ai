@@ -48,28 +48,10 @@ steps:
     '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
     '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
     '.',
-    '--build-arg', 'NODE_ENV=production',
-    '--build-arg', 'BABEL_ENV=production'
+    '--build-arg', 'NODE_ENV=production'
   ]
   waitFor: [ 'ui.pull' ]
   dir: 'ui'
-- id: 'ui.dist.create'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'create',
-    '--name', '$REPO_NAME-ui',
-    'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
-  ]
-  waitFor: [ 'ui.build' ]
-  dir: 'ui'
-- id: 'ui.dist.cp'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'cp',
-    '$REPO_NAME-ui:/usr/local/src/skiff/app/ui/build',
-    '/workspace/proxy/dist'
-  ]
-  waitFor: ['ui.dist.create']
 - id: 'proxy.build'
   name: 'gcr.io/cloud-builders/docker'
   args: [
@@ -80,7 +62,7 @@ steps:
     '.',
     '--build-arg', 'CONF_FILE=prod.conf'
   ]
-  waitFor: [ 'ui.dist.cp', 'proxy.pull' ]
+  waitFor: [ proxy.pull' ]
   dir: 'proxy'
 - id: 'api.push'
   name: 'gcr.io/cloud-builders/docker'
@@ -89,6 +71,13 @@ steps:
     'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
   ]
   waitFor: [ 'api.build' ]
+- id: 'ui.push'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push',
+    'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
+  ]
+  waitFor: [ 'ui.build' ]
 - id: 'proxy.push'
   name: 'gcr.io/cloud-builders/docker'
   args: [
@@ -104,6 +93,7 @@ steps:
     '-y',
     '--output-file', './webapp.json',
     '--tla-str', 'env=$_ENV',
+    '--tla-str', 'uiImage=gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
     '--tla-str', 'apiImage=gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
     '--tla-str', 'proxyImage=gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA',
     '--tla-str', 'sha=$COMMIT_SHA',
@@ -114,6 +104,7 @@ steps:
     './webapp.jsonnet'
   ]
   dir: '.skiff'
+  waitFor: [ 'api.push', 'ui.push', 'proxy.push' ]
 # Deploy the image to Kubernetes
 - id: 'deploy'
   name: 'gcr.io/ai2-reviz/rudder'
@@ -123,6 +114,7 @@ steps:
     'webapp.json'
   ]
   dir: '.skiff'
+  waitFor: [ 'config' ]
 substitutions:
   _ENV: staging
 images: [

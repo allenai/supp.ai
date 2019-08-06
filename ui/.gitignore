@@ -1,0 +1,8 @@
+# Files built by NextJS
+.next/
+
+# Dependencies
+node_modules/
+
+# yarn error logs
+*.log
