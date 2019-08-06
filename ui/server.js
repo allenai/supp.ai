@@ -4,7 +4,6 @@
  * NodeJS version (see the ui/Dockerfile).
  */
 
-const { parse } = require('url');
 const next = require('next');
 const morgan = require('morgan');
 const express = require('express');
