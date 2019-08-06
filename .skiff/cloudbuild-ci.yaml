@@ -1,0 +1,101 @@
+# This file tells Google Cloud Build what steps to run to verify pull
+# requests.
+steps:
+# Pull down the latest versions of each Docker image, so the build is faster.
+- id: 'api.pull'
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: '/bin/bash'
+  args: [
+    '-c',
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-api:latest || exit 0'
+  ]
+  waitFor: [ '-' ]
+- id: 'ui.pull'
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: '/bin/bash'
+  args: [
+    '-c',
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest || exit 0'
+  ]
+  waitFor: [ '-' ]
+- id: 'proxy.pull'
+  name: 'gcr.io/cloud-builders/docker'
+  entrypoint: '/bin/bash'
+  args: [
+    '-c',
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-proxy:latest || exit 0'
+  ]
+  waitFor: [ '-' ]
+# Build docker images for each piece of the puzzle
+- id: 'api.build'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-api:latest',
+    '.',
+    '--build-arg', 'FLASK_ENV=production'
+  ]
+  waitFor: [ 'api.pull' ]
+  dir: 'api'
+- id: 'ui.build'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
+    '.',
+    '--build-arg', 'NODE_ENV=production'
+  ]
+  waitFor: [ 'ui.pull' ]
+  dir: 'ui'
+- id: 'proxy.build'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:latest',
+    '.',
+    '--build-arg', 'CONF_FILE=prod.conf'
+  ]
+  waitFor: [ 'proxy.pull' ]
+  dir: 'proxy'
+# Validate the API
+- id: 'api.check.types'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'run',
+    'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
+    '-m',
+    'mypy',
+    'app/start.py'
+  ]
+  dir: 'api'
+  waitFor: [ 'api.build' ]
+- id: 'api.check.format'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'run',
+    'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
+    '-m',
+    'black',
+    '--check',
+    'app'
+  ]
+  dir: 'api'
+  waitFor: [ 'api.build' ]
+# Validate the UI
+- id: 'ui.check.format'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'run',
+    'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
+    'format:check'
+  ]
+  dir: 'ui'
+  waitFor: [ 'api.build' ]
+images: [
+  'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
+  'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA',
+]

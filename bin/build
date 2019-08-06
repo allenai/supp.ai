@@ -6,44 +6,85 @@ from subprocess import check_call, check_output
 from argparse import ArgumentParser
 import json
 
-def build(image_prefix = None, tag = None, silent = False):
+
+def build(image_prefix=None, tag=None, silent=False):
     root = path.dirname(path.dirname(path.realpath(__file__)))
     config = json.load(open(path.join(root, "skiff.json")))
     stdout = open(devnull) if silent == True else None
     if image_prefix is None:
         image_prefix = "gcr.io/ai2-reviz/%s" % config["appName"]
     if tag is None:
-        tag = check_output([ "git", "rev-parse", "HEAD" ], cwd=root).decode("utf-8").strip()
+        tag = (
+            check_output(["git", "rev-parse", "HEAD"], cwd=root).decode("utf-8").strip()
+        )
 
     api_image = "%s-api:%s" % (image_prefix, tag)
     ui_image = "%s-ui:%s" % (image_prefix, tag)
     proxy_image = "%s-proxy:%s" % (image_prefix, tag)
 
     # Build the required Docker images
-    check_call([ "docker", "build", "-t",
-        ui_image, "ui/",
-        "--build-arg", "NODE_ENV=production" ],
-        stdout=stdout)
-    check_call([ "docker", "build", "-t",
-        api_image, "api/",
-        "--build-arg", "FLASK_ENV=production" ], stdout=stdout)
-    check_call([ "docker", "build", "-t",
-        proxy_image, "--build-arg", "CONF_FILE=prod.conf", "proxy/" ],
-        stdout=stdout)
+    check_call(
+        [
+            "docker",
+            "build",
+            "-t",
+            ui_image,
+            "ui/",
+            "--build-arg",
+            "NODE_ENV=production",
+        ],
+        stdout=stdout,
+    )
+    check_call(
+        [
+            "docker",
+            "build",
+            "-t",
+            api_image,
+            "api/",
+            "--build-arg",
+            "FLASK_ENV=production",
+        ],
+        stdout=stdout,
+    )
+    check_call(
+        [
+            "docker",
+            "build",
+            "-t",
+            proxy_image,
+            "--build-arg",
+            "CONF_FILE=prod.conf",
+            "proxy/",
+        ],
+        stdout=stdout,
+    )
 
-    return { "api": api_image, "ui": ui_image, "proxy": proxy_image };
+    return {"api": api_image, "ui": ui_image, "proxy": proxy_image}
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--image", "-i", help="The image name prefix.",
-        type=str, default=None)
-    parser.add_argument("--tag", "-t", help="The image tag.", default=None,
-        type=str)
-    formats = set([ "text", "json" ])
-    parser.add_argument("--output", "-o", choices=formats, type=str,
-        help="The output format.", default="text")
-    parser.add_argument("--silent", "-s", help="Disable verbose output.",
-        default=False, action="store_true")
+    parser.add_argument(
+        "--image", "-i", help="The image name prefix.", type=str, default=None
+    )
+    parser.add_argument("--tag", "-t", help="The image tag.", default=None, type=str)
+    formats = set(["text", "json"])
+    parser.add_argument(
+        "--output",
+        "-o",
+        choices=formats,
+        type=str,
+        help="The output format.",
+        default="text",
+    )
+    parser.add_argument(
+        "--silent",
+        "-s",
+        help="Disable verbose output.",
+        default=False,
+        action="store_true",
+    )
     args = parser.parse_args()
     images = build(args.image, args.tag, args.silent)
     if args.output == "text":
