@@ -1,4 +1,5 @@
-from pythonjsonlogger import jsonlogger
+from pythonjsonlogger import jsonlogger  # type: ignore
+
 
 class StackdriverJsonFormatter(jsonlogger.JsonFormatter):
     """
@@ -11,7 +12,9 @@ class StackdriverJsonFormatter(jsonlogger.JsonFormatter):
     TODO:Add a timestamp that's used in place of Stackdriver's records (which
     reflect the time the log was written to Stackdriver, I think).
     """
+
     def add_fields(self, log_record, record, message_dict):
-        super(StackdriverJsonFormatter, self).add_fields(log_record, record,
-            message_dict)
-        log_record['severity'] = record.levelname
+        super(StackdriverJsonFormatter, self).add_fields(
+            log_record, record, message_dict
+        )
+        log_record["severity"] = record.levelname

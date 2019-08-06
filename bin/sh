@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 from subprocess import check_call
 from os import path
 
+
 def start_shell():
     """
     Starts a shell session in the target container.
@@ -12,18 +13,22 @@ def start_shell():
 
     # TODO: We could parse these from the `docker-compose.yaml` file instead
     # of hard-coding them, but for now this is easier.
-    services = [ 'api', 'ui', 'proxy' ]
+    services = ["api", "ui", "proxy"]
 
     arg_parser = ArgumentParser(
-            description='A utility that opens a shell session in the specified web application container.',
-            prog='sh')
-    arg_parser.add_argument('service', type=str, help='The service container',
-            choices=list(services))
+        description="A utility that opens a shell session in the specified web application container.",
+        prog="sh",
+    )
+    arg_parser.add_argument(
+        "service", type=str, help="The service container", choices=services
+    )
     args = arg_parser.parse_args()
 
     check_call(
-        [ 'docker-compose', 'exec', '--user', 'root', args.service, '/bin/sh' ], 
-        cwd=path.realpath(path.dirname(__file__)))
+        ["docker-compose", "exec", "--user", "root", args.service, "/bin/sh"],
+        cwd=path.realpath(path.dirname(__file__)),
+    )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     start_shell()
