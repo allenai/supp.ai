@@ -65,6 +65,7 @@ steps:
   args: [
     'run',
     'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
+    '-m',
     'mypy',
     'app/start.py'
   ]
@@ -75,6 +76,7 @@ steps:
   args: [
     'run',
     'gcr.io/$PROJECT_ID/$REPO_NAME-api:$COMMIT_SHA',
+    '-m',
     'black',
     '--check',
     'app'
@@ -87,7 +89,6 @@ steps:
   args: [
     'run',
     'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
-    'yarn',
     'format:check'
   ]
   dir: 'ui'
