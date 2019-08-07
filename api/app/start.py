@@ -2,46 +2,34 @@ import argparse
 import os
 import sys
 import logging
-from typing import Tuple
+from typing import Tuple, Iterable, Optional
 from gevent.pywsgi import WSGIServer  # type: ignore
 from flask import Flask, Response, request, jsonify
 from app.api import create_api
 from app.utils import StackdriverJsonFormatter
 
 
-def start():
+def start(data_dir: str, port: int, prod: bool):
     """
     Starts up a HTTP server attached to the provider port, and optionally
     in development mode (which is ideal for local development but unideal
     for production use).
     """
-    parser = argparse.ArgumentParser(
-        description="Starts your application's HTTP server."
-    )
-    parser.add_argument("--port", "-p", help="The port to listen on", default=8000)
-    parser.add_argument(
-        "--prod",
-        help="If specified the server is started in production mode, where "
-        + "the server isn't restarted as changes to the source code occur.",
-        action="store_true",
-    )
-    args = parser.parse_args()
 
-    # Locally we don't specify any handlers, which causes `basicConfig` to set
-    # up one for us that writes human readable messages.
-    handlers = None
+    logging_config = {
+        "level": getattr(logging, os.environ.get("LOG_LEVEL", default="INFO"))
+    }
 
     # If we're in production we setup a handler that writes JSON log messages
     # in a format that Google likes.
     if args.prod:
         json_handler = logging.StreamHandler()
         json_handler.setFormatter(StackdriverJsonFormatter())
-        handlers = [json_handler]
+        logging_config["handlers"] = [json_handler]
 
-    logging.basicConfig(
-        level=os.environ.get("LOG_LEVEL", default=logging.INFO), handlers=handlers
-    )
-    logger = logging.getLogger()
+    logging.basicConfig(**logging_config)
+
+    logger = logging.getLogger(__name__)
     logger.debug("AHOY! Let's get this boat out to water...")
 
     app = Flask(__name__)
@@ -49,7 +37,7 @@ def start():
     # Bind the API functionality to our application. You can add additional
     # API endpoints by editing api.py.
     logger.debug("Starting: init API...")
-    app.register_blueprint(create_api(), url_prefix="/")
+    app.register_blueprint(create_api(data_dir), url_prefix="/")
     logger.debug("Complete: init API...")
 
     # In production we use a HTTP server appropriate for production.
@@ -66,4 +54,22 @@ def start():
 
 
 if __name__ == "__main__":
-    start()
+    parser = argparse.ArgumentParser(
+        description="Starts your application's HTTP server."
+    )
+    parser.add_argument("--port", "-p", help="The port to listen on", default=8000)
+    parser.add_argument(
+        "--prod",
+        help="If specified the server is started in production mode, where "
+        + "the server isn't restarted as changes to the source code occur.",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--data-dir",
+        help="Path to a directory containing the datafiles that makeup the "
+        + "collection of interactions.",
+        default="/usr/local/data/skiff",
+    )
+    args = parser.parse_args()
+    start(args.data_dir, args.port, args.prod)
