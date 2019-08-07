@@ -93,4 +93,4 @@ steps:
     'format:check'
   ]
   dir: 'ui'
-  waitFor: [ 'api.build' ]
+  waitFor: [ 'ui.build' ]
