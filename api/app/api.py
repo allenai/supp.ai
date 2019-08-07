@@ -47,13 +47,13 @@ def create_api(data_dir: str) -> Blueprint:
 
     @api.route("/agent/search", methods=["GET"])
     def search_agents() -> Response:
-        query = request.args.get("q", default=None)
-        if query is None:
-            return error("q is required")
-        agents = idx.find_agents_by_name(query)
+        name = request.args.get("name", default=None)
+        if name is None:
+            return error("name is required")
+        agents = idx.find_agents_by_name(name)
         results = [idx.get_interactions(agent)._asdict() for agent in agents]
         response = simplejson.dumps(
-            {"query": {"q": query}, "results": results, "total": len(results)}
+            {"query": {"name": name}, "results": results, "total": len(results)}
         )
         return Response(response, 200, content_type="application/json")
 
