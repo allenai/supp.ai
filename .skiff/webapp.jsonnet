@@ -118,7 +118,10 @@ function(
                 'certmanager.k8s.io/cluster-issuer': 'letsencrypt-prod',
                 'kubernetes.io/ingress.class': 'nginx',
                 'nginx.ingress.kubernetes.io/ssl-redirect': 'true',
-                'nginx.ingress.kubernetes.io/enable-cors': 'false'
+                'nginx.ingress.kubernetes.io/enable-cors': 'false',
+                'nginx.ingress.kubernetes.io/auth-type': 'basic',
+                'nginx.ingress.kubernetes.io/auth-secret': 'auth',
+                'nginx.ingress.kubernetes.io/auth-realm': 'Please Login'
             }
         },
         spec: {
