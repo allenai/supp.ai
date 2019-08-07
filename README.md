@@ -37,3 +37,30 @@ submitting changes follow these steps:
     ```
     ~ ./bin/dev ui format
     ```
+
+## Updating the Data
+
+To deploy new data, follow these steps:
+
+1. Compress the datafiles using `tar` (there should be 3 files, `cui_metadata.json`,
+  `sentence_dict.json` and `interaction_id_dict.json`). The `YYYY`, `MM` and `DD`
+   below refer to the 4 digit year, 2 digit month and 2 digit date. The `NN` value
+   is an index to allow for multiple data releases in a single day.
+
+    ```
+    ~ tar -cvjf YYYYMMDD_NN.tar.gz *.json
+    ```
+
+2. Upload them to [this GCS bucket](https://console.cloud.google.com/storage/browser/supp-ai-data?project=ai2-reviz)
+   and make them public (give `read` access to the `allUsers` User).
+
+3. Update the `Dockerfile`, replacing the `DATA_ARCHIVE` value with the new
+   archive name.
+
+5. Start things locally to make sure everything works as expected:
+
+    ```
+    ~ docker-compose up --build
+    ```
+
+💊 Happy supplement interaction finding!
