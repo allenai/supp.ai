@@ -185,15 +185,6 @@ function(
                                 {
                                     name: 'SUPP_AI_ORIGIN',
                                     value: 'http://localhost:' + proxyPort
-                                },
-                                {
-                                    name: 'SUPP_AI_ALGOLIA_API_KEY',
-                                    valueFrom: {
-                                        secretKeyRef: {
-                                            name: 'algolia-api-key',
-                                            key: 'value'
-                                        }
-                                    }
                                 }
                             ],
                             resources: {
@@ -214,7 +205,18 @@ function(
                                     cpu: '0.3',
                                     memory: '2Gi'
                                 }
-                            }
+                            },
+                            env: [
+                                {
+                                    name: 'SUPP_AI_ALGOLIA_API_KEY',
+                                    valueFrom: {
+                                        secretKeyRef: {
+                                            name: 'algolia-api-key',
+                                            key: 'value'
+                                        }
+                                    }
+                                }
+                            ]
                         },
                         {
                             name: fullyQualifiedName + '-proxy',
