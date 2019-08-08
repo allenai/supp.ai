@@ -5,6 +5,7 @@ import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
 import { PaddedContent, Page } from "@allenai/varnish/components/shared";
 import { Input } from "@allenai/varnish/components/form";
 import { Icon } from "@allenai/varnish/components/icon";
+import { BodySmall } from "@allenai/varnish/components/typography"
 import { DocumentContext } from "next/document";
 import Router from "next/router";
 
@@ -28,6 +29,12 @@ interface State {
  *  - [ ] Break this out a bit, it's too much in one file.
  *  - [ ] Use the Footer. I'll need to modify Varnish, as it relies upon
  *        a client side Router. This will take a bit of thought.
+ *  - [ ] Look into ant's List component, as it has some nice built-in
+ *        things (like pagination).
+ *  - [ ] Refactor the WithMentions component, as it's a bit rough around
+ *        the edges / hard to follow. This might get revoked in the final
+ *        design, so things should only be cleaned up if / when we decide
+ *        that it's sticking around.
  */
 
 export default class Home extends React.PureComponent<Props, State> {
@@ -148,10 +155,13 @@ export default class Home extends React.PureComponent<Props, State> {
 const Agent = ({ agent }: { agent: api.model.Agent }) => (
     <React.Fragment>
         <AgentName>{agent.preferred_name}</AgentName>
-        <p>
-            <em>{agent.synonyms.join(", ")}</em>
-        </p>
         <p>{agent.definition}</p>
+        <p>
+            <BodySmall>
+                <strong>A.K.A:</strong>
+                {" "}<em>{agent.synonyms.join(", ")}</em>
+            </BodySmall>
+        </p>
     </React.Fragment>
 );
 
@@ -217,7 +227,7 @@ const WithMentions = ({
                 const variant =
                     mentioned == target.cui ? Variant.TARGET : Variant.SUBJECT;
                 return (
-                    <React.Fragment>
+                    <React.Fragment key={`${spanText}-${idx}`}>
                         {idx > 0 ? " " : null}
                         {mentioned ? (
                             <Mention variant={variant}>{spanText}</Mention>
@@ -278,14 +288,15 @@ const Mention = styled.strong<{ variant: Variant }>`
     padding: 1px 3px;
     border-radius: 4px;
     color: ${({ variant, theme }) =>
-        theme.color[variant == Variant.SUBJECT ? "B8" : "G8"].hex};
+        variant == Variant.SUBJECT ? theme.color.B8 : theme.color.G8};
     background: ${({ variant, theme }) =>
-        theme.color[variant == Variant.SUBJECT ? "B2" : "G2"].hex};
+        variant == Variant.SUBJECT ? theme.color.B2 : theme.color.G2};
 `;
 
 const AgentName = styled.h3`
     margin: 0;
-    color: ${({ theme }) => theme.color.B8.hex};
+    color: ${({ theme }) => theme.color.B8};
+    text-transform: capitalize;
 `;
 
 const Result = styled.li`
@@ -300,7 +311,8 @@ const Interaction = styled.li`
 `;
 
 const InteractionName = styled.strong`
-    color: ${({ theme }) => theme.color.G8.hex};
+    color: ${({ theme }) => theme.color.G8};
+    text-transform: capitalize;
 `;
 
 const Sentence = styled.li`
