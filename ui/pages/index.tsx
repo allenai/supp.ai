@@ -5,7 +5,7 @@ import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
 import { PaddedContent, Page } from "@allenai/varnish/components/shared";
 import { Input } from "@allenai/varnish/components/form";
 import { Icon } from "@allenai/varnish/components/icon";
-import { BodySmall } from "@allenai/varnish/components/typography"
+import { BodySmall } from "@allenai/varnish/components/typography";
 import { DocumentContext } from "next/document";
 import Router from "next/router";
 
@@ -158,8 +158,7 @@ const Agent = ({ agent }: { agent: api.model.Agent }) => (
         <p>{agent.definition}</p>
         <p>
             <BodySmall>
-                <strong>A.K.A:</strong>
-                {" "}<em>{agent.synonyms.join(", ")}</em>
+                <strong>A.K.A:</strong> <em>{agent.synonyms.join(", ")}</em>
             </BodySmall>
         </p>
     </React.Fragment>
