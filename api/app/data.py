@@ -1,6 +1,9 @@
 from typing import Iterable, List, Dict, Optional, Tuple, Union, NamedTuple
 from json import load
 from os import path
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class Agent(NamedTuple):
@@ -91,6 +94,10 @@ class InteractionId(NamedTuple):
 
     cuis: Tuple[str, str]
 
+    def __str__(self) -> str:
+        [l, r] = self.cuis
+        return f"{l}-{r}"
+
     @staticmethod
     def from_str(str: str) -> "InteractionId":
         parts = str.split("-")
@@ -152,16 +159,22 @@ class InteractionIndex:
         interaction_ids = self.interaction_ids_by_cui[agent.cui]
         interactions = []
         for interaction_id in interaction_ids:
-            [interacting_agent_id] = filter(
-                lambda iid: iid != agent.cui, interaction_id.cuis
+            interacting_agent_ids = list(
+                filter(lambda iid: iid != agent.cui, interaction_id.cuis)
             )
-            interacting_agent = self.get_agent(interacting_agent_id)
-            assert interacting_agent is not None
-            interactions.append(
-                InteractingAgent(
-                    interacting_agent, self.sentences_by_interaction_id[interaction_id]
+            if len(interacting_agent_ids) == 1:
+                [interacting_agent_id] = interacting_agent_ids
+                interacting_agent = self.get_agent(interacting_agent_id)
+                assert interacting_agent is not None
+                interactions.append(
+                    InteractingAgent(
+                        interacting_agent,
+                        self.sentences_by_interaction_id[interaction_id],
+                    )
                 )
-            )
+            else:
+                logger.warn(f"Malformed interaction id: {interaction_id}")
+
         return Interactions(agent, interacts_with=interactions)
 
     @staticmethod
