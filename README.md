@@ -5,8 +5,14 @@ between supplements and pharmaceuticals.
 
 ## Getting Started
 
-Make sure you have [docker](https://www.docker.com/products/docker-desktop)
-installed locally, then run:
+Fist, set your [Algolia Admin API key](https://www.algolia.com/apps/YZ85FPO05E/api-keys/all):
+
+```
+~ export SUPP_AI_ALGOLIA_API_KEY=$YOUR_KEY_HERE
+```
+
+Then, make sure you have [docker](https://www.docker.com/products/docker-desktop)
+installed locally and run:
 
 ```
 ~ docker-compose up --build

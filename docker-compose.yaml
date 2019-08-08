@@ -11,6 +11,7 @@ services:
             # makes debugging easier.
             - 'PYTHONUNBUFFERED=1'
             - 'LOG_LEVEL=DEBUG'
+            - 'SUPPAI_ALGOLIA_API_KEY=${SUPP_AI_ALGOLIA_API_KEY}'
     ui:
         build: ./ui
         # We can't mount the entire UI directory, since the `node_modules`

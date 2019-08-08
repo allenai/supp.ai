@@ -174,14 +174,14 @@ const Interactions = ({
     <React.Fragment>
         <h4>{`${count} ${pluralize("interaction", count)}:`}</h4>
         <InteractionList>
-            {interactions.map(interaction => (
+            {interactions.map((interaction, iidx) => (
                 <Interaction key={interaction.agent.cui}>
                     <InteractionName>
                         {interaction.agent.preferred_name}
                     </InteractionName>
                     <SentenceList>
-                        {interaction.sentences.map(sentence => (
-                            <Sentence key={sentence.uid}>
+                        {interaction.sentences.map((sentence, idx) => (
+                            <Sentence key={`${interaction.agent.cui}-${sentence.uid}-${iidx}-${idx}`}>
                                 <WithMentions
                                     sentence={sentence}
                                     target={interaction.agent}

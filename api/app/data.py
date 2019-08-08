@@ -1,10 +1,18 @@
 from typing import Iterable, List, Dict, Optional, Tuple, Union, NamedTuple
 from json import load
-from os import path
+from os import path, environ
 from logging import getLogger
+from algoliasearch.search_client import SearchClient # type:ignore
 
 logger = getLogger(__name__)
 
+#
+# TODO:
+#   - [ ] Don't always reindex all values
+#   - [ ] Separate indices for dev, prod, etc
+#   - [ ] Buy an account / investigate pricing?
+#   - [ ] Only index what's required for search
+#
 
 class Agent(NamedTuple):
     """
@@ -129,6 +137,25 @@ class InteractionIndex:
         self.cuis_by_name = InteractionIndex.build_agent_index(
             self.agents_by_cui.values()
         )
+        self.algolia_client = SearchClient.create(
+            "YZ85FPO05E", environ["SUPPAI_ALGOLIA_API_KEY"]
+        )
+        self.index = self.init_algolia_index()
+
+    def init_algolia_index(self):
+        index_name = f"agent_{self.version}"
+        idx = self.algolia_client.init_index(index_name)
+        batch = []
+        for agent in self.agents_by_cui.values():
+            agent_dict = agent._asdict()
+            agent_dict["objectID"] = agent.cui
+            batch.append(agent_dict)
+            if len(batch) == 100:
+                idx.save_objects(batch)
+                batch = []
+        if len(batch) > 0:
+            idx.save_objects(batch)
+        return idx
 
     def get_agent(self, cui: str) -> Optional[Agent]:
         """
@@ -142,12 +169,10 @@ class InteractionIndex:
         Attempts to find agents with the provided name. Only exact matches
         are returned.
         """
-        normalized = name.strip().lower()
-        if not normalized in self.cuis_by_name:
-            return []
         agents = []
-        for cui in self.cuis_by_name[normalized]:
-            agent = self.get_agent(cui)
+        resp = self.index.search(name)
+        for hit in resp["hits"]:
+            agent = self.get_agent(hit["cui"])
             assert agent is not None
             agents.append(agent)
         return agents
