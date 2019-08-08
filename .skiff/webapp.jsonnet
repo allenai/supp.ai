@@ -177,10 +177,16 @@ function(
                             image: uiImage,
                             readinessProbe: uiHealthCheck,
                             livenessProbe: uiHealthCheck,
-                            env: [{
-                                name: 'NODE_ENV',
-                                value: 'production'
-                            }],
+                            env: [
+                                {
+                                    name: 'NODE_ENV',
+                                    value: 'production'
+                                },
+                                {
+                                    name: 'SUPP_AI_ORIGIN',
+                                    value: 'http://localhost:' + proxyPort
+                                }
+                            ],
                             resources: {
                                 requests: {
                                     cpu: '0.3',
