@@ -3,7 +3,11 @@ import styled from "styled-components";
 import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
 import { Footer } from "@allenai/varnish/components/Footer";
 
-import { PaddedContent, Page, WhiteBackground } from "@allenai/varnish/components/shared";
+import {
+    PaddedContent,
+    Page,
+    WhiteBackground
+} from "@allenai/varnish/components/shared";
 import { Input } from "@allenai/varnish/components/form";
 import { Icon } from "@allenai/varnish/components/icon";
 import { BodySmall } from "@allenai/varnish/components/typography";
@@ -114,21 +118,26 @@ export default class Home extends React.PureComponent<Props, State> {
                                     {this.state.isSearching ? (
                                         <Loading />
                                     ) : this.state
-                                        .searchResponse /* TODO: Fixup, nested ternary == bad coder, no cookie */ ? (
+                                          .searchResponse /* TODO: Fixup, nested ternary == bad coder, no cookie */ ? (
                                         <React.Fragment>
                                             <ResultsText
                                                 totalResults={
-                                                    this.state.searchResponse.total
+                                                    this.state.searchResponse
+                                                        .total
                                                 }
                                             />
                                             <ResultList>
                                                 {this.state.searchResponse.results.map(
                                                     result => (
                                                         <Result
-                                                            key={result.agent.cui}
+                                                            key={
+                                                                result.agent.cui
+                                                            }
                                                         >
                                                             <Agent
-                                                                agent={result.agent}
+                                                                agent={
+                                                                    result.agent
+                                                                }
                                                             />
                                                             <Interactions
                                                                 interactions={
@@ -158,7 +167,7 @@ export default class Home extends React.PureComponent<Props, State> {
 }
 
 const Logo = styled.img.attrs({ src: logo })`
-    margin: ${({theme}) => `0 ${theme.spacing.sm} 0 0`};
+    margin: ${({ theme }) => `0 ${theme.spacing.sm} 0 0`};
 `;
 
 const Agent = ({ agent }: { agent: api.model.Agent }) => (
@@ -190,7 +199,9 @@ const Interactions = ({
                     </InteractionName>
                     <SentenceList>
                         {interaction.sentences.map((sentence, idx) => (
-                            <Sentence key={`${interaction.agent.cui}-${sentence.uid}-${iidx}-${idx}`}>
+                            <Sentence
+                                key={`${interaction.agent.cui}-${sentence.uid}-${iidx}-${idx}`}
+                            >
                                 <WithMentions
                                     sentence={sentence}
                                     target={interaction.agent}
