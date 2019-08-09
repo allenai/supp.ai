@@ -6,14 +6,6 @@ from algoliasearch.search_client import SearchClient # type:ignore
 
 logger = getLogger(__name__)
 
-#
-# TODO:
-#   - [ ] Don't always reindex all values
-#   - [ ] Separate indices for dev, prod, etc
-#   - [ ] Buy an account / investigate pricing?
-#   - [ ] Only index what's required for search
-#
-
 class Agent(NamedTuple):
     """
     Model for a supplement or drug, or rather an individual agent that's
@@ -143,18 +135,28 @@ class InteractionIndex:
         self.index = self.init_algolia_index()
 
     def init_algolia_index(self):
-        index_name = f"agent_{self.version}"
+        resp = self.algolia_client.list_indices()
+        indices = set(map(lambda item : item["name"], resp["items"]))
+
+        index_name = environ.get("SUPP_AI_INDEX_NAME", f"agent_{self.version}")
         idx = self.algolia_client.init_index(index_name)
-        batch = []
-        for agent in self.agents_by_cui.values():
-            agent_dict = agent._asdict()
-            agent_dict["objectID"] = agent.cui
-            batch.append(agent_dict)
-            if len(batch) == 100:
+
+        # Only load data into the index if the index doesn't exist. This acts
+        # as a simple gate that prevents us from loading data everytime the
+        # server starts.
+        if index_name not in indices:
+            batch = []
+            for agent in self.agents_by_cui.values():
+                agent_dict = agent._asdict()
+                # This is the ID Algolia uses for deduplicating records.
+                agent_dict["objectID"] = agent.cui
+                batch.append(agent_dict)
+                if len(batch) == 500:
+                    idx.save_objects(batch)
+                    batch = []
+            if len(batch) > 0:
                 idx.save_objects(batch)
-                batch = []
-        if len(batch) > 0:
-            idx.save_objects(batch)
+
         return idx
 
     def get_agent(self, cui: str) -> Optional[Agent]:
