@@ -12,6 +12,7 @@ import Router from "next/router";
 
 import * as api from "../api";
 import { debounce, pluralize } from "../util";
+import logo from "./logo.svg";
 
 interface Props {
     meta: api.model.IndexMeta;
@@ -95,7 +96,8 @@ export default class Home extends React.PureComponent<Props, State> {
         return (
             <React.Fragment>
                 <Header>
-                    <HeaderTitle>💊 supp.ai</HeaderTitle>
+                    <Logo height="56" width="56" alt="supp.ai logo" />
+                    <HeaderTitle>supp.ai</HeaderTitle>
                 </Header>
                 <WhiteBackground>
                     <PaddedContent>
@@ -154,6 +156,10 @@ export default class Home extends React.PureComponent<Props, State> {
         );
     }
 }
+
+const Logo = styled.img.attrs({ src: logo })`
+    margin: ${({theme}) => `0 ${theme.spacing.sm} 0 0`};
+`;
 
 const Agent = ({ agent }: { agent: api.model.Agent }) => (
     <React.Fragment>
