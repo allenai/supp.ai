@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
+import { Footer } from "@allenai/varnish/components/Footer";
 
-import { PaddedContent, Page } from "@allenai/varnish/components/shared";
+import { PaddedContent, Page, WhiteBackground } from "@allenai/varnish/components/shared";
 import { Input } from "@allenai/varnish/components/form";
 import { Icon } from "@allenai/varnish/components/icon";
 import { BodySmall } from "@allenai/varnish/components/typography";
@@ -27,14 +28,13 @@ interface State {
 /**
  * TODO:
  *  - [ ] Break this out a bit, it's too much in one file.
- *  - [ ] Use the Footer. I'll need to modify Varnish, as it relies upon
- *        a client side Router. This will take a bit of thought.
  *  - [ ] Look into ant's List component, as it has some nice built-in
  *        things (like pagination).
  *  - [ ] Refactor the WithMentions component, as it's a bit rough around
  *        the edges / hard to follow. This might get revoked in the final
  *        design, so things should only be cleaned up if / when we decide
  *        that it's sticking around.
+ *  - [ ] Add Google Analytics
  */
 
 export default class Home extends React.PureComponent<Props, State> {
@@ -97,56 +97,59 @@ export default class Home extends React.PureComponent<Props, State> {
                 <Header>
                     <HeaderTitle>💊 supp.ai</HeaderTitle>
                 </Header>
-                <PaddedContent>
-                    <Page>
-                        <LimitWidth>
-                            <Input
-                                type="text"
-                                autoFocus={!this.state.queryText}
-                                value={this.state.queryText}
-                                placeholder={placeholder}
-                                onChange={this.handleChange}
-                            />
-                            <Results>
-                                {this.state.isSearching ? (
-                                    <Loading />
-                                ) : this.state
-                                      .searchResponse /* TODO: Fixup, nested ternary == bad coder, no cookie */ ? (
-                                    <React.Fragment>
-                                        <ResultsText
-                                            totalResults={
-                                                this.state.searchResponse.total
-                                            }
-                                        />
-                                        <ResultList>
-                                            {this.state.searchResponse.results.map(
-                                                result => (
-                                                    <Result
-                                                        key={result.agent.cui}
-                                                    >
-                                                        <Agent
-                                                            agent={result.agent}
-                                                        />
-                                                        <Interactions
-                                                            interactions={
-                                                                result.interacts_with
-                                                            }
-                                                            count={
-                                                                result
-                                                                    .interacts_with
-                                                                    .length
-                                                            }
-                                                        />
-                                                    </Result>
-                                                )
-                                            )}
-                                        </ResultList>
-                                    </React.Fragment>
-                                ) : null}
-                            </Results>
-                        </LimitWidth>
-                    </Page>
-                </PaddedContent>
+                <WhiteBackground>
+                    <PaddedContent>
+                        <Page>
+                            <LimitWidth>
+                                <Input
+                                    type="text"
+                                    autoFocus={!this.state.queryText}
+                                    value={this.state.queryText}
+                                    placeholder={placeholder}
+                                    onChange={this.handleChange}
+                                />
+                                <Results>
+                                    {this.state.isSearching ? (
+                                        <Loading />
+                                    ) : this.state
+                                        .searchResponse /* TODO: Fixup, nested ternary == bad coder, no cookie */ ? (
+                                        <React.Fragment>
+                                            <ResultsText
+                                                totalResults={
+                                                    this.state.searchResponse.total
+                                                }
+                                            />
+                                            <ResultList>
+                                                {this.state.searchResponse.results.map(
+                                                    result => (
+                                                        <Result
+                                                            key={result.agent.cui}
+                                                        >
+                                                            <Agent
+                                                                agent={result.agent}
+                                                            />
+                                                            <Interactions
+                                                                interactions={
+                                                                    result.interacts_with
+                                                                }
+                                                                count={
+                                                                    result
+                                                                        .interacts_with
+                                                                        .length
+                                                                }
+                                                            />
+                                                        </Result>
+                                                    )
+                                                )}
+                                            </ResultList>
+                                        </React.Fragment>
+                                    ) : null}
+                                </Results>
+                            </LimitWidth>
+                        </Page>
+                    </PaddedContent>
+                </WhiteBackground>
+                <Footer />
             </React.Fragment>
         );
     }
