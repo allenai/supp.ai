@@ -30,18 +30,6 @@ interface State {
     searchResponse?: api.model.SearchResponse;
 }
 
-/**
- * TODO:
- *  - [ ] Break this out a bit, it's too much in one file.
- *  - [ ] Look into ant's List component, as it has some nice built-in
- *        things (like pagination).
- *  - [ ] Refactor the WithMentions component, as it's a bit rough around
- *        the edges / hard to follow. This might get revoked in the final
- *        design, so things should only be cleaned up if / when we decide
- *        that it's sticking around.
- *  - [ ] Add Google Analytics
- */
-
 export default class Home extends React.PureComponent<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -89,8 +77,11 @@ export default class Home extends React.PureComponent<Props, State> {
             this.setState({ isSearching: false, searchResponse: undefined });
         }
     });
-    handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+    handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({ queryText: event.currentTarget.value }, this.search);
+    };
+    handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        event.preventDefault();
     };
     render() {
         const { format } = Intl.NumberFormat();
@@ -108,11 +99,12 @@ export default class Home extends React.PureComponent<Props, State> {
                         <Page>
                             <LimitWidth>
                                 <Input
-                                    type="text"
+                                    type="search"
                                     autoFocus={!this.state.queryText}
                                     value={this.state.queryText}
                                     placeholder={placeholder}
                                     onChange={this.handleChange}
+                                    onPressEnter={this.handleSubmit}
                                 />
                                 <Results>
                                     {this.state.isSearching ? (
