@@ -2,9 +2,10 @@ from typing import Iterable, List, Dict, Optional, Tuple, Union, NamedTuple
 from json import load
 from os import path, environ
 from logging import getLogger
-from algoliasearch.search_client import SearchClient # type:ignore
+from algoliasearch.search_client import SearchClient  # type:ignore
 
 logger = getLogger(__name__)
+
 
 class Agent(NamedTuple):
     """
@@ -136,7 +137,7 @@ class InteractionIndex:
 
     def init_algolia_index(self):
         resp = self.algolia_client.list_indices()
-        indices = set(map(lambda item : item["name"], resp["items"]))
+        indices = set(map(lambda item: item["name"], resp["items"]))
 
         index_name = environ.get("SUPP_AI_INDEX_NAME", f"agent_{self.version}")
         idx = self.algolia_client.init_index(index_name)
@@ -164,6 +165,8 @@ class InteractionIndex:
         Returns an agent with the provided cui, if one exists. If no agent with
         the provided cui exists None is returned.
         """
+        if cui not in self.agents_by_cui:
+            return None
         return self.agents_by_cui[cui]
 
     def find_agents_by_name(self, name: str) -> List[Agent]:
@@ -175,8 +178,10 @@ class InteractionIndex:
         resp = self.index.search(name)
         for hit in resp["hits"]:
             agent = self.get_agent(hit["cui"])
-            assert agent is not None
-            agents.append(agent)
+            if agent is not None:
+                agents.append(agent)
+            else:
+                logger.warn(f"Search result without a CUI: {hit}")
         return agents
 
     def get_interactions(self, agent: Agent) -> Interactions:
@@ -192,15 +197,21 @@ class InteractionIndex:
             if len(interacting_agent_ids) == 1:
                 [interacting_agent_id] = interacting_agent_ids
                 interacting_agent = self.get_agent(interacting_agent_id)
-                assert interacting_agent is not None
-                interactions.append(
-                    InteractingAgent(
-                        interacting_agent,
-                        self.sentences_by_interaction_id[interaction_id],
+                if interacting_agent is not None:
+                    interactions.append(
+                        InteractingAgent(
+                            interacting_agent,
+                            self.sentences_by_interaction_id[interaction_id],
+                        )
                     )
-                )
+                else:
+                    logger.warn(
+                        f"Interaction id that references a missing CUI: {interacting_agent_id}, IID: {interaction_id}"
+                    )
             else:
-                logger.warn(f"Malformed interaction id: {interaction_id}")
+                logger.warn(
+                    f"Malformed interaction id: {interaction_id}, agent CUI: {agent.cui}"
+                )
 
         return Interactions(agent, interacts_with=interactions)
 
