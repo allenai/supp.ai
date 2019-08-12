@@ -29,6 +29,7 @@ services:
             - './ui/pages:/usr/local/src/skiff/app/ui/pages'
             - './ui/api:/usr/local/src/skiff/app/ui/api'
             - './ui/util:/usr/local/src/skiff/app/ui/util'
+            - './ui/components:/usr/local/src/skiff/app/ui/components'
         command:
             - 'dev'
     proxy:

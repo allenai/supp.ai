@@ -17,6 +17,7 @@ import Router from "next/router";
 import * as api from "../api";
 import { debounce, pluralize } from "../util";
 import logo from "./logo.svg";
+import { Disclaimer } from "../components";
 
 interface Props {
     meta: api.model.IndexMeta;
@@ -148,6 +149,7 @@ export default class Home extends React.PureComponent<Props, State> {
                                         </React.Fragment>
                                     ) : null}
                                 </Results>
+                                <Disclaimer />
                             </LimitWidth>
                         </Page>
                     </PaddedContent>
