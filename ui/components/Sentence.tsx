@@ -28,10 +28,7 @@ export const Sentence = ({ sentence, target }: Props) => {
                     </React.Fragment>
                 );
             })}
-            ” via{" "}
-            <a href={`https://semanticscholar.org/paper/${sentence.paper_id}`}>
-                this paper.
-            </a>
+            ”
         </div>
     );
 };

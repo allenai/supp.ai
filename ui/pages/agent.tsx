@@ -12,6 +12,7 @@ import {
     DefaultLayout,
     SearchForm,
     Sentence,
+    PaperInfo,
     WithAgentDefinitionPopover,
     Synonyms
 } from "../components";
@@ -73,15 +74,20 @@ export default class AgentDetail extends React.PureComponent<Props> {
                                         </WithAgentDefinitionPopover>
                                     </AgentLink>
                                 </AgentListItemTitle>
-                                {interaction.sentences.map((sentence, idx) => (
-                                    <AgentListItemContent
-                                        key={`${this.props.agent.cui}-${interaction.agent.cui}-${sentence.uid}-${idx}`}
-                                    >
-                                        <Sentence
-                                            sentence={sentence}
-                                            target={interaction.agent}
-                                        />
-                                    </AgentListItemContent>
+                                {interaction.evidence.map(evidence => (
+                                    <Evidence key={evidence.paper.pid}>
+                                        {evidence.sentences.map(sentence => (
+                                            <AgentListItemContent
+                                                key={`${evidence.paper.pid}-${sentence.sentence_id}`}
+                                            >
+                                                <Sentence
+                                                    sentence={sentence}
+                                                    target={interaction.agent}
+                                                />
+                                            </AgentListItemContent>
+                                        ))}
+                                        <PaperInfo paper={evidence.paper} />
+                                    </Evidence>
                                 ))}
                             </AgentListItem>
                         ))}
@@ -91,6 +97,18 @@ export default class AgentDetail extends React.PureComponent<Props> {
         );
     }
 }
+
+const Evidence = styled.div`
+    margin: ${({ theme }) => theme.spacing.md} 0;
+    padding: 0 0 ${({ theme }) => theme.spacing.md};
+    border-bottom: 1px solid ${({ theme }) => theme.palette.border.main};
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+`;
 
 const AgentName = styled.h1`
     text-transform: capitalize;

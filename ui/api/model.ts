@@ -30,9 +30,21 @@ export interface SupportingSentence {
     spans: SupportingSentenceSpan[];
 }
 
+export interface Paper {
+    pid: string;
+    title: string;
+    year?: number;
+    venue?: number;
+}
+
+export interface Evidence {
+    paper: Paper;
+    sentences: SupportingSentence[];
+}
+
 export interface InteractingAgent {
     agent: Agent;
-    sentences: SupportingSentence[];
+    evidence: Evidence[];
 }
 
 export interface AgentWithInteractions {
