@@ -94,7 +94,8 @@ class Paper(NamedTuple):
     @staticmethod
     def from_json(fields: Dict) -> "Paper":
         authors = [PaperAuthor(**a) for a in fields["authors"]]
-        return Paper(**{**fields, "authors": authors})
+        with_authors: Dict = {**fields, "authors": authors}
+        return Paper(**with_authors)
 
 
 class SupportingSentence(NamedTuple):
@@ -301,7 +302,7 @@ class InteractionIndex:
                 [interacting_agent_id] = interacting_agent_ids
                 interacting_agent = self.get_agent(interacting_agent_id)
                 if interacting_agent is not None:
-                    sentences_by_paper_id: Dict[str, SupportingSentence] = {}
+                    sentences_by_paper_id: Dict[str, List[SupportingSentence]] = {}
                     for sentence in self.sentences_by_interaction_id[interaction_id]:
                         if sentence.paper_id not in sentences_by_paper_id:
                             sentences_by_paper_id[sentence.paper_id] = []
