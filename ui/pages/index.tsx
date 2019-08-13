@@ -1,8 +1,5 @@
 import React from "react";
-import styled from "styled-components";
 import { DocumentContext } from "next/document";
-import Router from "next/router";
-import { Icon } from "@allenai/varnish/components/icon";
 
 import { model, fetchIndexMeta, searchForAgents } from "../api";
 import {
@@ -12,34 +9,21 @@ import {
     DefaultLayout
 } from "../components";
 
-interface Props {
-    meta: model.IndexMeta;
-    defaultQueryText?: string;
-    defaultSearchResponse?: model.SearchResponse;
-}
-
 enum View {
     DEFAULT,
-    SEARCHING,
     RESULTS
 }
 
-interface State {
-    view: View;
+interface Props {
+    meta: model.IndexMeta;
     queryText?: string;
     searchResponse?: model.SearchResponse;
+    view: View;
 }
 
-export default class Home extends React.PureComponent<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            view: props.defaultSearchResponse ? View.RESULTS : View.DEFAULT,
-            queryText: props.defaultQueryText,
-            searchResponse: props.defaultSearchResponse
-        };
-    }
-    static async getInitialProps({ query }: DocumentContext): Promise<Props> {
+export default class Home extends React.PureComponent<Props> {
+    static async getInitialProps(context: DocumentContext): Promise<Props> {
+        const { query } = context;
         const queryText = SearchForm.queryTextFromQueryString(query);
         if (queryText !== undefined) {
             const [meta, response] = await Promise.all([
@@ -48,38 +32,13 @@ export default class Home extends React.PureComponent<Props, State> {
             ]);
             return {
                 meta,
-                defaultQueryText: queryText,
-                defaultSearchResponse: response
+                queryText: queryText,
+                searchResponse: response,
+                view: View.RESULTS
             };
         } else {
             const meta = await fetchIndexMeta();
-            return { meta };
-        }
-    }
-    componentDidUpdate() {
-        const { router } = Router;
-        if (router != null) {
-            const queryText = SearchForm.queryTextFromQueryString(router.query);
-            if (queryText === undefined) {
-                this.setState({
-                    view: View.DEFAULT,
-                    searchResponse: undefined,
-                    queryText
-                });
-            } else if (
-                !this.state.queryText ||
-                this.state.queryText !== queryText
-            ) {
-                this.setState({ view: View.SEARCHING, queryText }, async () => {
-                    const searchResponse = await searchForAgents(queryText);
-                    this.setState(state => {
-                        if (state.queryText !== searchResponse.query.q) {
-                            return null;
-                        }
-                        return { view: View.RESULTS, searchResponse };
-                    });
-                });
-            }
+            return { meta, view: View.DEFAULT };
         }
     }
     render() {
@@ -87,32 +46,18 @@ export default class Home extends React.PureComponent<Props, State> {
         const placeholder =
             "Enter the name of a supplement or drug to search " +
             `${format(this.props.meta.interaction_count)} interactions…`;
-
-        let main = null;
-        switch (this.state.view) {
-            case View.SEARCHING:
-                main = <Loading />;
-                break;
-            case View.RESULTS: {
-                if (this.state.searchResponse) {
-                    main = (
-                        <SearchResults response={this.state.searchResponse} />
-                    );
-                    break;
-                }
-            }
-        }
         return (
             <DefaultLayout>
                 <SearchForm
                     placeholder={placeholder}
-                    defaultQueryText={this.props.defaultQueryText}
+                    defaultQueryText={this.props.queryText}
                 />
-                {main}
+                {this.props.view === View.RESULTS &&
+                this.props.searchResponse ? (
+                    <SearchResults response={this.props.searchResponse} />
+                ) : null}
                 <Disclaimer />
             </DefaultLayout>
         );
     }
 }
-
-export const Loading = styled(Icon).attrs({ type: "loading" })``;
