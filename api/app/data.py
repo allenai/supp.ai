@@ -5,6 +5,7 @@ from logging import getLogger
 from algoliasearch.search_client import SearchClient  # type:ignore
 from re import sub
 from urllib.parse import quote_plus
+from copy import deepcopy
 
 logger = getLogger(__name__)
 
@@ -62,6 +63,39 @@ class SupportingSentenceSpan(NamedTuple):
 
     text: str
     cui: Optional[str]
+
+
+class PaperAuthor(NamedTuple):
+    """
+    Model for a paper author.
+    """
+
+    first: Optional[str]
+    middle: Optional[str]
+    last: Optional[str]
+    suffix: Optional[str]
+
+
+class Paper(NamedTuple):
+    """
+    Model capturing metatdata about a Semantic Scholar paper.
+    """
+
+    pid: str
+    title: str
+    authors: List[PaperAuthor]
+    year: Optional[int]
+    venue: Optional[str]
+    doi: Optional[str]
+    pmid: Optional[int]
+    fields_of_study: List[str]
+    human_study: bool
+    animal_study: bool
+
+    @staticmethod
+    def from_json(fields: Dict) -> "Paper":
+        authors = [PaperAuthor(**a) for a in fields["authors"]]
+        return Paper(**{**fields, "authors": authors})
 
 
 class SupportingSentence(NamedTuple):
@@ -123,6 +157,16 @@ class SupportingSentence(NamedTuple):
         return SupportingSentence(**with_spans)
 
 
+class Evidence(NamedTuple):
+    """
+    Model for evidence, which represents a paper and the sentences from the
+    paper that mention a particular agent.
+    """
+
+    paper: Paper
+    sentences: List[SupportingSentence]
+
+
 class InteractingAgent(NamedTuple):
     """
     Model defining an agent interaction. The agent in this case refers to the
@@ -131,7 +175,7 @@ class InteractingAgent(NamedTuple):
     """
 
     agent: Agent
-    sentences: List[SupportingSentence]
+    evidence: List[Evidence]
 
 
 class Interactions(NamedTuple):
@@ -178,6 +222,7 @@ class InteractionIndex:
         agents_by_cui: Dict[str, Agent],
         sentences_by_interaction_id: Dict[InteractionId, List[SupportingSentence]],
         interaction_ids_by_cui: Dict[str, List[InteractionId]],
+        paper_metadata_by_id: Dict[str, Paper],
     ):
         self.version = version
         self.agents_by_cui = agents_by_cui
@@ -192,6 +237,7 @@ class InteractionIndex:
             "YZ85FPO05E", environ["SUPP_AI_ALGOLIA_API_KEY"]
         )
         self.index = self.init_algolia_index()
+        self.paper_metadata_by_id = paper_metadata_by_id
 
     def init_algolia_index(self):
         resp = self.algolia_client.list_indices()
@@ -256,12 +302,29 @@ class InteractionIndex:
                 [interacting_agent_id] = interacting_agent_ids
                 interacting_agent = self.get_agent(interacting_agent_id)
                 if interacting_agent is not None:
-                    interactions.append(
-                        InteractingAgent(
-                            interacting_agent,
-                            self.sentences_by_interaction_id[interaction_id],
-                        )
+                    sentences_by_paper_id: Dict[str, SupportingSentence] = {}
+                    for sentence in self.sentences_by_interaction_id[interaction_id]:
+                        if sentence.paper_id not in sentences_by_paper_id:
+                            sentences_by_paper_id[sentence.paper_id] = []
+                        sentences_by_paper_id[sentence.paper_id].append(sentence)
+                    evidence = []
+                    for paper_id, sentences in sentences_by_paper_id.items():
+                        if paper_id in self.paper_metadata_by_id:
+                            evidence.append(
+                                Evidence(
+                                    self.paper_metadata_by_id[paper_id],
+                                    sentences
+                                )
+                            )
+                        else:
+                            logger.warn(
+                                f"Paper id without metadata: ${paper_id}"
+                            )
+                    agent_with_interaction = InteractingAgent(
+                        interacting_agent,
+                        evidence
                     )
+                    interactions.append(agent_with_interaction)
                 else:
                     logger.warn(
                         f"Interaction id that references a missing CUI: {interacting_agent_id}, IID: {interaction_id}"
@@ -282,6 +345,7 @@ class InteractionIndex:
             InteractionIndex.load_agents_by_cui(data_dir),
             InteractionIndex.load_sentences_by_interaction_id(data_dir),
             InteractionIndex.load_interaction_ids_by_cui(data_dir),
+            InteractionIndex.load_paper_metadata(data_dir),
         )
 
     @staticmethod
@@ -308,7 +372,7 @@ class InteractionIndex:
             for [interaction_id_str, sentences] in raw.items():
                 interaction_id = InteractionId.from_str(interaction_id_str)
                 if interaction_id in sentences_by_interaction_id:
-                    raise RuntimeError(f"Duplicate interaction id : {interaction_id}")
+                    raise RuntimeError(f"Duplicate interaction id: {interaction_id}")
                 sentences_by_interaction_id[interaction_id] = list(
                     map(SupportingSentence.from_json, sentences)
                 )
@@ -321,7 +385,7 @@ class InteractionIndex:
             raw = load(fp)
             for [cui, interaction_ids] in raw.items():
                 if cui in interaction_ids_by_cui:
-                    raise RuntimeError(f"Duplicate cui : {cui}")
+                    raise RuntimeError(f"Duplicate cui: {cui}")
                 interaction_ids_by_cui[cui] = list(
                     map(InteractionId.from_str, interaction_ids)
                 )
@@ -337,3 +401,14 @@ class InteractionIndex:
                     cuis_by_name[normalized_name] = []
                 cuis_by_name[normalized_name].append(agent.cui)
         return cuis_by_name
+
+    @staticmethod
+    def load_paper_metadata(data_dir: str) -> Dict[str, Paper]:
+        papers_by_id: Dict[str, Paper] = {}
+        with open(path.join(data_dir, "paper_metadata.json")) as fp:
+            raw = load(fp)
+            for [paper_id, paper] in raw.items():
+                if paper_id in papers_by_id:
+                    raise RuntimeError(f"Duplicate paper: ${paper_id}")
+                papers_by_id[paper_id] = Paper.from_json({**paper, "pid": paper_id})
+        return papers_by_id
