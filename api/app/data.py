@@ -5,7 +5,6 @@ from logging import getLogger
 from algoliasearch.search_client import SearchClient  # type:ignore
 from re import sub
 from urllib.parse import quote_plus
-from copy import deepcopy
 
 logger = getLogger(__name__)
 
