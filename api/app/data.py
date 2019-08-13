@@ -310,18 +310,12 @@ class InteractionIndex:
                     for paper_id, sentences in sentences_by_paper_id.items():
                         if paper_id in self.paper_metadata_by_id:
                             evidence.append(
-                                Evidence(
-                                    self.paper_metadata_by_id[paper_id],
-                                    sentences
-                                )
+                                Evidence(self.paper_metadata_by_id[paper_id], sentences)
                             )
                         else:
-                            logger.warn(
-                                f"Paper id without metadata: ${paper_id}"
-                            )
+                            logger.warn(f"Paper id without metadata: ${paper_id}")
                     agent_with_interaction = InteractingAgent(
-                        interacting_agent,
-                        evidence
+                        interacting_agent, evidence
                     )
                     interactions.append(agent_with_interaction)
                 else:

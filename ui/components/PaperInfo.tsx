@@ -18,15 +18,19 @@ export const PaperInfo = ({ paper }: Props) => (
                 {paper.title}
             </PaperLink>
         </div>
-        {[ paper.venue, paper.year ].filter(meta => meta !== undefined).join("\u00A0\u00A0•\u00A0\u00A0")}
-        {"\u00A0\u00A0|\u00A0\u00A0"}<a href={semanticScholarUrl(paper)}>View Paper</a>
+        {[paper.venue, paper.year]
+            .filter(meta => meta !== undefined)
+            .join("\u00A0\u00A0•\u00A0\u00A0")}
+        {"\u00A0\u00A0|\u00A0\u00A0"}
+        <a href={semanticScholarUrl(paper)}>View Paper</a>
     </BodySmall>
 );
 
 const PaperLink = styled.a`
     font-weight: 700;
 
-    &, &:hover {
+    &,
+    &:hover {
         color: ${({ theme }) => theme.palette.text.primary};
         text-decoration: none;
     }

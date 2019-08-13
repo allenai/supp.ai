@@ -78,7 +78,8 @@ export default class AgentDetail extends React.PureComponent<Props> {
                                     <Evidence key={evidence.paper.pid}>
                                         {evidence.sentences.map(sentence => (
                                             <AgentListItemContent
-                                                    key={`${evidence.paper.pid}-${sentence.sentence_id}`}>
+                                                key={`${evidence.paper.pid}-${sentence.sentence_id}`}
+                                            >
                                                 <Sentence
                                                     sentence={sentence}
                                                     target={interaction.agent}
