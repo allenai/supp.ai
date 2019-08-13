@@ -8,3 +8,6 @@ export * from "./AgentLink";
 export * from "./AgentList";
 export * from "./Synonyms";
 export * from "./WithAgentDefinitionPopover";
+
+import * as icon from "./icon";
+export { icon };

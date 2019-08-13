@@ -94,6 +94,7 @@ export default class AgentDetail extends React.PureComponent<Props> {
 
 const AgentName = styled.h1`
     text-transform: capitalize;
+    margin: 0;
 `;
 
 const Section = styled.section`

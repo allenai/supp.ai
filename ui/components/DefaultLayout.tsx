@@ -7,14 +7,19 @@ import {
     Page,
     WhiteBackground
 } from "@allenai/varnish/components/shared";
+import Link from "next/link";
 
 import { Logo } from "./Logo";
 
 export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
     <React.Fragment>
         <Header>
-            <Logo height="56" width="56" alt="supp.ai logo" />
-            <HeaderTitle>supp.ai</HeaderTitle>
+            <Link href="/">
+                <HeaderLink>
+                    <Logo height="56" width="56" alt="supp.ai logo" />
+                    <HeaderTitle>supp.ai</HeaderTitle>
+                </HeaderLink>
+            </Link>
         </Header>
         <WhiteBackground>
             <PaddedContent>
@@ -30,5 +35,14 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
 const MaxWidth = styled.div`
     && {
         max-width: 869px;
+    }
+`;
+
+const HeaderLink = styled.a`
+    display: flex;
+    align-items: center;
+
+    &:hover {
+        text-decoration: none;
     }
 `;

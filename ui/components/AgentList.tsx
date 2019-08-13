@@ -17,7 +17,11 @@ interface Props {
 export const AgentListItem = ({ agent, children }: Props) => (
     <ListItem>
         <ListItemIcon>
-            {agent.is_supp ? <icon.Supplement /> : <icon.Drug />}
+            {agent.is_supp ? (
+                <icon.Supplement width="36" height="37" />
+            ) : (
+                <icon.Drug width="24" height="24" />
+            )}
         </ListItemIcon>
         <ListItemContent>{children}</ListItemContent>
     </ListItem>
@@ -46,7 +50,7 @@ export const AgentListItemContent = styled.div`
 const ListItem = styled.li`
     border-radius: 4px;
     border: 1px solid ${({ theme }) => theme.palette.border.main};
-    margin: ${({ theme }) => theme.spacing.xl} 0;
+    margin: ${({ theme }) => theme.spacing.md} 0;
     padding: ${({ theme }) =>
         `${theme.spacing.lg} ${theme.spacing.lg} ${theme.spacing.lg} 0`};
     display: grid;
