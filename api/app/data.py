@@ -3,8 +3,17 @@ from json import load
 from os import path, environ
 from logging import getLogger
 from algoliasearch.search_client import SearchClient  # type:ignore
+from re import sub
+from urllib.parse import quote_plus
 
 logger = getLogger(__name__)
+
+
+def slug(text: str) -> str:
+    """
+    Returns a url safe slug, derived from the provided text.
+    """
+    return quote_plus(sub(r"[\W_]", "-", text.lower()))
 
 
 class Agent(NamedTuple):
@@ -22,6 +31,7 @@ class Agent(NamedTuple):
     definition: str
     # True the agent is a supplment, False if the agent is a drug / pharmaceutical
     is_supp: bool
+    slug: str
 
 
 class SupportingSentenceArg(NamedTuple):
@@ -43,6 +53,17 @@ class SupportingSentenceArg(NamedTuple):
         return SupportingSentenceArg(**normalized)
 
 
+class SupportingSentenceSpan(NamedTuple):
+    """
+    Model for a span in a supporting sentence. A span is a portion of text in
+    a sentence. If the span has a cui, then it's text that mentions a specific
+    agent.
+    """
+
+    text: str
+    cui: Optional[str]
+
+
 class SupportingSentence(NamedTuple):
     """
     Model for a sentence, from a paper, where two agents that interact with
@@ -53,17 +74,53 @@ class SupportingSentence(NamedTuple):
     confidence: Optional[int]
     paper_id: str
     sentence_id: int
-    # TODO: Ellipsize to acceptable character lenght, per publisher agreements
-    sentence: str
-    arg1: SupportingSentenceArg
-    arg2: SupportingSentenceArg
+    # TODO: Truncate to acceptable character length, per publisher agreements
+    spans: List[SupportingSentenceSpan]
 
     @staticmethod
     def from_json(fields: Dict) -> "SupportingSentence":
+        # We convert each sentence into a list of spans, where each span
+        # is the text from that portion of the sentence and an optional cui.
+        # If a cui is set, it means the span constitutes a mention of an
+        # agent in the sentence. So, for instance, if we had the sentence
+        # "I drink water, after eating donuts" and our agents were "water",
+        # and "donuts", we'd produce the spans:
+        # [
+        #   { text: "I drink ", cui: None },
+        #   { text: "water", cui: "C123456" },
+        #   { text: ", after eating ", cui: None },
+        #   { text: "donuts", cui: "C654321" }
+        # ]
         arg1 = SupportingSentenceArg.from_json(fields["arg1"])
         arg2 = SupportingSentenceArg.from_json(fields["arg2"])
-        normalized: Dict = {**fields, "arg1": arg1, "arg2": arg2}
-        return SupportingSentence(**normalized)
+
+        # Order the mentions (we'll always have two) by the lower index,
+        # so that we can process them in order
+        args_ordered_by_index = [arg1, arg2]
+        args_ordered_by_index.sort(key=lambda arg: arg.span[0])
+        [first, second] = args_ordered_by_index
+
+        # Put together our sentence spans
+        sentence: str = fields["sentence"]
+        spans = [
+            SupportingSentenceSpan(sentence[0 : first.span[0] - 1], None),
+            SupportingSentenceSpan(sentence[first.span[0] : first.span[1]], first.cui),
+            SupportingSentenceSpan(sentence[first.span[1] : second.span[0]], None),
+            SupportingSentenceSpan(
+                sentence[second.span[0] : second.span[1]], second.cui
+            ),
+            SupportingSentenceSpan(sentence[second.span[1] :], None),
+        ]
+
+        # Add the extra information we prepared
+        with_spans: Dict = {**fields, "spans": spans}
+
+        # Remove fields that from the model that the UI doesn't use
+        del with_spans["sentence"]
+        del with_spans["arg1"]
+        del with_spans["arg2"]
+
+        return SupportingSentence(**with_spans)
 
 
 class InteractingAgent(NamedTuple):
@@ -84,6 +141,7 @@ class Interactions(NamedTuple):
 
     agent: Agent
     interacts_with: List[InteractingAgent]
+    interacts_with_count: int
 
 
 class InteractionId(NamedTuple):
@@ -101,7 +159,7 @@ class InteractionId(NamedTuple):
 
     @staticmethod
     def from_str(str: str) -> "InteractionId":
-        parts = str.split("-")
+        parts = str.upper().split("-")
         if len(parts) != 2:
             raise RuntimeError(f"Malformed interaction id: {str}")
         [first, second] = parts
@@ -160,11 +218,12 @@ class InteractionIndex:
 
         return idx
 
-    def get_agent(self, cui: str) -> Optional[Agent]:
+    def get_agent(self, raw_cui: str) -> Optional[Agent]:
         """
         Returns an agent with the provided cui, if one exists. If no agent with
         the provided cui exists None is returned.
         """
+        cui = raw_cui.upper()
         if cui not in self.agents_by_cui:
             return None
         return self.agents_by_cui[cui]
@@ -213,7 +272,9 @@ class InteractionIndex:
                     f"Malformed interaction id: {interaction_id}, agent CUI: {agent.cui}"
                 )
 
-        return Interactions(agent, interacts_with=interactions)
+        return Interactions(
+            agent, interacts_with=interactions, interacts_with_count=len(interactions)
+        )
 
     @staticmethod
     def from_data(archive_name: str, data_dir: str) -> "InteractionIndex":
@@ -229,10 +290,13 @@ class InteractionIndex:
         agents_by_cui: Dict[str, Agent] = {}
         with open(path.join(data_dir, "cui_metadata.json")) as fp:
             raw = load(fp)
-            for [cui, fields] in raw.items():
+            for [raw_cui, fields] in raw.items():
+                cui = raw_cui.upper()
                 if cui in agents_by_cui:
                     raise RuntimeError(f"Duplicate cui: {cui}")
-                agents_by_cui[cui] = Agent(**{**{"cui": cui}, **fields})
+                agents_by_cui[cui] = Agent(
+                    **{**{"cui": cui, "slug": slug(fields["preferred_name"])}, **fields}
+                )
         return agents_by_cui
 
     @staticmethod

@@ -19,6 +19,14 @@ export async function fetchIndexMeta(): Promise<model.IndexMeta> {
         .then(resp => resp.data);
 }
 
+export async function fetchAgent(
+    cui: string
+): Promise<model.AgentWithInteractions> {
+    return axios
+        .get<model.AgentWithInteractions>(`${API_ORIGIN}/api/agent/${cui}`)
+        .then(resp => resp.data);
+}
+
 export async function searchByName(
     name: string
 ): Promise<model.SearchResponse> {

@@ -12,6 +12,6 @@ export function debounce<A extends any[]>(
     return delayExecution;
 }
 
-export function pluralize(str: string, len: number): string {
-    return len === 1 ? str : `${str}s`;
+export function pluralize(str: string, len: number, plural?: string): string {
+    return len === 1 ? str : plural || `${str}s`;
 }

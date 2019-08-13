@@ -13,12 +13,13 @@ export interface Agent {
     preferred_name: string;
     synonyms: string[];
     definition: string;
+    slug: string;
     is_supp: boolean;
 }
 
-export interface SupportingSentenceArg {
-    cui: string;
-    span: [number, number];
+export interface SupportingSentenceSpan {
+    cui?: string;
+    text: string;
 }
 
 export interface SupportingSentence {
@@ -26,9 +27,7 @@ export interface SupportingSentence {
     confidence?: number;
     paper_id: string;
     sentence_id: number;
-    sentence: string;
-    arg1: SupportingSentenceArg;
-    arg2: SupportingSentenceArg;
+    spans: SupportingSentenceSpan[];
 }
 
 export interface InteractingAgent {
@@ -36,13 +35,14 @@ export interface InteractingAgent {
     sentences: SupportingSentence[];
 }
 
-export interface Interactions {
+export interface AgentWithInteractions {
     agent: Agent;
     interacts_with: InteractingAgent[];
+    interacts_with_count: number;
 }
 
 export interface SearchResponse {
     query: Query;
     total: number;
-    results: Interactions[];
+    results: AgentWithInteractions[];
 }
