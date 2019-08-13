@@ -24,10 +24,7 @@ export const SearchResults = ({ response }: Props) => (
             {response.results.map(result => (
                 <AgentListItem key={result.agent.cui} agent={result.agent}>
                     <AgentListItemTitle>
-                        <AgentLink
-                            agent={result.agent}
-                            query={response.query.name}
-                        >
+                        <AgentLink agent={result.agent} query={response.query}>
                             <WithAgentDefinitionPopover agent={result.agent}>
                                 {result.agent.preferred_name}
                             </WithAgentDefinitionPopover>
@@ -43,7 +40,7 @@ export const SearchResults = ({ response }: Props) => (
                     <AgentListItemContent>
                         <Synonyms synonyms={result.agent.synonyms} />
                     </AgentListItemContent>
-                    <AgentLink agent={result.agent} query={response.query.name}>
+                    <AgentLink agent={result.agent} query={response.query}>
                         View {result.interacts_with_count}{" "}
                         {pluralize("Interaction", result.interacts_with_count)}
                     </AgentLink>

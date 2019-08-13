@@ -4,7 +4,7 @@ import { DocumentContext } from "next/document";
 import Router from "next/router";
 import { Icon } from "@allenai/varnish/components/icon";
 
-import { model, fetchIndexMeta, searchByName } from "../api";
+import { model, fetchIndexMeta, searchForAgents } from "../api";
 import {
     Disclaimer,
     SearchForm,
@@ -44,7 +44,7 @@ export default class Home extends React.PureComponent<Props, State> {
         if (queryText !== undefined) {
             const [meta, response] = await Promise.all([
                 fetchIndexMeta(),
-                searchByName(queryText)
+                searchForAgents(queryText)
             ]);
             return {
                 meta,
@@ -71,9 +71,9 @@ export default class Home extends React.PureComponent<Props, State> {
                 this.state.queryText !== queryText
             ) {
                 this.setState({ view: View.SEARCHING, queryText }, async () => {
-                    const searchResponse = await searchByName(queryText);
+                    const searchResponse = await searchForAgents(queryText);
                     this.setState(state => {
-                        if (state.queryText !== searchResponse.query.name) {
+                        if (state.queryText !== searchResponse.query.q) {
                             return null;
                         }
                         return { view: View.RESULTS, searchResponse };

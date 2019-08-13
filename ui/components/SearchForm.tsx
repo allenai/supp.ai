@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Router from "next/router";
 import { Input } from "antd";
+import { encode } from "querystring";
 
 import { ParsedUrlQuery } from "querystring";
 
@@ -24,7 +25,7 @@ export class SearchForm extends React.PureComponent<Props> {
     onSearch = (value: string) => {
         const queryText = value.trim();
         if (queryText) {
-            Router.push(`/?q=${encodeURIComponent(queryText)}`);
+            Router.push(`/?${encode({ q: queryText })}`);
         } else {
             Router.push(`/`);
         }

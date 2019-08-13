@@ -27,12 +27,12 @@ export async function fetchAgent(
         .then(resp => resp.data);
 }
 
-export async function searchByName(
-    name: string
+export async function searchForAgents(
+    q: string
 ): Promise<model.SearchResponse> {
     return axios
         .get<model.SearchResponse>(`${API_ORIGIN}/api/agent/search`, {
-            params: { name }
+            params: { q }
         })
         .then(resp => resp.data);
 }

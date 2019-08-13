@@ -73,8 +73,10 @@ export default class AgentDetail extends React.PureComponent<Props> {
                                         </WithAgentDefinitionPopover>
                                     </AgentLink>
                                 </AgentListItemTitle>
-                                {interaction.sentences.map(sentence => (
-                                    <AgentListItemContent>
+                                {interaction.sentences.map((sentence, idx) => (
+                                    <AgentListItemContent
+                                        key={`${this.props.agent.cui}-${interaction.agent.cui}-${sentence.uid}-${idx}`}
+                                    >
                                         <Sentence
                                             sentence={sentence}
                                             target={interaction.agent}

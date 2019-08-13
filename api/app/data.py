@@ -228,13 +228,12 @@ class InteractionIndex:
             return None
         return self.agents_by_cui[cui]
 
-    def find_agents_by_name(self, name: str) -> List[Agent]:
+    def search_for_agents(self, query: str) -> List[Agent]:
         """
-        Attempts to find agents with the provided name. Only exact matches
-        are returned.
+        Attempts to find agents related to the provided query text.
         """
         agents = []
-        resp = self.index.search(name)
+        resp = self.index.search(query)
         for hit in resp["hits"]:
             agent = self.get_agent(hit["cui"])
             if agent is not None:

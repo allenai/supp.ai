@@ -5,7 +5,7 @@ export interface IndexMeta {
 }
 
 export interface Query {
-    name: string;
+    q: string;
 }
 
 export interface Agent {
