@@ -8,13 +8,19 @@ export interface Query {
     q: string;
 }
 
+export enum AgentType {
+    SUPPLEMENT = "supplement",
+    DRUG = "drug",
+    OTHER = "other"
+}
+
 export interface Agent {
     cui: string;
     preferred_name: string;
     synonyms: string[];
     definition: string;
     slug: string;
-    is_supp: boolean;
+    ent_type: AgentType;
 }
 
 export interface SupportingSentenceSpan {
@@ -30,11 +36,21 @@ export interface SupportingSentence {
     spans: SupportingSentenceSpan[];
 }
 
+export enum StudyType {
+    CLINICAL_TRIAL = "clinical trial",
+    CASE_REPORT = "case report",
+    SURVEY = "survey",
+    ANIMAL_STUDY = "animal_study",
+    IN_VITRO = "in vitro",
+    UNKNOWN = "unknown"
+}
+
 export interface Paper {
     pid: string;
     title: string;
     year?: number;
     venue?: number;
+    study_type: StudyType;
 }
 
 export interface Evidence {
