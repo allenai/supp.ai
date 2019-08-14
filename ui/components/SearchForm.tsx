@@ -164,6 +164,8 @@ const SearchInputWithAutoComplete = styled(AutoComplete)`
         border: 0;
     }
 
+    // TODO: These styles are hacks. Remove them once Varnish's base elements
+    // handle this case better / can be restyled.
     input {
         padding: 0 ${({ theme }) => theme.spacing.md};
         border-top-right-radius: 0;
@@ -193,8 +195,8 @@ const SearchButton = styled(Button)`
 `;
 
 const AutoCompleteStyles = createGlobalStyle`
-    /* We style the autocomplete like so as using the styled() route doesn't
-       work with Ant's autocomplete options. */
+    // We style the autocomplete like so as using the styled() route doesn't
+    // work with Ant's autocomplete options.
     .supp-autocomplete-option {
         font-size: 1rem;
         display: grid;
