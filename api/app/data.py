@@ -23,14 +23,16 @@ class Agent(NamedTuple):
 
     Each agent has a cui, or "Concept Unique Identifier" which is a stable
     identifier derived from a medical ontology.
+
+    Each agent has an `ent_type` member, which is a string indicating if it's
+    a "supplement", "drug" or "other" (we don't know what it is).
     """
 
     cui: str
     preferred_name: str
     synonyms: List[str]
     definition: str
-    # True the agent is a supplment, False if the agent is a drug / pharmaceutical
-    is_supp: bool
+    ent_type: str
     slug: str
 
 
@@ -88,8 +90,13 @@ class Paper(NamedTuple):
     doi: Optional[str]
     pmid: Optional[int]
     fields_of_study: List[str]
-    human_study: bool
-    animal_study: bool
+    # Study types is one of "clinical trial", "case report", "survey",
+    # "animal study", "in-vitro", "etc"
+    # The UI currently interprets these as follows:
+    #   - "clinical trial", "case report" and "survey" map to "human"
+    #   - "animal study" maps to "animal"
+    #   - "in vitro" and "unknown" map to "other"
+    study_type: str
 
     @staticmethod
     def from_json(fields: Dict) -> "Paper":

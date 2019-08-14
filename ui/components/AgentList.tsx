@@ -17,11 +17,7 @@ interface Props {
 export const AgentListItem = ({ agent, children }: Props) => (
     <ListItem>
         <ListItemIcon>
-            {agent.is_supp ? (
-                <icon.Supplement width="36" height="37" />
-            ) : (
-                <icon.Drug width="24" height="24" />
-            )}
+            <icon.AgentTypeIcon type={agent.ent_type} />
         </ListItemIcon>
         <ListItemContent>{children}</ListItemContent>
     </ListItem>
@@ -51,10 +47,9 @@ const ListItem = styled.li`
     border-radius: 4px;
     border: 1px solid ${({ theme }) => theme.palette.border.main};
     margin: ${({ theme }) => theme.spacing.md} 0;
-    padding: ${({ theme }) =>
-        `${theme.spacing.lg} ${theme.spacing.lg} ${theme.spacing.lg} 0`};
+    padding: ${({ theme }) => `${theme.spacing.lg} 0 ${theme.spacing.lg} 0`};
     display: grid;
-    grid-template-columns: 60px auto;
+    grid-template-columns: 60px 1fr;
 `;
 
 const ListItemIcon = styled.span`
@@ -65,4 +60,7 @@ const ListItemIcon = styled.span`
     flex-shrink: 0;
 `;
 
-const ListItemContent = styled.span``;
+const ListItemContent = styled.span`
+    padding-right: ${({ theme }) => theme.spacing.lg};
+    overflow: hidden;
+`;
