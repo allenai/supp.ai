@@ -2,12 +2,7 @@ import React from "react";
 import { DocumentContext } from "next/document";
 
 import { model, fetchIndexMeta, searchForAgents } from "../api";
-import {
-    Disclaimer,
-    SearchForm,
-    SearchResults,
-    DefaultLayout
-} from "../components";
+import { SearchForm, SearchResults, DefaultLayout } from "../components";
 
 enum View {
     DEFAULT,
@@ -56,7 +51,6 @@ export default class Home extends React.PureComponent<Props> {
                 this.props.searchResponse ? (
                     <SearchResults response={this.props.searchResponse} />
                 ) : null}
-                <Disclaimer />
             </DefaultLayout>
         );
     }

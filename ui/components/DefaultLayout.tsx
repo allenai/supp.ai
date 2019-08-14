@@ -9,6 +9,7 @@ import {
 } from "@allenai/varnish/components/shared";
 import Link from "next/link";
 
+import { Disclaimer } from "./Disclaimer";
 import { Logo } from "./Logo";
 
 export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
@@ -25,6 +26,7 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
             <PaddedContent>
                 <MaxWidth>
                     <Page>{children}</Page>
+                    <Disclaimer />
                 </MaxWidth>
             </PaddedContent>
             <Footer />
