@@ -37,14 +37,10 @@ export default class Home extends React.PureComponent<Props> {
         }
     }
     render() {
-        const { format } = Intl.NumberFormat();
-        const placeholder =
-            "Enter the name of a supplement or drug to search " +
-            `${format(this.props.meta.interaction_count)} interactions…`;
         return (
             <DefaultLayout>
                 <SearchForm
-                    placeholder={placeholder}
+                    meta={this.props.meta}
                     defaultQueryText={this.props.queryText}
                 />
                 {this.props.view === View.RESULTS &&

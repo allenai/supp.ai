@@ -36,3 +36,13 @@ export async function searchForAgents(
         })
         .then(resp => resp.data);
 }
+
+export async function fetchSuggestions(
+    q: string
+): Promise<model.SuggestResponse> {
+    return axios
+        .get<model.SuggestResponse>(`${API_ORIGIN}/api/agent/suggest`, {
+            params: { q }
+        })
+        .then(resp => resp.data);
+}
