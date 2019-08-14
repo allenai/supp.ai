@@ -15,3 +15,8 @@ export function debounce<A extends any[]>(
 export function pluralize(str: string, len: number, plural?: string): string {
     return len === 1 ? str : plural || `${str}s`;
 }
+
+export function formatNumber(value: number): string {
+    const intl = Intl.NumberFormat();
+    return intl.format(value);
+}

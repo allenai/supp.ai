@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
 import { Footer } from "@allenai/varnish/components/Footer";
 import {
@@ -14,6 +14,7 @@ import { Logo } from "./Logo";
 
 export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
     <React.Fragment>
+        <HeaderZIndexFix />
         <Header>
             <Link href="/">
                 <HeaderLink>
@@ -29,10 +30,22 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
                     <Disclaimer />
                 </MaxWidth>
             </PaddedContent>
-            <Footer />
         </WhiteBackground>
+        <NeutralBackground>
+            <Centered>
+                <MaxWidth>
+                    <Footer />
+                </MaxWidth>
+            </Centered>
+        </NeutralBackground>
     </React.Fragment>
 );
+
+const HeaderZIndexFix = createGlobalStyle`
+    header {
+        z-index: 10000 !important;
+    }
+`;
 
 const MaxWidth = styled.div`
     && {
@@ -46,5 +59,20 @@ const HeaderLink = styled.a`
 
     &:hover {
         text-decoration: none;
+    }
+`;
+
+const Centered = styled.div`
+    margin: 0 auto;
+    max-width: ${({ theme }) => theme.breakpoints.xl};
+`;
+
+const NeutralBackground = styled.div`
+    background: ${({ theme }) => theme.color.N2};
+
+    // TODO: This is a hack, remove once Varnish's Footer can be restyled.
+    footer {
+        text-align: left !important;
+        padding: ${({ theme }) => theme.spacing.lg} !important;
     }
 `;

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { model } from "../api";
-import { pluralize } from "../util";
+import { pluralize, formatNumber } from "../util";
 import {
     AgentList,
     AgentListItem,
@@ -30,7 +30,7 @@ export const SearchResults = ({ response }: Props) => (
                             </WithAgentDefinitionPopover>
                         </AgentLink>
                         <InteractionCount>
-                            {result.interacts_with_count}{" "}
+                            {formatNumber(result.interacts_with_count)}{" "}
                             {pluralize(
                                 "Interaction",
                                 result.interacts_with_count

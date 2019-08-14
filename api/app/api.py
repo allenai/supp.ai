@@ -45,6 +45,29 @@ def create_api(data_dir: str) -> Blueprint:
             content_type="application/json",
         )
 
+    @api.route("/agent/suggest", methods=["GET"])
+    def suggest_agents() -> Response:
+        query = request.args.get("q", default=None)
+        if query is None:
+            return error("The q argument is required")
+        agents = idx.search_for_agents(query, ["preferred_name"])
+        results = []
+        for agent in agents:
+            interactions = idx.get_interactions(agent)
+            interacts_with_count = interactions.interacts_with_count
+            # We put together a search result for suggestions that's as compact
+            # as possible and includes only the information we need.
+            result = {
+                "cui": agent.cui,
+                "slug": agent.slug,
+                "preferred_name": agent.preferred_name,
+                "ent_type": agent.ent_type,
+                "interacts_with_count": interacts_with_count,
+            }
+            results.append(result)
+        response = simplejson.dumps({"query": {"q": query}, "results": results})
+        return Response(response, 200, content_type="application/json")
+
     @api.route("/agent/search", methods=["GET"])
     def search_agents() -> Response:
         query = request.args.get("q", default=None)
@@ -52,6 +75,7 @@ def create_api(data_dir: str) -> Blueprint:
             return error("The q argument is required")
         agents = idx.search_for_agents(query)
         results = [idx.get_interactions(agent)._asdict() for agent in agents]
+        # TODO: Use the real total, and paginate the query.
         response = simplejson.dumps(
             {"query": {"q": query}, "results": results, "total": len(results)}
         )

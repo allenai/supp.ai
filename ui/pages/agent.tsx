@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { DocumentContext } from "next/document";
 
-import { fetchAgent, model } from "../api";
+import { fetchAgent, fetchIndexMeta, model } from "../api";
 import {
     AgentList,
     AgentListItem,
@@ -16,10 +16,11 @@ import {
     WithAgentDefinitionPopover,
     Synonyms
 } from "../components";
-import { pluralize } from "../util";
+import { pluralize, formatNumber } from "../util";
 
 interface Props {
     agent: model.Agent;
+    meta: model.IndexMeta;
     defaultQueryText?: string;
     interacts_with: model.InteractingAgent[];
     interacts_with_count: number;
@@ -32,16 +33,24 @@ export default class AgentDetail extends React.PureComponent<Props> {
             // TODO: Handle this.
             throw new Error("CUI must be set.");
         }
-        const resp = await fetchAgent(cui);
+        const [searchResp, meta] = await Promise.all([
+            fetchAgent(cui),
+            fetchIndexMeta()
+        ]);
         return {
-            ...resp,
+            ...searchResp,
+            meta,
             defaultQueryText: SearchForm.queryTextFromQueryString(query)
         };
     }
     render() {
         return (
             <DefaultLayout>
-                <SearchForm defaultQueryText={this.props.defaultQueryText} />
+                <SearchForm
+                    meta={this.props.meta}
+                    defaultQueryText={this.props.defaultQueryText}
+                    autoFocus={false}
+                />
                 <Section>
                     <AgentName>
                         <WithAgentDefinitionPopover agent={this.props.agent}>
@@ -52,7 +61,7 @@ export default class AgentDetail extends React.PureComponent<Props> {
                 </Section>
                 <Section>
                     <h3>
-                        {this.props.interacts_with_count}{" "}
+                        {formatNumber(this.props.interacts_with_count)}{" "}
                         {pluralize(
                             "Interaction",
                             this.props.interacts_with_count
@@ -111,7 +120,6 @@ const Evidence = styled.div`
 `;
 
 const AgentName = styled.h1`
-    text-transform: capitalize;
     margin: 0;
 `;
 

@@ -253,6 +253,12 @@ class InteractionIndex:
         index_name = environ.get("SUPP_AI_INDEX_NAME", f"agent_{self.version}")
         idx = self.algolia_client.init_index(index_name)
 
+        # We define the list of searchable fields everytime the application
+        # starts up. There's no indication that this is expensive to do.
+        idx.set_settings(
+            {"searchableAttributes": ["preferred_name", "definition", "synonyms"]}
+        )
+
         # Only load data into the index if the index doesn't exist. This acts
         # as a simple gate that prevents us from loading data everytime the
         # server starts.
@@ -281,12 +287,19 @@ class InteractionIndex:
             return None
         return self.agents_by_cui[cui]
 
-    def search_for_agents(self, query: str) -> List[Agent]:
+    def search_for_agents(
+        self, query: str, only_fields: List[str] = None, num_per_page=10
+    ) -> List[Agent]:
         """
         Attempts to find agents related to the provided query text.
         """
         agents = []
-        resp = self.index.search(query)
+        if only_fields is not None:
+            params = {"restrictSearchableAttributes": only_fields}
+        else:
+            params = {}
+        default_params = {"hitsPerPage": num_per_page}
+        resp = self.index.search(query, {**default_params, **params})
         for hit in resp["hits"]:
             agent = self.get_agent(hit["cui"])
             if agent is not None:

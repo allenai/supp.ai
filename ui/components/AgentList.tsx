@@ -27,7 +27,6 @@ export const AgentListItemTitle = styled.h3`
     margin: 0;
     display: flex;
     align-items: center;
-    text-transform: capitalize;
     font-family: ${({ theme }) => theme.typography.fontFamily};
     font-weight: 400;
 
@@ -47,20 +46,19 @@ const ListItem = styled.li`
     border-radius: 4px;
     border: 1px solid ${({ theme }) => theme.palette.border.main};
     margin: ${({ theme }) => theme.spacing.md} 0;
-    padding: ${({ theme }) => `${theme.spacing.lg} 0 ${theme.spacing.lg} 0`};
+    padding: ${({ theme }) => theme.spacing.lg};
     display: grid;
-    grid-template-columns: 60px 1fr;
+    grid-template-columns: min-content auto;
+    grid-gap: ${({ theme }) => theme.spacing.lg};
 `;
 
 const ListItemIcon = styled.span`
     display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 28px;
+    align-items: flex-start;
     flex-shrink: 0;
+    padding: 4px 0;
 `;
 
 const ListItemContent = styled.span`
-    padding-right: ${({ theme }) => theme.spacing.lg};
     overflow: hidden;
 `;
