@@ -26,11 +26,6 @@ export default class AppWithVarnishTheme extends App {
                     html {
                         background: #08426c !important;
                     }
-                    body > div {
-                        display: flex;
-                        flex-direction: column;
-                        min-height: 100%;
-                    }
                 `}</style>
             </React.Fragment>
         );
