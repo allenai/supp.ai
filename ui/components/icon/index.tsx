@@ -8,6 +8,7 @@ import animalSrc from "./animal.svg";
 import otherBulletSrc from "./other-bullet.svg";
 import humanSrc from "./human.svg";
 import closeSrc from "./close.svg";
+import s2Src from "./s2.svg";
 
 import { model } from "../../api";
 
@@ -19,8 +20,8 @@ export const Info = styled.img.attrs(() => ({ src: infoSrc }))``;
 export const Animal = styled.img.attrs(() => ({ src: animalSrc }))``;
 export const OtherBullet = styled.img.attrs(() => ({ src: otherBulletSrc }))``;
 export const Human = styled.img.attrs(() => ({ src: humanSrc }))``;
-
 export const Close = styled.img.attrs(() => ({ src: closeSrc }))``;
+export const PoweredByS2 = styled.img.attrs(() => ({ src: s2Src }))``;
 
 interface Props {
     type: model.AgentType;

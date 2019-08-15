@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 
 import { Logo } from "./Logo";
+import * as icon from "./icon";
 
 export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
     <React.Fragment>
@@ -21,6 +22,11 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
                     <HeaderTitle>supp.ai</HeaderTitle>
                 </HeaderLink>
             </Link>
+            <Right>
+                <a href="https://www.semanticscholar.org">
+                    <icon.PoweredByS2 />
+                </a>
+            </Right>
         </Header>
         <MainPane>
             <PaddedContent>
@@ -51,6 +57,11 @@ const LayoutOverrides = createGlobalStyle`
     footer {
         flex-grow: 0;
     }
+`;
+
+const Right = styled.div`
+    margin-left: auto;
+    padding-left: ${({ theme }) => theme.spacing.md};
 `;
 
 const MaxWidth = styled.div`
