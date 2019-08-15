@@ -7,6 +7,7 @@ import {
     AgentList,
     AgentListItem,
     AgentListItemTitle,
+    AgentListItemContent,
     AgentLink,
     DefaultLayout,
     SearchForm,
@@ -61,7 +62,9 @@ export default class AgentDetail extends React.PureComponent<Props> {
                             {this.props.agent.preferred_name}
                         </WithAgentDefinitionPopover>
                     </AgentName>
-                    <Synonyms synonyms={this.props.agent.synonyms} />
+                    {this.props.agent.synonyms.length > 0 ? (
+                        <Synonyms synonyms={this.props.agent.synonyms} />
+                    ) : null}
                 </Section>
                 <Section>
                     <h3>
@@ -87,6 +90,15 @@ export default class AgentDetail extends React.PureComponent<Props> {
                                         </WithAgentDefinitionPopover>
                                     </AgentLink>
                                 </AgentListItemTitle>
+                                {interaction.agent.synonyms.length > 0 ? (
+                                    <AgentListItemContent>
+                                        <Synonyms
+                                            synonyms={
+                                                interaction.agent.synonyms
+                                            }
+                                        />
+                                    </AgentListItemContent>
+                                ) : null}
                                 <EvidenceList interaction={interaction} />
                             </AgentListItem>
                         ))}

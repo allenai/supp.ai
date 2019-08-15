@@ -37,9 +37,11 @@ export const SearchResults = ({ response }: Props) => (
                             )}
                         </InteractionCount>
                     </AgentListItemTitle>
-                    <AgentListItemContent>
-                        <Synonyms synonyms={result.agent.synonyms} />
-                    </AgentListItemContent>
+                    {result.agent.synonyms.length > 0 ? (
+                        <AgentListItemContent>
+                            <Synonyms synonyms={result.agent.synonyms} />
+                        </AgentListItemContent>
+                    ) : null}
                     <AgentLink agent={result.agent} query={response.query}>
                         View {result.interacts_with_count}{" "}
                         {pluralize("Interaction", result.interacts_with_count)}
