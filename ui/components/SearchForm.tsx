@@ -83,7 +83,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
             event.preventDefault();
         }
         const queryText = this.state.queryText.trim();
-        this.setState({ queryText }, () => {
+        this.setState({ queryText, suggestions: [] }, () => {
             if (queryText) {
                 Router.push(`/?${encode({ q: queryText })}`);
             } else {
@@ -96,6 +96,9 @@ export class SearchForm extends React.PureComponent<Props, State> {
             this.hasSelectedItem = false;
             this.onFormSubmitted();
         }
+    };
+    onSearchButtonClicked = () => {
+        this.onFormSubmitted();
     };
     render() {
         const placeholder =
@@ -145,7 +148,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
                             addonAfter={
                                 <SearchButton
                                     variant="primary"
-                                    onClick={() => this.onFormSubmitted()}
+                                    onClick={this.onSearchButtonClicked}
                                 >
                                     Search
                                 </SearchButton>
@@ -196,7 +199,9 @@ const SearchButton = styled(Button)`
     box-shadow: none;
 
     &&,
-    &&:hover {
+    &&:hover,
+    &&:focus,
+    &&:active {
         padding: 0 ${({ theme }) => theme.spacing.lg};
     }
 `;
