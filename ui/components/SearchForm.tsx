@@ -9,7 +9,7 @@ import { Input } from "@allenai/varnish/components/form";
 import { Button } from "@allenai/varnish/components/button";
 import { Key } from "ts-keycode-enum";
 
-import { debounce, formatNumber } from "../util";
+import { debounce, formatNumber, pluralize } from "../util";
 import { model, fetchSuggestions } from "../api";
 import * as icon from "./icon";
 import { Disclaimer } from "../components";
@@ -114,7 +114,8 @@ export class SearchForm extends React.PureComponent<Props, State> {
                 </span>
                 <span>{suggestion.preferred_name}</span>
                 <BodySmall>
-                    {formatNumber(suggestion.interacts_with_count)}
+                    {formatNumber(suggestion.interacts_with_count)}{" "}
+                    {pluralize("interaction", suggestion.interacts_with_count)}
                 </BodySmall>
             </AutoComplete.Option>
         ));

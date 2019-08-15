@@ -24,7 +24,7 @@ export default class AppWithVarnishTheme extends App {
                 </Container>
                 <style global jsx>{`
                     html {
-                        background: #08426C !important;
+                        background: #08426c !important;
                     }
                     body > div {
                         display: flex;
