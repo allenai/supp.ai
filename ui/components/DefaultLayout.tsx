@@ -8,12 +8,20 @@ import {
     WhiteBackground
 } from "@allenai/varnish/components/shared";
 import Link from "next/link";
+import Head from "next/head";
 
 import { Logo } from "./Logo";
 import * as icon from "./icon";
 
 export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
     <React.Fragment>
+        <Head>
+            <link
+                rel="shortcut icon"
+                type="image/x-icon"
+                href="/static/favicon.ico"
+            />
+        </Head>
         <LayoutOverrides />
         <Header>
             <Link href="/">

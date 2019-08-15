@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { DocumentContext } from "next/document";
+import Head from "next/head";
 
 import { fetchAgent, fetchIndexMeta, model } from "../api";
 import {
@@ -50,6 +51,11 @@ export default class AgentDetail extends React.PureComponent<Props> {
     render() {
         return (
             <DefaultLayout>
+                <Head>
+                    <title>
+                        {this.props.agent.preferred_name} - SUPP.AI by AI2
+                    </title>
+                </Head>
                 <SearchForm
                     meta={this.props.meta}
                     defaultQueryText={this.props.defaultQueryText}

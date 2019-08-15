@@ -59,9 +59,7 @@ const Summary = ({ total }: { total: number }) => {
         "supplements and/or drugs"
     );
     const text =
-        total > 0
-            ? `We found ${total} matching ${label}:`
-            : "No matching agents";
+        total > 0 ? `We found ${total} matching ${label}:` : "No results.";
     return <SummaryText>{text}</SummaryText>;
 };
 

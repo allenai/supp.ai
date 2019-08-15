@@ -21,7 +21,7 @@ const StudyTypeIcon = ({ type }: { type: model.StudyType }) => {
         case model.StudyType.SURVEY:
             return <icon.Human />;
         default:
-            return <icon.OtherBullet />;
+            return <icon.SmallPaperIcon />;
     }
 };
 

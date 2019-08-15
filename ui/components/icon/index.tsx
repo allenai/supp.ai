@@ -9,6 +9,7 @@ import otherBulletSrc from "./other-bullet.svg";
 import humanSrc from "./human.svg";
 import closeSrc from "./close.svg";
 import s2Src from "./s2.svg";
+import smallPaperSrc from "./paper-small.svg";
 
 import { model } from "../../api";
 
@@ -22,6 +23,9 @@ export const OtherBullet = styled.img.attrs(() => ({ src: otherBulletSrc }))``;
 export const Human = styled.img.attrs(() => ({ src: humanSrc }))``;
 export const Close = styled.img.attrs(() => ({ src: closeSrc }))``;
 export const PoweredByS2 = styled.img.attrs(() => ({ src: s2Src }))``;
+export const SmallPaperIcon = styled.img.attrs(() => ({
+    src: smallPaperSrc
+}))``;
 
 interface Props {
     type: model.AgentType;

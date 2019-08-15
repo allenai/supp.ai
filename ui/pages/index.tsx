@@ -1,5 +1,6 @@
 import React from "react";
 import { DocumentContext } from "next/document";
+import Head from "next/head";
 
 import { model, fetchIndexMeta, searchForAgents } from "../api";
 import {
@@ -45,8 +46,15 @@ export default class Home extends React.PureComponent<Props> {
         }
     }
     render() {
+        const title =
+            this.props.view != View.RESULTS
+                ? "SUPP.AI by AI2"
+                : `${this.props.queryText} - SUPP.AI by AI2`;
         return (
             <DefaultLayout>
+                <Head>
+                    <title>{title}</title>
+                </Head>
                 <SearchForm
                     meta={this.props.meta}
                     defaultQueryText={this.props.queryText}

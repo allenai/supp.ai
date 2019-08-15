@@ -216,4 +216,8 @@ const AutoCompleteStyles = createGlobalStyle`
             height: 16px;
         }
     }
+
+    .ant-select-dropdown-menu-item-active {
+        font-weight: 700;
+    }
 `;
