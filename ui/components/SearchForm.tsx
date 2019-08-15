@@ -177,6 +177,7 @@ const SearchInputWithAutoComplete = styled(AutoComplete)`
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         border-right: 0;
+        transition: none !important;
 
         &:focus {
             box-shadow: none;
