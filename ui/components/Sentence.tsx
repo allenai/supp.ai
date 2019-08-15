@@ -5,16 +5,16 @@ import { model } from "../api";
 
 interface Props {
     sentence: model.SupportingSentence;
-    target: model.Agent;
+    interactingAgent: model.Agent;
 }
 
-export const Sentence = ({ sentence, target }: Props) => {
+export const Sentence = ({ sentence, interactingAgent }: Props) => {
     return (
         <div>
             “
             {sentence.spans.map(({ text, cui }, idx) => {
                 const type =
-                    cui == target.cui
+                    cui == interactingAgent.cui
                         ? MentionType.INTERACTING
                         : MentionType.SUBJECT;
                 return (
