@@ -50,7 +50,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
         if (typeof value === "string") {
             const queryText = value.trim();
             this.setState(
-                { queryText },
+                { queryText: value },
                 debounce(async () => {
                     if (queryText === "") {
                         this.setState({ suggestions: [] });

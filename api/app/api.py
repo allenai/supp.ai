@@ -50,7 +50,7 @@ def create_api(data_dir: str) -> Blueprint:
         query = request.args.get("q", default=None)
         if query is None:
             return error("The q argument is required")
-        agents = idx.search_for_agents(query, ["preferred_name"])
+        agents = idx.search_for_agents(query, ["preferred_name", "synonyms"])
         results = []
         for agent in agents:
             interactions = idx.get_interactions(agent)
