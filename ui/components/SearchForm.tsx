@@ -22,7 +22,6 @@ interface Props {
 }
 
 interface State {
-    locked?: boolean;
     queryText: string;
     suggestions: model.SuggestedAgent[];
 }
