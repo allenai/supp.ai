@@ -13,7 +13,7 @@ import { Logo } from "./Logo";
 
 export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
     <React.Fragment>
-        <HeaderZIndexFix />
+        <LayoutOverrides />
         <Header>
             <Link href="/">
                 <HeaderLink>
@@ -22,13 +22,13 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
                 </HeaderLink>
             </Link>
         </Header>
-        <WhiteBackground>
+        <MainPane>
             <PaddedContent>
                 <MaxWidth>
                     <Page>{children}</Page>
                 </MaxWidth>
             </PaddedContent>
-        </WhiteBackground>
+        </MainPane>
         <NeutralBackground>
             <Centered>
                 <MaxWidth>
@@ -39,11 +39,17 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
     </React.Fragment>
 );
 
-const HeaderZIndexFix = createGlobalStyle`
-    // TODO: This is a hack. Once Varnish allows the <Header /> to be styled
-    // we should remove this and just used a standard override (i.e. styled(Header)).
+const LayoutOverrides = createGlobalStyle`
+    // TODO: This is a hack. Once Varnish allows the <Header />, <Footer />
+    // and other things to be styled we should remove this and just used a
+    // standard override (i.e. styled(Header)).
     header {
-        z-index: 10000 !important;
+        z-index: 100 !important;
+        flex-grow: 0;
+    }
+
+    footer {
+        flex-grow: 0;
     }
 `;
 
@@ -60,6 +66,10 @@ const HeaderLink = styled.a`
     &:hover {
         text-decoration: none;
     }
+`;
+
+const MainPane = styled(WhiteBackground)`
+    flex-grow: 1;
 `;
 
 const Centered = styled.div`

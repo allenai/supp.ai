@@ -28,6 +28,7 @@
     "next": "^9.0.3",
     "next-images": "^1.1.2",
     "next-transpile-modules": "^2.3.1",
+    "nookies": "^2.0.8",
     "prettier": "^1.18.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
