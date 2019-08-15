@@ -9,7 +9,6 @@ import {
 } from "@allenai/varnish/components/shared";
 import Link from "next/link";
 
-import { Disclaimer } from "./Disclaimer";
 import { Logo } from "./Logo";
 
 export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
@@ -27,7 +26,6 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
             <PaddedContent>
                 <MaxWidth>
                     <Page>{children}</Page>
-                    <Disclaimer />
                 </MaxWidth>
             </PaddedContent>
         </WhiteBackground>
@@ -42,6 +40,8 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
 );
 
 const HeaderZIndexFix = createGlobalStyle`
+    // TODO: This is a hack. Once Varnish allows the <Header /> to be styled
+    // we should remove this and just used a standard override (i.e. styled(Header)).
     header {
         z-index: 10000 !important;
     }
