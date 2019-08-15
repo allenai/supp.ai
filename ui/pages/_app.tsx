@@ -22,6 +22,13 @@ export default class AppWithVarnishTheme extends App {
                         <Component {...pageProps} />
                     </ThemeProvider>
                 </Container>
+                <style global jsx>{`
+                    body > div {
+                        display: flex;
+                        flex-direction: column;
+                        min-height: 100%;
+                    }
+                `}</style>
             </React.Fragment>
         );
     }

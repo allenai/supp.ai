@@ -12,11 +12,13 @@ import { Key } from "ts-keycode-enum";
 import { debounce, formatNumber } from "../util";
 import { model, fetchSuggestions } from "../api";
 import * as icon from "./icon";
+import { Disclaimer } from "../components";
 
 interface Props {
     defaultQueryText?: string;
     autoFocus?: boolean;
     meta: model.IndexMeta;
+    hideDisclaimer?: boolean;
 }
 
 interface State {
@@ -117,37 +119,40 @@ export class SearchForm extends React.PureComponent<Props, State> {
             </AutoComplete.Option>
         ));
         return (
-            <Form onSubmit={this.onFormSubmitted}>
-                <AutoCompleteStyles />
-                <SearchInputWithAutoComplete
-                    defaultActiveFirstOption={false}
-                    dataSource={suggestions}
-                    onSelect={this.onSuggestionSelected}
-                    onSearch={this.onQueryChanged}
-                    optionLabelProp="title"
-                    transitionName="none"
-                    value={this.state.queryText}
-                >
-                    <Input
-                        type="search"
-                        autoFocus={
-                            this.props.autoFocus !== false &&
-                            this.state.queryText === ""
-                        }
-                        placeholder={placeholder}
-                        onKeyDown={this.onKeyDown}
-                        size="large"
-                        addonAfter={
-                            <SearchButton
-                                variant="primary"
-                                onClick={() => this.onFormSubmitted()}
-                            >
-                                Search
-                            </SearchButton>
-                        }
-                    />
-                </SearchInputWithAutoComplete>
-            </Form>
+            <React.Fragment>
+                {!this.props.hideDisclaimer ? <Disclaimer /> : null}
+                <Form onSubmit={this.onFormSubmitted}>
+                    <AutoCompleteStyles />
+                    <SearchInputWithAutoComplete
+                        defaultActiveFirstOption={false}
+                        dataSource={suggestions}
+                        onSelect={this.onSuggestionSelected}
+                        onSearch={this.onQueryChanged}
+                        optionLabelProp="title"
+                        transitionName="none"
+                        value={this.state.queryText}
+                    >
+                        <Input
+                            type="search"
+                            autoFocus={
+                                this.props.autoFocus !== false &&
+                                this.state.queryText === ""
+                            }
+                            placeholder={placeholder}
+                            onKeyDown={this.onKeyDown}
+                            size="large"
+                            addonAfter={
+                                <SearchButton
+                                    variant="primary"
+                                    onClick={() => this.onFormSubmitted()}
+                                >
+                                    Search
+                                </SearchButton>
+                            }
+                        />
+                    </SearchInputWithAutoComplete>
+                </Form>
+            </React.Fragment>
         );
     }
 }

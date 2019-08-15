@@ -12,7 +12,8 @@ import {
     SearchForm,
     WithAgentDefinitionPopover,
     EvidenceList,
-    Synonyms
+    Synonyms,
+    hasDismissedDisclaimer
 } from "../components";
 import { pluralize, formatNumber } from "../util";
 
@@ -22,10 +23,12 @@ interface Props {
     defaultQueryText?: string;
     interacts_with: model.InteractingAgent[];
     interacts_with_count: number;
+    hideDisclaimer: boolean;
 }
 
 export default class AgentDetail extends React.PureComponent<Props> {
-    static async getInitialProps({ query }: DocumentContext): Promise<Props> {
+    static async getInitialProps(context: DocumentContext): Promise<Props> {
+        const { query } = context;
         const cui = Array.isArray(query.cui) ? query.cui.shift() : query.cui;
         if (cui === undefined) {
             // TODO: Handle this.
@@ -35,9 +38,11 @@ export default class AgentDetail extends React.PureComponent<Props> {
             fetchAgent(cui),
             fetchIndexMeta()
         ]);
+        const hideDisclaimer = hasDismissedDisclaimer(context);
         return {
             ...searchResp,
             meta,
+            hideDisclaimer,
             defaultQueryText: SearchForm.queryTextFromQueryString(query)
         };
     }
@@ -48,6 +53,7 @@ export default class AgentDetail extends React.PureComponent<Props> {
                     meta={this.props.meta}
                     defaultQueryText={this.props.defaultQueryText}
                     autoFocus={false}
+                    hideDisclaimer={this.props.hideDisclaimer}
                 />
                 <Section>
                     <AgentName>
