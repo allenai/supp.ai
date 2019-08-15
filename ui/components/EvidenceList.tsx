@@ -23,7 +23,7 @@ export const EvidenceList = ({ interaction }: Props) => {
         <Fragment>
             <div>
                 {visibleEvidence.map(evidence => (
-                    <Evidence>
+                    <Evidence key={evidence.paper.pid}>
                         {evidence.sentences.map(sentence => (
                             <AgentListItemContent
                                 key={`${evidence.paper.pid}-${sentence.sentence_id}`}
