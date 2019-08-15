@@ -6,14 +6,12 @@ import { fetchAgent, fetchIndexMeta, model } from "../api";
 import {
     AgentList,
     AgentListItem,
-    AgentListItemContent,
     AgentListItemTitle,
     AgentLink,
     DefaultLayout,
     SearchForm,
-    Sentence,
-    PaperInfo,
     WithAgentDefinitionPopover,
+    EvidenceList,
     Synonyms
 } from "../components";
 import { pluralize, formatNumber } from "../util";
@@ -83,21 +81,7 @@ export default class AgentDetail extends React.PureComponent<Props> {
                                         </WithAgentDefinitionPopover>
                                     </AgentLink>
                                 </AgentListItemTitle>
-                                {interaction.evidence.map(evidence => (
-                                    <Evidence key={evidence.paper.pid}>
-                                        {evidence.sentences.map(sentence => (
-                                            <AgentListItemContent
-                                                key={`${evidence.paper.pid}-${sentence.sentence_id}`}
-                                            >
-                                                <Sentence
-                                                    sentence={sentence}
-                                                    target={interaction.agent}
-                                                />
-                                            </AgentListItemContent>
-                                        ))}
-                                        <PaperInfo paper={evidence.paper} />
-                                    </Evidence>
-                                ))}
+                                <EvidenceList interaction={interaction} />
                             </AgentListItem>
                         ))}
                     </AgentList>
@@ -107,20 +91,8 @@ export default class AgentDetail extends React.PureComponent<Props> {
     }
 }
 
-const Evidence = styled.div`
-    margin: ${({ theme }) => theme.spacing.md} 0;
-    padding: 0 0 ${({ theme }) => theme.spacing.md};
-    border-bottom: 1px solid ${({ theme }) => theme.palette.border.main};
-
-    &:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-        margin-bottom: 0;
-    }
-`;
-
 const AgentName = styled.h1`
-    margin: 0;
+    margin: 0 0 ${({ theme }) => theme.spacing.sm};
 `;
 
 const Section = styled.section`

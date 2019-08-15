@@ -9,6 +9,7 @@ export * from "./AgentList";
 export * from "./Synonyms";
 export * from "./WithAgentDefinitionPopover";
 export * from "./PaperInfo";
+export * from "./EvidenceList";
 
 import * as icon from "./icon";
 export { icon };
