@@ -24,6 +24,7 @@ interface Props {
 interface State {
     queryText: string;
     suggestions: model.SuggestedAgent[];
+    enableAutoComplete: boolean;
 }
 
 export class SearchForm extends React.PureComponent<Props, State> {
@@ -42,14 +43,15 @@ export class SearchForm extends React.PureComponent<Props, State> {
         super(props);
         this.state = {
             suggestions: [],
-            queryText: props.defaultQueryText || ""
+            queryText: props.defaultQueryText || "",
+            enableAutoComplete: true
         };
     }
     onQueryChanged = (value: SelectValue) => {
         if (typeof value === "string") {
             const queryText = value.trim();
             this.setState(
-                { queryText: value },
+                { queryText: value, enableAutoComplete: true },
                 debounce(async () => {
                     if (queryText === "") {
                         this.setState({ suggestions: [] });
@@ -58,6 +60,9 @@ export class SearchForm extends React.PureComponent<Props, State> {
                         this.setState(state => {
                             if (state.queryText !== resp.query.q) {
                                 return null;
+                            }
+                            if (!state.enableAutoComplete) {
+                                return { suggestions: [] };
                             }
                             return { suggestions: resp.results };
                         });
@@ -82,7 +87,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
             event.preventDefault();
         }
         const queryText = this.state.queryText.trim();
-        this.setState({ queryText, suggestions: [] }, () => {
+        this.setState({ queryText, suggestions: [], enableAutoComplete: false }, () => {
             if (queryText) {
                 Router.push(`/?${encode({ q: queryText })}`);
             } else {
