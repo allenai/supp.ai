@@ -28,13 +28,14 @@ export const Synonyms = ({ synonyms }: Props) => {
         }
     }
 
+    const hasMore = numberOfSynonyms < synonyms.length;
     const visible = isExpanded ? synonyms : synonyms.slice(0, numberOfSynonyms);
     const buttonText = isExpanded ? "(less)" : "(more)";
 
     return (
         <div>
             A.K.A: <em>{visible.join(", ")}</em>
-            {synonyms.length > 3 ? (
+            {hasMore ? (
                 <Fragment>
                     , …
                     <ToggleLink onClick={() => toggleIsExpanded(!isExpanded)}>

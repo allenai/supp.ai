@@ -19,20 +19,19 @@ export async function fetchIndexMeta(): Promise<model.IndexMeta> {
         .then(resp => resp.data);
 }
 
-export async function fetchAgent(
-    cui: string
-): Promise<model.AgentWithInteractions> {
+export async function fetchAgent(cui: string): Promise<model.Agent> {
     return axios
-        .get<model.AgentWithInteractions>(`${API_ORIGIN}/api/agent/${cui}`)
+        .get<model.Agent>(`${API_ORIGIN}/api/agent/${cui}`)
         .then(resp => resp.data);
 }
 
 export async function searchForAgents(
-    q: string
+    q: string,
+    p: number = 0
 ): Promise<model.SearchResponse> {
     return axios
         .get<model.SearchResponse>(`${API_ORIGIN}/api/agent/search`, {
-            params: { q }
+            params: { q, p }
         })
         .then(resp => resp.data);
 }
@@ -44,5 +43,19 @@ export async function fetchSuggestions(
         .get<model.SuggestResponse>(`${API_ORIGIN}/api/agent/suggest`, {
             params: { q }
         })
+        .then(resp => resp.data);
+}
+
+export async function fetchInteractions(
+    cui: string,
+    p: number = 0
+): Promise<model.InteractionsPage> {
+    return axios
+        .get<model.InteractionsPage>(
+            `${API_ORIGIN}/api/agent/${cui}/interactions`,
+            {
+                params: { p }
+            }
+        )
         .then(resp => resp.data);
 }

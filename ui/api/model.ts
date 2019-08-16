@@ -6,6 +6,7 @@ export interface IndexMeta {
 
 export interface Query {
     q: string;
+    p: number;
 }
 
 export enum AgentType {
@@ -21,6 +22,7 @@ export interface Agent {
     definition: string;
     slug: string;
     ent_type: AgentType;
+    interacts_with_count: number;
 }
 
 export interface SupportingSentenceSpan {
@@ -63,16 +65,23 @@ export interface InteractingAgent {
     evidence: Evidence[];
 }
 
-export interface AgentWithInteractions {
-    agent: Agent;
+export interface AgentWithInteractions extends Agent {
     interacts_with: InteractingAgent[];
-    interacts_with_count: number;
+    interactions_per_page: number;
+}
+
+export interface InteractionsPage {
+    page: number;
+    interactions: InteractingAgent[];
+    interactions_per_page: number;
 }
 
 export interface SearchResponse {
+    results: Agent[];
     query: Query;
-    total: number;
-    results: AgentWithInteractions[];
+    total_pages: number;
+    total_results: number;
+    num_per_page: number;
 }
 
 export interface SuggestedAgent {
