@@ -8,6 +8,7 @@ import { BodySmall } from "@allenai/varnish/components/typography";
 import { Input } from "@allenai/varnish/components/form";
 import { Button } from "@allenai/varnish/components/button";
 import { Key } from "ts-keycode-enum";
+import Link from "next/link";
 
 import { debounce, formatNumber, pluralize } from "../util";
 import { model, fetchSuggestions } from "../api";
@@ -26,6 +27,12 @@ interface State {
     suggestions: model.SuggestedAgent[];
     enableAutoComplete: boolean;
 }
+
+const SAMPLE_QUERIES = [
+    { cui: "C0043031", slug: "warfarin", name: "Warfarin" },
+    { cui: "C3531686", slug: "ginkgo-biloba-whole", name: "Ginkgo" },
+    { cui: "C1527137", slug: "melatonin", name: "Melatonin" }
+];
 
 export class SearchForm extends React.PureComponent<Props, State> {
     static queryFromQueryString(args: ParsedUrlQuery): model.Query {
@@ -133,7 +140,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
         return (
             <React.Fragment>
                 {!this.props.hideDisclaimer ? <Disclaimer /> : null}
-                <Form onSubmit={this.onFormSubmitted}>
+                <FormContainer onSubmit={this.onFormSubmitted}>
                     <AutoCompleteStyles />
                     <SearchInputWithAutoComplete
                         defaultActiveFirstOption={false}
@@ -163,15 +170,50 @@ export class SearchForm extends React.PureComponent<Props, State> {
                             }
                         />
                     </SearchInputWithAutoComplete>
-                </Form>
+                    <Samples>
+                        <SampleLabel>Try:</SampleLabel>{" "}
+                        {SAMPLE_QUERIES.map((sample, idx) => (
+                            <React.Fragment>
+                                {idx === 0 ? " " : ", "}
+                                <Link
+                                    href={`/agent?${encode({
+                                        cui: sample.cui,
+                                        slug: sample.slug
+                                    })}`}
+                                    as={`/a/${sample.slug}/${sample.cui}`}
+                                    key={sample.cui}
+                                >
+                                    <a>{sample.name}</a>
+                                </Link>
+                            </React.Fragment>
+                        ))}
+                    </Samples>
+                </FormContainer>
             </React.Fragment>
         );
     }
 }
 
+const Samples = styled.div`
+    font-size: 1rem;
+    padding: 0 ${({ theme }) => theme.spacing.md};
+`;
+
+const SampleLabel = styled.label`
+    font-weight: 700;
+
+    && {
+        font-size: 1rem;
+    }
+`;
+
+const FormContainer = styled(Form)`
+    margin: ${({ theme }) => theme.spacing.lg} 0;
+`;
+
 const SearchInputWithAutoComplete = styled(AutoComplete)`
     width: 100%;
-    margin: ${({ theme }) => theme.spacing.lg} 0;
+    margin: 0 0 ${({ theme }) => theme.spacing.sm};
 
     .ant-select-search__field {
         padding: 0 !important;
