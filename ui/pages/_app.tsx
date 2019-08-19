@@ -13,7 +13,7 @@ export default class AppWithVarnishTheme extends App {
             "window.dataLayer = window.dataLayer || [];",
             "function gtag(){ dataLayer.push(arguments); }",
             "gtag('js', new Date());",
-            "gtag('config', 'UA-136317607-8');`;"
+            "gtag('config', 'UA-136317607-8');"
         ].join("\n");
         return (
             <React.Fragment>
