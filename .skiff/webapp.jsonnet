@@ -180,8 +180,12 @@ function(
                                     value: 'production'
                                 },
                                 {
-                                    name: 'SUPP_AI_ORIGIN',
+                                    name: 'SUPP_AI_API_ORIGIN',
                                     value: 'http://localhost:' + proxyPort
+                                },
+                                {
+                                    name: 'SUPP_AI_CANONICAL_ORIGIN',
+                                    value: 'https://' + hosts[0],
                                 }
                             ],
                             resources: {

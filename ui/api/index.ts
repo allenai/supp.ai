@@ -9,7 +9,7 @@ import * as model from "./model";
 const isClient = typeof window !== "undefined";
 const API_ORIGIN = isClient
     ? ""
-    : process.env.SUPP_AI_ORIGIN || "http://proxy:80";
+    : process.env.SUPP_AI_API_ORIGIN || "http://proxy:80";
 
 export { model };
 

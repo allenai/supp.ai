@@ -23,6 +23,7 @@ import { pluralize, formatNumber } from "../util";
 
 interface Props {
     agent: model.Agent;
+    origin: string;
     meta: model.IndexMeta;
     defaultQueryText?: string;
     interactionsPage: model.InteractionsPage;
@@ -57,29 +58,38 @@ export default class AgentDetail extends React.PureComponent<Props> {
             }
             return;
         }
+        const origin = process.env.SUPP_AI_CANONICAL_ORIGIN;
+        if (!origin) {
+            throw new Error(
+                "Invalid environment, missing SUPP_AI_CANONICAL_ORIGIN."
+            );
+        }
         return {
             agent,
             interactionsPage,
             meta,
             hideDisclaimer,
+            origin,
             defaultQueryText: maybeQuery ? maybeQuery.q : undefined
         };
     }
+    onInteractionPageChanged = async (p: number) => {
+        const { slug, cui } = this.props.agent;
+        await Router.push(
+            `/agent?${encode({ slug, cui, p })}`,
+            `/a/${slug}/${cui}?${encode({ p })}`
+        );
+        window.scrollTo(0, 0);
+    };
     render() {
-        const onInteractionPageChanged = async (p: number) => {
-            const { slug, cui } = this.props.agent;
-            await Router.push(
-                `/agent?${encode({ slug, cui, p })}`,
-                `/a/${slug}/${cui}?${encode({ p })}`
-            );
-            window.scrollTo(0, 0);
-        };
+        const canonicalUrl = `${this.props.origin}/a/${this.props.agent.slug}/${this.props.agent.cui}`;
         return (
             <DefaultLayout>
                 <Head>
                     <title>
                         {this.props.agent.preferred_name} - SUPP.AI by AI2
                     </title>
+                    <link rel="canonical" href={canonicalUrl} />
                 </Head>
                 <SearchForm
                     meta={this.props.meta}
@@ -110,7 +120,7 @@ export default class AgentDetail extends React.PureComponent<Props> {
                         pagination={{
                             current: this.props.interactionsPage.page,
                             total: this.props.agent.interacts_with_count,
-                            onChange: onInteractionPageChanged,
+                            onChange: this.onInteractionPageChanged,
                             pageSize: this.props.interactionsPage
                                 .interactions_per_page,
                             hideOnSinglePage: true

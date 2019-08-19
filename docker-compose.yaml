@@ -32,6 +32,8 @@ services:
             - './ui/components:/usr/local/src/skiff/app/ui/components'
         command:
             - 'dev'
+        environment:
+            - 'SUPP_AI_CANONICAL_ORIGIN=http://localhost:8080'
     proxy:
         build: ./proxy
         ports:
