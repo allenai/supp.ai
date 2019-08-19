@@ -30,15 +30,16 @@ interface Props {
 }
 
 export default class AgentDetail extends React.PureComponent<Props> {
-    static async getInitialProps(context: DocumentContext): Promise<Props> {
+    static async getInitialProps(
+        context: DocumentContext
+    ): Promise<Props | undefined> {
         if (Array.isArray(context.query.cui)) {
             throw new Error("Invalid CUI.");
         }
-        const { cui } = context.query;
+        const { cui, slug } = context.query;
         if (cui === undefined) {
             throw new Error("CUI must be set.");
         }
-
         const maybeQuery = SearchForm.queryFromQueryString(context.query);
         const [agent, interactionsPage, meta] = await Promise.all([
             fetchAgent(cui),
@@ -46,6 +47,16 @@ export default class AgentDetail extends React.PureComponent<Props> {
             fetchIndexMeta()
         ]);
         const hideDisclaimer = hasDismissedDisclaimer(context);
+        if (agent.slug !== slug) {
+            const canonicalUrl = `/a/${agent.slug}/${agent.cui}`;
+            if (context.res) {
+                context.res.writeHead(301, { Location: canonicalUrl });
+                context.res.end();
+            } else {
+                Router.push(canonicalUrl);
+            }
+            return;
+        }
         return {
             agent,
             interactionsPage,
