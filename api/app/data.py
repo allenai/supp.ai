@@ -3,8 +3,9 @@ from json import load
 from os import path, environ
 from logging import getLogger
 from algoliasearch.search_client import SearchClient  # type:ignore
-from re import sub
+from re import sub, split, fullmatch, sub
 from urllib.parse import quote_plus
+from math import floor
 
 logger = getLogger(__name__)
 
@@ -168,6 +169,46 @@ class SupportingSentence(NamedTuple):
             ),
             SupportingSentenceSpan(sentence[second.span[1] :], None),
         ]
+
+        # Some of the publishers S2 works with only allow us to display up to
+        # 149 words. Rather than try to figure out if a paper is subject to
+        # those restrictions, we just make sure we never display > 149 words.
+        all_words = list(
+            filter(lambda token: len(token.strip()) > 0, split(r"\W+", sentence))
+        )
+        word_count = len(all_words)
+        if word_count > 149:
+            diff = word_count - 149
+            span_idx = 0
+            span_count = len(spans)
+            while diff > 0:
+                span = spans[span_idx]
+                # Don't remove entity mentions, as they're important to
+                # maintain in the UI
+                if span.cui is None:
+                    # Split the text on
+                    tokens = split(r"(\W+)", span.text)
+                    token_count = len(tokens)
+                    # Prefer tokens in the middle of a span, as these are
+                    # further from the mentioned entity and are accordingly
+                    # less likely to be important.
+                    mid = floor(token_count / 2)
+                    for idx in [*range(mid, token_count), *range(0, mid)]:
+                        token = tokens[idx]
+                        # We'll replace the first word we find.
+                        if fullmatch(r"\w+", token):
+                            tokens[idx] = "…"
+                            diff -= 1
+                            # Put together the text, and remove ellipsis that
+                            # occur one after another.
+                            text = sub(r"…\W+…", "…", "".join(tokens))
+                            spans[span_idx] = SupportingSentenceSpan(text, None)
+                            break
+                span_idx += 1
+                # Start over if we iterate over all spans and still need to
+                # remove words.
+                if span_idx == span_count:
+                    span_idx = 0
 
         # Add the extra information we prepared
         with_spans: Dict = {**fields, "spans": spans}
