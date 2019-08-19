@@ -34,13 +34,36 @@ def create_api(data_dir: str) -> Blueprint:
     def index() -> Response:
         return Response("", 204)
 
+    interactions_per_page = 10
+
     @api.route("/agent/<string:cui>", methods=["GET"])
     def get_agent_by_cui(cui: str) -> Response:
+        agent = idx.get_agent_with_interaction_count(cui)
+        if agent is None:
+            return error("Not Found", 404)
+        return Response(simplejson.dumps(agent), 200, content_type="application/json")
+
+    @api.route("/agent/<string:cui>/interactions", methods=["GET"])
+    def get_agent_interactions(cui: str) -> Response:
         agent = idx.get_agent(cui)
         if agent is None:
             return error("Not Found", 404)
+        try:
+            page = int(request.args.get("p", default=0))
+        except ValueError:
+            return error("Invalid value for 'p'.", 400)
+        start = page * interactions_per_page
+        end = start + interactions_per_page
+        interactions = idx.get_interactions(agent)
+        interactions_page = interactions[start:end]
         return Response(
-            simplejson.dumps(idx.get_interactions(agent)),
+            simplejson.dumps(
+                {
+                    "page": page,
+                    "interactions": interactions,
+                    "interactions_per_page": interactions_per_page,
+                }
+            ),
             200,
             content_type="application/json",
         )
@@ -50,34 +73,35 @@ def create_api(data_dir: str) -> Blueprint:
         query = request.args.get("q", default=None)
         if query is None:
             return error("The q argument is required")
-        agents = idx.search_for_agents(query, ["preferred_name", "synonyms"])
+        search_results = idx.search_for_agents(query, ["preferred_name", "synonyms"])
         results = []
-        for agent in agents:
-            interactions = idx.get_interactions(agent)
-            interacts_with_count = interactions.interacts_with_count
-            # We put together a search result for suggestions that's as compact
-            # as possible and includes only the information we need.
-            result = {
-                "cui": agent.cui,
-                "slug": agent.slug,
-                "preferred_name": agent.preferred_name,
-                "ent_type": agent.ent_type,
-                "interacts_with_count": interacts_with_count,
-            }
+        for agent in search_results.results:
+            result = agent._asdict()
+            del result["definition"]
             results.append(result)
-        response = simplejson.dumps({"query": {"q": query}, "results": results})
+        response = simplejson.dumps(
+            {"query": {"q": search_results.query}, "results": results}
+        )
         return Response(response, 200, content_type="application/json")
 
     @api.route("/agent/search", methods=["GET"])
     def search_agents() -> Response:
         query = request.args.get("q", default=None)
+        try:
+            page = int(request.args.get("p", default=0))
+        except ValueError:
+            return error("Invalid value for 'p'.", 400)
         if query is None:
             return error("The q argument is required")
-        agents = idx.search_for_agents(query)
-        results = [idx.get_interactions(agent)._asdict() for agent in agents]
-        # TODO: Use the real total, and paginate the query.
+        search_results = idx.search_for_agents(query, page=page)
         response = simplejson.dumps(
-            {"query": {"q": query}, "results": results, "total": len(results)}
+            {
+                "query": {"q": search_results.query, "p": search_results.page},
+                "results": search_results.results,
+                "total_pages": search_results.total_pages,
+                "total_results": search_results.total_results,
+                "num_per_page": search_results.num_per_page,
+            }
         )
         return Response(response, 200, content_type="application/json")
 

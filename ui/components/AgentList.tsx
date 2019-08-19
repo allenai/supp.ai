@@ -3,12 +3,6 @@ import styled from "styled-components";
 import * as icon from "./icon";
 import { model } from "../api";
 
-export const AgentList = styled.ul`
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-`;
-
 interface Props {
     agent: model.Agent;
     children: React.ReactNode;

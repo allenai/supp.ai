@@ -2,10 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import { DocumentContext } from "next/document";
 import Head from "next/head";
+import Router from "next/router";
+import { List } from "antd";
+import { encode } from "querystring";
 
-import { fetchAgent, fetchIndexMeta, model } from "../api";
+import { fetchAgent, fetchIndexMeta, model, fetchInteractions } from "../api";
 import {
-    AgentList,
     AgentListItem,
     AgentListItemTitle,
     AgentListItemContent,
@@ -23,32 +25,43 @@ interface Props {
     agent: model.Agent;
     meta: model.IndexMeta;
     defaultQueryText?: string;
-    interacts_with: model.InteractingAgent[];
-    interacts_with_count: number;
+    interactionsPage: model.InteractionsPage;
     hideDisclaimer: boolean;
 }
 
 export default class AgentDetail extends React.PureComponent<Props> {
     static async getInitialProps(context: DocumentContext): Promise<Props> {
-        const { query } = context;
-        const cui = Array.isArray(query.cui) ? query.cui.shift() : query.cui;
+        if (Array.isArray(context.query.cui)) {
+            throw new Error("Invalid CUI.");
+        }
+        const maybeQuery = SearchForm.queryFromQueryString(context.query);
+        const { cui } = context.query;
         if (cui === undefined) {
-            // TODO: Handle this.
             throw new Error("CUI must be set.");
         }
-        const [searchResp, meta] = await Promise.all([
+        const [agent, interactionsPage, meta] = await Promise.all([
             fetchAgent(cui),
+            fetchInteractions(cui, maybeQuery ? maybeQuery.p : 0),
             fetchIndexMeta()
         ]);
         const hideDisclaimer = hasDismissedDisclaimer(context);
         return {
-            ...searchResp,
+            agent,
+            interactionsPage,
             meta,
             hideDisclaimer,
-            defaultQueryText: SearchForm.queryTextFromQueryString(query)
+            defaultQueryText: maybeQuery ? maybeQuery.q : undefined
         };
     }
     render() {
+        const onInteractionPageChanged = async (p: number) => {
+            const { slug, cui } = this.props.agent;
+            await Router.push(
+                `/agent?${encode({ slug, cui, p })}`,
+                `/a/${slug}/${cui}?${encode({ p })}`
+            );
+            window.scrollTo(0, 0);
+        };
         return (
             <DefaultLayout>
                 <Head>
@@ -74,15 +87,24 @@ export default class AgentDetail extends React.PureComponent<Props> {
                 </Section>
                 <Section>
                     <h3>
-                        {formatNumber(this.props.interacts_with_count)}{" "}
+                        {formatNumber(this.props.agent.interacts_with_count)}{" "}
                         {pluralize(
                             "Interaction",
-                            this.props.interacts_with_count
+                            this.props.agent.interacts_with_count
                         )}
                         :
                     </h3>
-                    <AgentList>
-                        {this.props.interacts_with.map(interaction => (
+                    <List
+                        pagination={{
+                            current: this.props.interactionsPage.page,
+                            total: this.props.agent.interacts_with_count,
+                            onChange: onInteractionPageChanged,
+                            pageSize: this.props.interactionsPage
+                                .interactions_per_page,
+                            hideOnSinglePage: true
+                        }}
+                        dataSource={this.props.interactionsPage.interactions}
+                        renderItem={interaction => (
                             <AgentListItem
                                 key={`${interaction.agent.cui}`}
                                 agent={interaction.agent}
@@ -107,8 +129,8 @@ export default class AgentDetail extends React.PureComponent<Props> {
                                 ) : null}
                                 <EvidenceList interaction={interaction} />
                             </AgentListItem>
-                        ))}
-                    </AgentList>
+                        )}
+                    />
                 </Section>
             </DefaultLayout>
         );

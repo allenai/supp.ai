@@ -36,6 +36,22 @@ class Agent(NamedTuple):
     slug: str
 
 
+class AgentWithInteractionCount(NamedTuple):
+    """
+    Model for an agent with the number of interactions but not the actual
+    interactions themselves. This is intended for use with search results
+    to make the response smaller.
+    """
+
+    cui: str
+    preferred_name: str
+    synonyms: List[str]
+    definition: str
+    ent_type: str
+    slug: str
+    interacts_with_count: int
+
+
 class SupportingSentenceArg(NamedTuple):
     """
     Model capturing a span in the associated sentence where a particular CUI
@@ -185,7 +201,7 @@ class InteractingAgent(NamedTuple):
     evidence: List[Evidence]
 
 
-class Interactions(NamedTuple):
+class AgentWithInteractions(NamedTuple):
     """
     Model for an agent and the agents it interacts with.
     """
@@ -215,6 +231,19 @@ class InteractionId(NamedTuple):
             raise RuntimeError(f"Malformed interaction id: {str}")
         [first, second] = parts
         return InteractionId((first, second))
+
+
+class SearchResults(NamedTuple):
+    """
+    Model for agent search results.
+    """
+
+    results: List[AgentWithInteractionCount]
+    total_results: int
+    total_pages: int
+    query: str
+    page: int
+    num_per_page: int
 
 
 class InteractionIndex:
@@ -287,9 +316,19 @@ class InteractionIndex:
             return None
         return self.agents_by_cui[cui]
 
+    def get_agent_with_interaction_count(
+        self, cui: str
+    ) -> Optional[AgentWithInteractionCount]:
+        agent = self.get_agent(cui)
+        if agent is None:
+            return None
+        interactions = self.get_interactions(agent)
+        args = list(agent._asdict().values()) + [len(interactions)]
+        return AgentWithInteractionCount(*args)
+
     def search_for_agents(
-        self, query: str, only_fields: List[str] = None, num_per_page=10
-    ) -> List[Agent]:
+        self, query: str, only_fields: List[str] = None, page=0, num_per_page=10
+    ) -> SearchResults:
         """
         Attempts to find agents related to the provided query text.
         """
@@ -298,17 +337,24 @@ class InteractionIndex:
             params = {"restrictSearchableAttributes": only_fields}
         else:
             params = {}
-        default_params = {"hitsPerPage": num_per_page}
+        default_params = {"hitsPerPage": num_per_page, "page": page}
         resp = self.index.search(query, {**default_params, **params})
         for hit in resp["hits"]:
-            agent = self.get_agent(hit["cui"])
+            agent = self.get_agent_with_interaction_count(hit["cui"])
             if agent is not None:
                 agents.append(agent)
             else:
                 logger.warn(f"Search result without a CUI: {hit}")
-        return agents
+        return SearchResults(
+            agents,
+            resp["nbHits"],
+            resp["nbPages"],
+            resp["query"],
+            resp["page"],
+            resp["hitsPerPage"],
+        )
 
-    def get_interactions(self, agent: Agent) -> Interactions:
+    def get_interactions(self, agent: Agent) -> List[InteractingAgent]:
         """
         Returns the agents the provided agent interacts with.
         """
@@ -348,9 +394,7 @@ class InteractionIndex:
                     f"Malformed interaction id: {interaction_id}, agent CUI: {agent.cui}"
                 )
 
-        return Interactions(
-            agent, interacts_with=interactions, interacts_with_count=len(interactions)
-        )
+        return interactions
 
     @staticmethod
     def from_data(archive_name: str, data_dir: str) -> "InteractionIndex":

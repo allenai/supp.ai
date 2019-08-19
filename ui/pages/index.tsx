@@ -25,18 +25,20 @@ interface Props {
 
 export default class Home extends React.PureComponent<Props> {
     static async getInitialProps(context: DocumentContext): Promise<Props> {
-        const { query } = context;
-        const queryText = SearchForm.queryTextFromQueryString(query);
+        const query = SearchForm.queryFromQueryString(context.query);
         const hideDisclaimer = hasDismissedDisclaimer(context);
-        if (queryText !== undefined) {
+        if (query.q.length > 0) {
             const [meta, response] = await Promise.all([
                 fetchIndexMeta(),
-                searchForAgents(queryText)
+                // Algolia's pagination API is zero-indexed, while the
+                // Antd pagination control starts at 1, so we offset this
+                // value by one
+                searchForAgents(query.q, query.p - 1)
             ]);
             return {
                 meta,
                 hideDisclaimer,
-                queryText: queryText,
+                queryText: query.q,
                 searchResponse: response,
                 view: View.RESULTS
             };

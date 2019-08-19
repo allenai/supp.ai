@@ -28,15 +28,16 @@ interface State {
 }
 
 export class SearchForm extends React.PureComponent<Props, State> {
-    static queryTextFromQueryString(query: ParsedUrlQuery): string | undefined {
-        if (typeof query.q === "undefined") {
-            return undefined;
-        }
-        const value = (Array.isArray(query.q)
-            ? query.q.join(" ")
-            : query.q
+    static queryFromQueryString(args: ParsedUrlQuery): model.Query {
+        const queryText = (Array.isArray(args.q)
+            ? args.q.join(" ")
+            : args.q || ""
         ).trim();
-        return value || undefined;
+        const rawPage = parseInt(
+            Array.isArray(args.p) ? args.p.join() : args.p
+        );
+        const page = !isNaN(rawPage) ? rawPage : 1;
+        return { q: queryText, p: page };
     }
     private hasSelectedItem: boolean = false;
     constructor(props: Props) {
@@ -87,13 +88,16 @@ export class SearchForm extends React.PureComponent<Props, State> {
             event.preventDefault();
         }
         const queryText = this.state.queryText.trim();
-        this.setState({ queryText, suggestions: [], enableAutoComplete: false }, () => {
-            if (queryText) {
-                Router.push(`/?${encode({ q: queryText })}`);
-            } else {
-                Router.push(`/`);
+        this.setState(
+            { queryText, suggestions: [], enableAutoComplete: false },
+            () => {
+                if (queryText) {
+                    Router.push(`/?${encode({ q: queryText })}`);
+                } else {
+                    Router.push(`/`);
+                }
             }
-        });
+        );
     };
     onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (!this.hasSelectedItem && event.keyCode == Key.Enter) {
