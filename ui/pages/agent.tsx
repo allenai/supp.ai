@@ -34,11 +34,12 @@ export default class AgentDetail extends React.PureComponent<Props> {
         if (Array.isArray(context.query.cui)) {
             throw new Error("Invalid CUI.");
         }
-        const maybeQuery = SearchForm.queryFromQueryString(context.query);
         const { cui } = context.query;
         if (cui === undefined) {
             throw new Error("CUI must be set.");
         }
+
+        const maybeQuery = SearchForm.queryFromQueryString(context.query);
         const [agent, interactionsPage, meta] = await Promise.all([
             fetchAgent(cui),
             fetchInteractions(cui, maybeQuery ? maybeQuery.p : 0),
