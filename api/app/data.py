@@ -377,12 +377,22 @@ class InteractionIndex:
                     for paper_id, sentences in sentences_by_paper_id.items():
                         if paper_id in self.paper_metadata_by_id:
                             evidence.append(
-                                Evidence(self.paper_metadata_by_id[paper_id], sentences)
+                                Evidence(
+                                    self.paper_metadata_by_id[paper_id],
+                                    sorted(
+                                        sentences,
+                                        key=lambda sentence: sentence.spans[0]
+                                        .text[0]
+                                        .lower(),
+                                    ),
+                                )
                             )
                         else:
                             logger.warn(f"Paper id without metadata: ${paper_id}")
+
                     agent_with_interaction = InteractingAgent(
-                        interacting_agent, evidence
+                        interacting_agent,
+                        sorted(evidence, key=lambda evd: evd.paper.title[0].lower()),
                     )
                     interactions.append(agent_with_interaction)
                 else:
@@ -394,7 +404,7 @@ class InteractionIndex:
                     f"Malformed interaction id: {interaction_id}, agent CUI: {agent.cui}"
                 )
 
-        return interactions
+        return sorted(interactions, key=lambda intr: len(intr.evidence), reverse=True)
 
     @staticmethod
     def from_data(archive_name: str, data_dir: str) -> "InteractionIndex":
