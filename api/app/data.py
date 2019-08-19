@@ -210,8 +210,34 @@ class SupportingSentence(NamedTuple):
                 if span_idx == span_count:
                     span_idx = 0
 
+        # If there's a span with *only* punctuation before or after a mentioned
+        # entity collapse it with the bordering entity. Not doing so causes
+        # weird wrapping issues in the UI.
+        [prefix, first_entity, between, second_entity, tail] = spans
+        if fullmatch(r"\W+", prefix.text):
+            first_entity = SupportingSentenceSpan(
+                f"{prefix.text}{first_entity.text}", first_entity.cui
+            )
+            prefix = None  # type:ignore
+        if fullmatch(r"\W+", between.text):
+            first_entity = SupportingSentenceSpan(
+                f"{first_entity.text}{between.text}", first_entity.cui
+            )
+            between = None  # type:ignore
+        if fullmatch(r"\W+", tail.text):
+            second_entity = SupportingSentenceSpan(
+                f"{second_entity.text}{tail.text}", second_entity.cui
+            )
+            tail = None  # type:ignore
+        collapsed_spans = list(
+            filter(
+                lambda sp: sp != None,
+                [prefix, first_entity, between, second_entity, tail],
+            )
+        )
+
         # Add the extra information we prepared
-        with_spans: Dict = {**fields, "spans": spans}
+        with_spans: Dict = {**fields, "spans": collapsed_spans}
 
         # Remove fields that from the model that the UI doesn't use
         del with_spans["sentence"]
