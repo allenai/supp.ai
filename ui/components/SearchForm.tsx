@@ -173,7 +173,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
                     <Samples>
                         <SampleLabel>Try:</SampleLabel>{" "}
                         {SAMPLE_QUERIES.map((sample, idx) => (
-                            <React.Fragment>
+                            <React.Fragment key={sample.cui}>
                                 {idx === 0 ? " " : ", "}
                                 <Link
                                     href={`/agent?${encode({
@@ -181,7 +181,6 @@ export class SearchForm extends React.PureComponent<Props, State> {
                                         slug: sample.slug
                                     })}`}
                                     as={`/a/${sample.slug}/${sample.cui}`}
-                                    key={sample.cui}
                                 >
                                     <a>{sample.name}</a>
                                 </Link>
