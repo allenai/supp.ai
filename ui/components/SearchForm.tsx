@@ -30,8 +30,7 @@ interface State {
 
 const SAMPLE_QUERIES = [
     { cui: "C0043031", slug: "warfarin", name: "Warfarin" },
-    { cui: "C3531686", slug: "ginkgo-biloba-whole", name: "Ginkgo" },
-    { cui: "C1527137", slug: "melatonin", name: "Melatonin" }
+    { cui: "C3531686", slug: "ginkgo-biloba-whole", name: "Ginkgo" }
 ];
 
 export class SearchForm extends React.PureComponent<Props, State> {

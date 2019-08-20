@@ -9,7 +9,7 @@ RUN pip install -r requirements.txt
 
 # Copy over the data that makes up the corpus
 WORKDIR /usr/local/data/skiff/
-ARG DATA_ARCHIVE=20190815_01.tar.gz
+ARG DATA_ARCHIVE=20190820_01.tar.gz
 ENV SUPPAI_DATA_ARCHIVE ${DATA_ARCHIVE}
 ADD https://storage.googleapis.com/supp-ai-data/${DATA_ARCHIVE} /usr/local/data/skiff
 RUN tar -xvf ${DATA_ARCHIVE} && rm ${DATA_ARCHIVE}
