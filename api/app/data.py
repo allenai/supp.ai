@@ -373,6 +373,9 @@ class InteractionIndex:
 
         return idx
 
+    def get_all_agents(self) -> List[Agent]:
+        return list(self.agents_by_cui.values())
+
     def get_agent(self, raw_cui: str) -> Optional[Agent]:
         """
         Returns an agent with the provided cui, if one exists. If no agent with

@@ -216,6 +216,10 @@ function(
                                             key: 'value'
                                         }
                                     }
+                                },
+                                {
+                                    name: 'SUPP_AI_CANONICAL_ORIGIN',
+                                    value: 'https://' + hosts[0],
                                 }
                             ]
                         },

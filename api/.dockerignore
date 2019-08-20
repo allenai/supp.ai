@@ -8,9 +8,7 @@
 .dockerignore
 
 # Docker artifacts
-docker-compose.yaml
 Dockerfile
-ui/Dockerfile
 
 # Documentation
 **/*.md

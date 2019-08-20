@@ -7,6 +7,7 @@ from gevent.pywsgi import WSGIServer  # type: ignore
 from flask import Flask, Response, request, jsonify
 from app.api import create_api
 from app.utils import StackdriverJsonFormatter
+from app.data import InteractionIndex
 
 
 def start(data_dir: str, port: int, prod: bool):
@@ -32,12 +33,31 @@ def start(data_dir: str, port: int, prod: bool):
     logger = logging.getLogger(__name__)
     logger.debug("AHOY! Let's get this boat out to water...")
 
-    app = Flask(__name__)
+    logger.debug("Starting: init agent index...")
+    idx = InteractionIndex.from_data(os.environ["SUPPAI_DATA_ARCHIVE"], data_dir)
+    logger.debug("Complete: init agent index...")
 
-    # Bind the API functionality to our application. You can add additional
-    # API endpoints by editing api.py.
+    logger.debug("Starting: generate sitemap...")
+    agents = idx.get_all_agents()
+    # Google only allows up to 50000 urls in a single sitemap. If we have more
+    # than 50000 agents fail loudly.
+    if len(agents) > 50000:
+        raise RuntimeError(
+            f"There are {len(agents)} agents, which is more than the 50,000 per sitemap limit."
+        )
+    origin = os.environ["SUPP_AI_CANONICAL_ORIGIN"]
+    urls = "\n".join(
+        list(map(lambda agent: f"{origin}/a/{agent.slug}/{agent.cui}", agents))
+    )
+    static_dir = os.environ.get("SUPP_AI_STATIC_DIR", os.path.abspath("static"))
+    with open(os.path.join(static_dir, "sitemap.txt"), "w+b") as fp:
+        fp.write(urls.encode("utf8"))
+    logger.debug("Complete: generate sitemap....")
+
+    app = Flask(__name__, static_folder=static_dir)
+
     logger.debug("Starting: init API...")
-    app.register_blueprint(create_api(data_dir), url_prefix="/")
+    app.register_blueprint(create_api(idx), url_prefix="/")
     logger.debug("Complete: init API...")
 
     # In production we use a HTTP server appropriate for production.

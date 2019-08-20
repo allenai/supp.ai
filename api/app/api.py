@@ -9,7 +9,7 @@ import simplejson
 import os
 
 
-def create_api(data_dir: str) -> Blueprint:
+def create_api(idx: InteractionIndex) -> Blueprint:
     """
     Creates an instance of your API. If you'd like to toggle behavior based on
     command line flags or other inputs, add them as arguments to this function.
@@ -17,8 +17,6 @@ def create_api(data_dir: str) -> Blueprint:
     api = Blueprint("api", __name__)
 
     logger = getLogger(__name__)
-
-    idx = InteractionIndex.from_data(os.environ["SUPPAI_DATA_ARCHIVE"], data_dir)
 
     def error(message: str, status: int = 400) -> Response:
         return Response(
@@ -33,8 +31,6 @@ def create_api(data_dir: str) -> Blueprint:
     @api.route("/")
     def index() -> Response:
         return Response("", 204)
-
-    interactions_per_page = 10
 
     @api.route("/agent/<string:cui>", methods=["GET"])
     def get_agent_by_cui(cui: str) -> Response:
@@ -52,6 +48,7 @@ def create_api(data_dir: str) -> Blueprint:
             page = int(request.args.get("p", default=0))
         except ValueError:
             return error("Invalid value for 'p'.", 400)
+        interactions_per_page = 10
         start = page * interactions_per_page
         end = start + interactions_per_page
         interactions = idx.get_interactions(agent)

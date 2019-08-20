@@ -10,7 +10,11 @@
 # Docker artifacts
 docker-compose.yaml
 Dockerfile
+api/Dockerfile
+api/.dockerignore
 ui/Dockerfile
+ui/.dockerignore
+proxy/Dockerfile
 
 # Skiff artifacts
 .skiff/

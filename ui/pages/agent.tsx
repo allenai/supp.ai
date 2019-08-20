@@ -58,11 +58,10 @@ export default class AgentDetail extends React.PureComponent<Props> {
             }
             return;
         }
-        const isClient = typeof window !== 'undefined';
-        const origin =
-            !isClient
-                ? process.env.SUPP_AI_CANONICAL_ORIGIN
-                : document.location.origin;
+        const isClient = typeof window !== "undefined";
+        const origin = !isClient
+            ? process.env.SUPP_AI_CANONICAL_ORIGIN
+            : document.location.origin;
         if (!origin) {
             throw new Error(
                 "Invalid environment, missing SUPP_AI_CANONICAL_ORIGIN."

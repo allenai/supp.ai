@@ -5,13 +5,15 @@ services:
     api:
         build: ./api
         volumes:
-            - './api:/usr/local/src/skiff/app/api'
+            - './api/app:/usr/local/src/skiff/app/api/app'
+            - './api/requirements.txt:/usr/local/src/skiff/app/api/requirements.txt'
         environment:
             # This ensures that errors are printed as they occur, which
             # makes debugging easier.
             - 'PYTHONUNBUFFERED=1'
             - 'LOG_LEVEL=DEBUG'
             - 'SUPP_AI_ALGOLIA_API_KEY=${SUPP_AI_ALGOLIA_API_KEY}'
+            - 'SUPP_AI_CANONICAL_ORIGIN=http://localhost:8080'
     ui:
         build: ./ui
         # We can't mount the entire UI directory, since the `node_modules`
