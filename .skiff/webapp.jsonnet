@@ -212,7 +212,7 @@ function(
                                     name: 'SUPP_AI_ALGOLIA_API_KEY',
                                     valueFrom: {
                                         secretKeyRef: {
-                                            name: 'algolia-api-key',
+                                            name: 'algolia-key',
                                             key: 'value'
                                         }
                                     }

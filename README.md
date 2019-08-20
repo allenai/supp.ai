@@ -5,7 +5,7 @@ between supplements and pharmaceuticals.
 
 ## Getting Started
 
-Fist, set your [Algolia Admin API key](https://www.algolia.com/apps/YZ85FPO05E/api-keys/all):
+Fist, set your [Algolia Admin API key](https://www.algolia.com/apps/PEUZR5B1FW/api-keys/all):
 
 ```
 ~ export SUPP_AI_ALGOLIA_API_KEY=$YOUR_KEY_HERE
