@@ -47,7 +47,8 @@ def start(data_dir: str, port: int, prod: bool):
         )
     origin = os.environ["SUPP_AI_CANONICAL_ORIGIN"]
     urls = "\n".join(
-        list(map(lambda agent: f"{origin}/a/{agent.slug}/{agent.cui}", agents))
+        [f"{origin}"]
+        + list(map(lambda agent: f"{origin}/a/{agent.slug}/{agent.cui}", agents))
     )
     static_dir = os.environ.get("SUPP_AI_STATIC_DIR", os.path.abspath("static"))
     with open(os.path.join(static_dir, "sitemap.txt"), "w+b") as fp:
