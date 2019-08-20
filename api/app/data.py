@@ -446,23 +446,23 @@ class InteractionIndex:
                     evidence = []
                     for paper_id, sentences in sentences_by_paper_id.items():
                         if paper_id in self.paper_metadata_by_id:
+
+                            def by_text(value: SupportingSentence) -> str:
+                                return "".join(
+                                    map(lambda s: s.text, value.spans)
+                                ).strip()
+
                             evidence.append(
                                 Evidence(
                                     self.paper_metadata_by_id[paper_id],
-                                    sorted(
-                                        sentences,
-                                        key=lambda sentence: sentence.spans[0]
-                                        .text[0]
-                                        .lower(),
-                                    ),
+                                    sorted(sentences, key=by_text),
                                 )
                             )
                         else:
                             logger.warn(f"Paper id without metadata: ${paper_id}")
-
                     agent_with_interaction = InteractingAgent(
                         interacting_agent,
-                        sorted(evidence, key=lambda evd: evd.paper.title[0].lower()),
+                        sorted(evidence, key=lambda evd: evd.paper.title.lower()),
                     )
                     interactions.append(agent_with_interaction)
                 else:
