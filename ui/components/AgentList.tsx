@@ -37,15 +37,13 @@ export const AgentListItemContent = styled.div`
 `;
 
 const ListItem = styled.li`
-    border-bottom: 1px solid ${({ theme }) => theme.palette.border.main};
+    border: 1px solid ${({ theme }) => theme.palette.border.main};
+    border-radius: 4px;
     padding: ${({ theme }) => theme.spacing.lg};
+    margin: ${({ theme }) => theme.spacing.lg} 0;
     display: grid;
     grid-template-columns: min-content auto;
     grid-gap: ${({ theme }) => theme.spacing.lg};
-
-    &:first-child {
-        border-top: 1px solid ${({ theme }) => theme.palette.border.main};
-    }
 `;
 
 const ListItemIcon = styled.span`

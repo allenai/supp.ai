@@ -28,12 +28,10 @@
     "next": "^9.0.3",
     "next-images": "^1.1.2",
     "next-transpile-modules": "^2.3.1",
-    "nookies": "^2.0.8",
     "prettier": "^1.18.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "styled-components": "^4.3.2",
-    "ts-keycode-enum": "^1.0.6",
     "typescript": "^3.5.3"
   }
 }

@@ -12,12 +12,9 @@ interface Props {
 }
 
 export const EvidenceList = ({ interaction }: Props) => {
-    const [showAll, toggleShowAll] = useState(false);
-
-    const visibleEvidence = showAll
-        ? interaction.evidence
-        : interaction.evidence.slice(0, 3);
-    const buttonText = showAll ? "Show Less" : "Show More";
+    const [visibleIdx, setVisibleIdx] = useState(3);
+    const amountLeft = interaction.evidence.length - visibleIdx;
+    const visibleEvidence = interaction.evidence.slice(0, visibleIdx);
 
     return (
         <Fragment>
@@ -38,12 +35,14 @@ export const EvidenceList = ({ interaction }: Props) => {
                     </Evidence>
                 ))}
             </div>
-            {interaction.evidence.length > 3 ? (
+            {amountLeft > 0 ? (
                 <BodySmall>
                     <ToggleShowAllButton
-                        onClick={() => toggleShowAll(!showAll)}
+                        onClick={() =>
+                            setVisibleIdx(visibleIdx + Math.min(3, amountLeft))
+                        }
                     >
-                        {buttonText}
+                        Show More
                     </ToggleShowAllButton>
                 </BodySmall>
             ) : null}

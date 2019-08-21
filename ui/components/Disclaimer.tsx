@@ -1,32 +1,12 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { parseCookies, setCookie } from "nookies";
-import { DocumentContext } from "next/document";
 
-import * as icon from "./icon";
+export const Disclaimer = () => {
+    const [isExpanded, toggleIsExpanded] = useState(false);
 
-const DISMISSED_COOKIE_NAME = "has-dismissed-disclaimer";
-
-export function hasDismissedDisclaimer(context: DocumentContext): boolean {
-    const cookies = parseCookies(context);
-    return cookies[DISMISSED_COOKIE_NAME] === "true";
-}
-
-export function Disclaimer() {
-    const [isHidden, toggleIsHidden] = useState(false);
-    const hideAndSetCookie = () => {
-        toggleIsHidden(true);
-        setCookie({}, DISMISSED_COOKIE_NAME, "true", {
-            domain: window.location.hostname,
-            path: "/",
-            maxAge: 30 * 24 * 60 * 60, // 30 days
-            sameSite: "Strict",
-            secure: window.location.protocol === "https:"
-        });
-    };
-    return !isHidden ? (
-        <Warning>
-            <span>
+    if (isExpanded) {
+        return (
+            <Warning>
                 <strong>Disclaimer:</strong> The information contained herein
                 should NOT be used as a substitute for the advice of an
                 appropriately qualified and licensed physician or other health
@@ -42,20 +22,40 @@ export function Disclaimer() {
                 physician if you have health questions or concerns. Although we
                 attempt to provide accurate and up-to-date information, no
                 guarantee is made to that effect. This tool does not endorse any
-                drugs or supplements, diagnose patients, or recommend therapy.
-            </span>
-            <a onClick={hideAndSetCookie}>
-                <icon.Close />
-            </a>
-        </Warning>
-    ) : null;
-}
+                drugs or supplements, diagnose patients, or recommend therapy.{" "}
+                <ToggleLink onClick={() => toggleIsExpanded(false)}>
+                    (less)
+                </ToggleLink>
+            </Warning>
+        );
+    } else {
+        return (
+            <Warning>
+                <strong>Disclaimer:</strong> The information contained herein
+                should NOT be used as a substitute for the advice of an
+                appropriately qualified and licensed physician or other health
+                care provider. The tool is not a substitute for the care
+                provided…{" "}
+                <ToggleLink onClick={() => toggleIsExpanded(true)}>
+                    (more)
+                </ToggleLink>
+            </Warning>
+        );
+    }
+};
 
 const Warning = styled.div`
-    display: grid;
-    grid-template-columns: auto min-content;
+    margin: 0 0 ${({ theme }) => theme.spacing.lg};
     background: ${({ theme }) => theme.color.O1};
     border: 1px solid ${({ theme }) => theme.color.O2};
     border-radius: 4px;
     padding: ${({ theme }) => theme.spacing.md};
+`;
+
+const ToggleLink = styled.a`
+    &,
+    &:hover,
+    &:active {
+        color: ${({ theme }) => theme.color.O8};
+    }
 `;

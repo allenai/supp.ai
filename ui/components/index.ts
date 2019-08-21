@@ -10,6 +10,7 @@ export * from "./Synonyms";
 export * from "./WithAgentDefinitionPopover";
 export * from "./PaperInfo";
 export * from "./EvidenceList";
+export * from "./PageHeader";
 
 import * as icon from "./icon";
 export { icon };

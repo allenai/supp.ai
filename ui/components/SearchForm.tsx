@@ -19,13 +19,11 @@ import { WithAgentDefinitionPopover } from "./WithAgentDefinitionPopover";
 import { debounce, formatNumber, pluralize } from "../util";
 import { model, fetchSuggestions } from "../api";
 import * as icon from "./icon";
-import { Disclaimer } from "../components";
 
 interface Props {
     defaultQueryText?: string;
     autoFocus?: boolean;
     meta: model.IndexMeta;
-    hideDisclaimer?: boolean;
     autocomplete?: boolean;
 }
 
@@ -39,7 +37,6 @@ const SAMPLE_QUERIES = [
     { cui: "C3531686", slug: "ginkgo-biloba-whole", name: "Ginkgo" }
 ];
 
-// TODO: Remove keycode enum
 export class SearchForm extends React.PureComponent<Props, State> {
     static queryFromQueryString(args: ParsedUrlQuery): model.Query {
         const queryText = (Array.isArray(args.q)
@@ -97,7 +94,6 @@ export class SearchForm extends React.PureComponent<Props, State> {
             `${formatNumber(this.props.meta.interaction_count)} interactions…`;
         return (
             <React.Fragment>
-                {!this.props.hideDisclaimer ? <Disclaimer /> : null}
                 <FormContainer>
                     <AutoCompleteStyles />
                     {this.props.autocomplete ? (

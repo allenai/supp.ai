@@ -16,8 +16,10 @@ import {
     SearchForm,
     WithAgentDefinitionPopover,
     EvidenceList,
+    Disclaimer,
     Synonyms,
-    hasDismissedDisclaimer
+    PageHeader,
+    icon
 } from "../components";
 import { pluralize, formatNumber } from "../util";
 
@@ -27,7 +29,6 @@ interface Props {
     meta: model.IndexMeta;
     defaultQueryText?: string;
     interactionsPage: model.InteractionsPage;
-    hideDisclaimer: boolean;
 }
 
 export default class AgentDetail extends React.PureComponent<Props> {
@@ -47,7 +48,6 @@ export default class AgentDetail extends React.PureComponent<Props> {
             fetchInteractions(cui, maybeQuery ? maybeQuery.p : 0),
             fetchIndexMeta()
         ]);
-        const hideDisclaimer = hasDismissedDisclaimer(context);
         if (agent.slug !== slug) {
             const canonicalUrl = `/a/${agent.slug}/${agent.cui}`;
             if (context.res) {
@@ -71,7 +71,6 @@ export default class AgentDetail extends React.PureComponent<Props> {
             agent,
             interactionsPage,
             meta,
-            hideDisclaimer,
             origin,
             defaultQueryText: maybeQuery ? maybeQuery.q : undefined
         };
@@ -94,15 +93,17 @@ export default class AgentDetail extends React.PureComponent<Props> {
                     </title>
                     <link rel="canonical" href={canonicalUrl} />
                 </Head>
+                <Disclaimer />
                 <SearchForm
                     meta={this.props.meta}
                     defaultQueryText={this.props.defaultQueryText}
                     autoFocus={false}
-                    hideDisclaimer={this.props.hideDisclaimer}
                     autocomplete
                 />
                 <Section>
+                    <AgentType>{this.props.agent.ent_type}:</AgentType>
                     <AgentName>
+                        <icon.AgentTypeIcon type={this.props.agent.ent_type} />
                         <WithAgentDefinitionPopover agent={this.props.agent}>
                             {this.props.agent.preferred_name}
                         </WithAgentDefinitionPopover>
@@ -163,8 +164,17 @@ export default class AgentDetail extends React.PureComponent<Props> {
     }
 }
 
-const AgentName = styled.h1`
-    margin: 0 0 ${({ theme }) => theme.spacing.sm};
+const AgentType = styled.div`
+    text-transform: uppercase;
+`;
+
+const AgentName = styled(PageHeader)`
+    margin: 0 0 ${({ theme }) => theme.spacing.xs};
+    display: grid;
+    grid-template-columns: min-content auto;
+    grid-gap: ${({ theme }) => theme.spacing.sm};
+    align-items: center;
+    line-height: 1.2;
 `;
 
 const Section = styled.section`
