@@ -264,6 +264,7 @@ class InteractingAgent(NamedTuple):
     mentions that are evidence of the interaction.
     """
 
+    interaction_id: str
     agent: Agent
     evidence: List[Evidence]
 
@@ -424,6 +425,31 @@ class InteractionIndex:
             resp["hitsPerPage"],
         )
 
+    def get_evidence(self, interaction_id: InteractionId) -> List[Evidence]:
+        if interaction_id not in self.sentences_by_interaction_id:
+            return []
+        sentences_by_paper_id: Dict[str, List[SupportingSentence]] = {}
+        for sentence in self.sentences_by_interaction_id[interaction_id]:
+            if sentence.paper_id not in sentences_by_paper_id:
+                sentences_by_paper_id[sentence.paper_id] = []
+            sentences_by_paper_id[sentence.paper_id].append(sentence)
+        evidence = []
+        for paper_id, sentences in sentences_by_paper_id.items():
+            if paper_id in self.paper_metadata_by_id:
+
+                def by_text(value: SupportingSentence) -> str:
+                    return "".join(map(lambda s: s.text, value.spans)).strip()
+
+                evidence.append(
+                    Evidence(
+                        self.paper_metadata_by_id[paper_id],
+                        sorted(sentences, key=by_text),
+                    )
+                )
+            else:
+                logger.warn(f"Paper id without metadata: ${paper_id}")
+        return evidence
+
     def get_interactions(self, agent: Agent) -> List[InteractingAgent]:
         """
         Returns the agents the provided agent interacts with.
@@ -438,31 +464,13 @@ class InteractionIndex:
                 [interacting_agent_id] = interacting_agent_ids
                 interacting_agent = self.get_agent(interacting_agent_id)
                 if interacting_agent is not None:
-                    sentences_by_paper_id: Dict[str, List[SupportingSentence]] = {}
-                    for sentence in self.sentences_by_interaction_id[interaction_id]:
-                        if sentence.paper_id not in sentences_by_paper_id:
-                            sentences_by_paper_id[sentence.paper_id] = []
-                        sentences_by_paper_id[sentence.paper_id].append(sentence)
-                    evidence = []
-                    for paper_id, sentences in sentences_by_paper_id.items():
-                        if paper_id in self.paper_metadata_by_id:
-
-                            def by_text(value: SupportingSentence) -> str:
-                                return "".join(
-                                    map(lambda s: s.text, value.spans)
-                                ).strip()
-
-                            evidence.append(
-                                Evidence(
-                                    self.paper_metadata_by_id[paper_id],
-                                    sorted(sentences, key=by_text),
-                                )
-                            )
-                        else:
-                            logger.warn(f"Paper id without metadata: ${paper_id}")
                     agent_with_interaction = InteractingAgent(
+                        str(interaction_id),
                         interacting_agent,
-                        sorted(evidence, key=lambda evd: evd.paper.title.lower()),
+                        sorted(
+                            self.get_evidence(interaction_id),
+                            key=lambda evd: evd.paper.title.lower(),
+                        ),
                     )
                     interactions.append(agent_with_interaction)
                 else:

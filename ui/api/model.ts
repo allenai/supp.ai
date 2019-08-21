@@ -61,6 +61,7 @@ export interface Evidence {
 }
 
 export interface InteractingAgent {
+    interaction_id: string;
     agent: Agent;
     evidence: Evidence[];
 }

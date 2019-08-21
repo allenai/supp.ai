@@ -3,7 +3,7 @@ from random import randint
 from typing import Tuple, List, Dict
 from json import dumps
 from time import sleep
-from app.data import InteractionIndex
+from app.data import InteractionIndex, InteractionId
 from logging import getLogger
 import simplejson
 import os
@@ -31,6 +31,21 @@ def create_api(idx: InteractionIndex) -> Blueprint:
     @api.route("/")
     def index() -> Response:
         return Response("", 204)
+
+    @api.route("/interaction/<string:iid>", methods=["GET"])
+    def get_interaction(iid: str) -> Response:
+        interaction_id = InteractionId.from_str(iid)
+        first_agent_id, second_agent_id = interaction_id.cuis
+        response = simplejson.dumps(
+            {
+                "agents": [
+                    idx.get_agent(first_agent_id),
+                    idx.get_agent(second_agent_id),
+                ],
+                "evidence": idx.get_evidence(interaction_id),
+            }
+        )
+        return Response(response, 200, content_type="application/json")
 
     @api.route("/agent/<string:cui>", methods=["GET"])
     def get_agent_by_cui(cui: str) -> Response:
