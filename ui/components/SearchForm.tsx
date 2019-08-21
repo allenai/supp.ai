@@ -2,14 +2,20 @@ import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import Router from "next/router";
 import { ParsedUrlQuery, encode } from "querystring";
-import { AutoComplete, Form } from "antd";
+import { AutoComplete, List } from "antd";
 import { SelectValue } from "antd/lib/select";
 import { BodySmall } from "@allenai/varnish/components/typography";
 import { Input } from "@allenai/varnish/components/form";
-import { Button } from "@allenai/varnish/components/button";
-import { Key } from "ts-keycode-enum";
 import Link from "next/link";
 
+import {
+    AgentListItem,
+    AgentListItemContent,
+    AgentListItemTitle
+} from "./AgentList";
+import { AgentLink } from "./AgentLink";
+import { Synonyms } from "./Synonyms";
+import { WithAgentDefinitionPopover } from "./WithAgentDefinitionPopover";
 import { debounce, formatNumber, pluralize } from "../util";
 import { model, fetchSuggestions } from "../api";
 import * as icon from "./icon";
@@ -20,12 +26,12 @@ interface Props {
     autoFocus?: boolean;
     meta: model.IndexMeta;
     hideDisclaimer?: boolean;
+    autocomplete?: boolean;
 }
 
 interface State {
     queryText: string;
-    suggestions: model.SuggestedAgent[];
-    enableAutoComplete: boolean;
+    results: model.Agent[];
 }
 
 const SAMPLE_QUERIES = [
@@ -33,6 +39,7 @@ const SAMPLE_QUERIES = [
     { cui: "C3531686", slug: "ginkgo-biloba-whole", name: "Ginkgo" }
 ];
 
+// TODO: Remove keycode enum
 export class SearchForm extends React.PureComponent<Props, State> {
     static queryFromQueryString(args: ParsedUrlQuery): model.Query {
         const queryText = (Array.isArray(args.q)
@@ -45,43 +52,37 @@ export class SearchForm extends React.PureComponent<Props, State> {
         const page = !isNaN(rawPage) ? rawPage : 1;
         return { q: queryText, p: page };
     }
-    private hasSelectedItem: boolean = false;
     constructor(props: Props) {
         super(props);
         this.state = {
-            suggestions: [],
-            queryText: props.defaultQueryText || "",
-            enableAutoComplete: true
+            results: [],
+            queryText: props.defaultQueryText || ""
         };
     }
-    onQueryChanged = (value: SelectValue) => {
+    searchForAgents = (value: SelectValue) => {
         if (typeof value === "string") {
             const queryText = value.trim();
             this.setState(
-                { queryText: value, enableAutoComplete: true },
+                { queryText: value },
                 debounce(async () => {
                     if (queryText === "") {
-                        this.setState({ suggestions: [] });
+                        this.setState({ results: [] });
                     } else {
                         const resp = await fetchSuggestions(queryText);
                         this.setState(state => {
                             if (state.queryText !== resp.query.q) {
                                 return null;
                             }
-                            if (!state.enableAutoComplete) {
-                                return { suggestions: [] };
-                            }
-                            return { suggestions: resp.results };
+                            return { results: resp.results };
                         });
                     }
                 })
             );
         }
     };
-    onSuggestionSelected = (cui: SelectValue) => {
+    goToSelectedAgent = (cui: SelectValue) => {
         if (typeof cui === "string") {
-            this.hasSelectedItem = true;
-            const selected = this.state.suggestions.find(
+            const selected = this.state.results.find(
                 suggestion => suggestion.cui === cui
             );
             if (selected) {
@@ -89,86 +90,49 @@ export class SearchForm extends React.PureComponent<Props, State> {
             }
         }
     };
-    onFormSubmitted = (event?: React.FormEvent<HTMLElement>) => {
-        if (event) {
-            event.preventDefault();
-        }
-        const queryText = this.state.queryText.trim();
-        this.setState(
-            { queryText, suggestions: [], enableAutoComplete: false },
-            () => {
-                if (queryText) {
-                    Router.push(`/?${encode({ q: queryText })}`);
-                } else {
-                    Router.push(`/`);
-                }
-            }
-        );
-    };
-    onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (!this.hasSelectedItem && event.keyCode == Key.Enter) {
-            this.hasSelectedItem = false;
-            this.onFormSubmitted();
-        }
-    };
-    onSearchButtonClicked = () => {
-        this.onFormSubmitted();
-    };
     render() {
         const placeholder =
             "Enter the name of a supplement or drug to search " +
             `${formatNumber(this.props.meta.agent_count)} agents and ` +
             `${formatNumber(this.props.meta.interaction_count)} interactions…`;
-        const suggestions = this.state.suggestions.map(suggestion => (
-            <AutoComplete.Option
-                key={suggestion.cui}
-                value={suggestion.cui}
-                className="supp-autocomplete-option"
-                title={suggestion.preferred_name}
-            >
-                <span>
-                    <icon.AgentTypeIcon type={suggestion.ent_type} />
-                </span>
-                <span>{suggestion.preferred_name}</span>
-                <BodySmall>
-                    {formatNumber(suggestion.interacts_with_count)}{" "}
-                    {pluralize("interaction", suggestion.interacts_with_count)}
-                </BodySmall>
-            </AutoComplete.Option>
-        ));
         return (
             <React.Fragment>
                 {!this.props.hideDisclaimer ? <Disclaimer /> : null}
-                <FormContainer onSubmit={this.onFormSubmitted}>
+                <FormContainer>
                     <AutoCompleteStyles />
-                    <SearchInputWithAutoComplete
-                        defaultActiveFirstOption={false}
-                        dataSource={suggestions}
-                        onSelect={this.onSuggestionSelected}
-                        onSearch={this.onQueryChanged}
-                        optionLabelProp="title"
-                        transitionName="none"
-                        value={this.state.queryText}
-                    >
-                        <Input
+                    {this.props.autocomplete ? (
+                        <SearchInputWithAutoComplete
+                            dataSource={asAutocompleteResults(
+                                this.state.results
+                            )}
+                            onSelect={this.goToSelectedAgent}
+                            onSearch={this.searchForAgents}
+                            optionLabelProp="title"
+                            transitionName="none"
+                            value={this.state.queryText}
+                        >
+                            <Input
+                                type="search"
+                                autoFocus={
+                                    this.props.autoFocus !== false &&
+                                    this.state.queryText === ""
+                                }
+                                placeholder={placeholder}
+                            />
+                        </SearchInputWithAutoComplete>
+                    ) : (
+                        <SearchInput
                             type="search"
                             autoFocus={
                                 this.props.autoFocus !== false &&
                                 this.state.queryText === ""
                             }
                             placeholder={placeholder}
-                            onKeyDown={this.onKeyDown}
-                            size="large"
-                            addonAfter={
-                                <SearchButton
-                                    variant="primary"
-                                    onClick={this.onSearchButtonClicked}
-                                >
-                                    Search
-                                </SearchButton>
-                            }
+                            onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>
+                            ) => this.searchForAgents(event.target.value)}
                         />
-                    </SearchInputWithAutoComplete>
+                    )}
                     <Samples>
                         <SampleLabel>Try:</SampleLabel>{" "}
                         {SAMPLE_QUERIES.map((sample, idx) => (
@@ -187,12 +151,73 @@ export class SearchForm extends React.PureComponent<Props, State> {
                         ))}
                     </Samples>
                 </FormContainer>
+                {!this.props.autocomplete && this.state.results.length > 0 ? (
+                    <List
+                        bordered={false}
+                        dataSource={this.state.results}
+                        renderItem={agent => (
+                            <AgentListItem key={agent.cui} agent={agent}>
+                                <AgentListItemTitle>
+                                    <AgentLink agent={agent}>
+                                        <WithAgentDefinitionPopover
+                                            agent={agent}
+                                        >
+                                            {agent.preferred_name}
+                                        </WithAgentDefinitionPopover>
+                                    </AgentLink>
+                                    <InteractionCount>
+                                        {formatNumber(
+                                            agent.interacts_with_count
+                                        )}{" "}
+                                        {pluralize(
+                                            "Interaction",
+                                            agent.interacts_with_count
+                                        )}
+                                    </InteractionCount>
+                                </AgentListItemTitle>
+                                {agent.synonyms.length > 0 ? (
+                                    <AgentListItemContent>
+                                        <Synonyms synonyms={agent.synonyms} />
+                                    </AgentListItemContent>
+                                ) : null}
+                                <AgentLink agent={agent}>
+                                    View {agent.interacts_with_count}{" "}
+                                    {pluralize(
+                                        "Interaction",
+                                        agent.interacts_with_count
+                                    )}
+                                </AgentLink>
+                            </AgentListItem>
+                        )}
+                    />
+                ) : null}
             </React.Fragment>
         );
     }
 }
 
+function asAutocompleteResults(results: model.Agent[]) {
+    return results.map(suggestion => (
+        <AutoComplete.Option
+            key={suggestion.cui}
+            value={suggestion.cui}
+            className="supp-autocomplete-option"
+            title={suggestion.preferred_name}
+        >
+            <span>
+                <icon.AgentTypeIcon type={suggestion.ent_type} />
+            </span>
+            <span>{suggestion.preferred_name}</span>
+            <BodySmall>
+                {formatNumber(suggestion.interacts_with_count)}{" "}
+                {pluralize("interaction", suggestion.interacts_with_count)}
+            </BodySmall>
+        </AutoComplete.Option>
+    ));
+}
+
 const Samples = styled.div`
+    margin: ${({ theme }) => theme.spacing.sm} 0;
     font-size: 1rem;
     padding: 0 ${({ theme }) => theme.spacing.md};
 `;
@@ -205,53 +230,28 @@ const SampleLabel = styled.label`
     }
 `;
 
-const FormContainer = styled(Form)`
+const FormContainer = styled.div`
     margin: ${({ theme }) => theme.spacing.lg} 0;
 `;
 
 const SearchInputWithAutoComplete = styled(AutoComplete)`
     width: 100%;
-    margin: 0 0 ${({ theme }) => theme.spacing.sm};
-
-    .ant-select-search__field {
-        padding: 0 !important;
-    }
-
-    .ant-input-group-addon {
-        border: 0;
-    }
 
     // TODO: These styles are hacks. Remove them once Varnish's base elements
     // handle this case better / can be restyled.
     input {
-        padding: 0 ${({ theme }) => theme.spacing.md};
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-        border-right: 0;
+        padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
         transition: none !important;
-
-        &:focus {
-            box-shadow: none;
-        }
-    }
-
-    button,
-    input {
-        height: 40px !important;
+        line-height: 1.8 !important;
+        height: auto !important;
+        font-size: ${({ theme }) => theme.typography.body.fontSize} !important;
     }
 `;
 
-const SearchButton = styled(Button)`
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    box-shadow: none;
-
-    &&,
-    &&:hover,
-    &&:focus,
-    &&:active {
-        padding: 0 ${({ theme }) => theme.spacing.lg};
-    }
+const SearchInput = styled(Input)`
+    line-height: 1.8 !important;
+    padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
+    font-size: ${({ theme }) => theme.typography.body.fontSize};
 `;
 
 const AutoCompleteStyles = createGlobalStyle`
@@ -273,4 +273,9 @@ const AutoCompleteStyles = createGlobalStyle`
     .ant-select-dropdown-menu-item-active {
         font-weight: 700;
     }
+`;
+
+const InteractionCount = styled.div`
+    margin-left: auto;
+    white-space: nowrap;
 `;

@@ -84,16 +84,8 @@ export interface SearchResponse {
     num_per_page: number;
 }
 
-export interface SuggestedAgent {
-    cui: string;
-    preferred_name: string;
-    ent_type: AgentType;
-    interacts_with_count: number;
-    slug: string;
-}
-
 export interface SuggestResponse {
     query: Query;
     total: number;
-    results: SuggestedAgent[];
+    results: Agent[];
 }

@@ -99,6 +99,7 @@ export default class AgentDetail extends React.PureComponent<Props> {
                     defaultQueryText={this.props.defaultQueryText}
                     autoFocus={false}
                     hideDisclaimer={this.props.hideDisclaimer}
+                    autocomplete
                 />
                 <Section>
                     <AgentName>

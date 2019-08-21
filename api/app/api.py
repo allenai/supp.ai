@@ -68,16 +68,14 @@ def create_api(idx: InteractionIndex) -> Blueprint:
     @api.route("/agent/suggest", methods=["GET"])
     def suggest_agents() -> Response:
         query = request.args.get("q", default=None)
+        size = request.args.get("s", default="5")
         if query is None:
             return error("The q argument is required")
-        search_results = idx.search_for_agents(query, ["preferred_name", "synonyms"])
-        results = []
-        for agent in search_results.results:
-            result = agent._asdict()
-            del result["definition"]
-            results.append(result)
+        search_results = idx.search_for_agents(
+            query, ["preferred_name", "synonyms"], num_per_page=size
+        )
         response = simplejson.dumps(
-            {"query": {"q": search_results.query}, "results": results}
+            {"query": {"q": search_results.query}, "results": search_results.results}
         )
         return Response(response, 200, content_type="application/json")
 
