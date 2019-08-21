@@ -37,7 +37,7 @@ export const Synonyms = ({ synonyms }: Props) => {
             A.K.A: <em>{visible.join(", ")}</em>
             {hasMore ? (
                 <Fragment>
-                    , …
+                    {!isExpanded ? ", …" : null}
                     <ToggleLink onClick={() => toggleIsExpanded(!isExpanded)}>
                         {buttonText}
                     </ToggleLink>
