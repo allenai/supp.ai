@@ -138,7 +138,6 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                     meta={this.props.meta}
                     defaultQueryText={this.props.defaultQueryText}
                     autoFocus={false}
-                    autocomplete
                 />
                 <Section>
                     <AgentType>{this.props.agent.ent_type}:</AgentType>

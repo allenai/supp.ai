@@ -2,20 +2,12 @@ import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import Router from "next/router";
 import { ParsedUrlQuery, encode } from "querystring";
-import { AutoComplete, List } from "antd";
+import { AutoComplete } from "antd";
 import { SelectValue } from "antd/lib/select";
 import { BodySmall } from "@allenai/varnish/components/typography";
 import { Input } from "@allenai/varnish/components/form";
 import Link from "next/link";
 
-import {
-    AgentListItem,
-    AgentListItemContent,
-    AgentListItemTitle
-} from "./AgentList";
-import { AgentLink } from "./AgentLink";
-import { Synonyms } from "./Synonyms";
-import { WithAgentDefinitionPopover } from "./WithAgentDefinitionPopover";
 import { debounce, formatNumber, pluralize } from "../util";
 import { model, fetchSuggestions } from "../api";
 import * as icon from "./icon";
@@ -24,7 +16,6 @@ interface Props {
     defaultQueryText?: string;
     autoFocus?: boolean;
     meta: model.IndexMeta;
-    autocomplete?: boolean;
 }
 
 interface State {
@@ -96,39 +87,23 @@ export class SearchForm extends React.PureComponent<Props, State> {
             <React.Fragment>
                 <FormContainer>
                     <AutoCompleteStyles />
-                    {this.props.autocomplete ? (
-                        <SearchInputWithAutoComplete
-                            dataSource={asAutocompleteResults(
-                                this.state.results
-                            )}
-                            onSelect={this.goToSelectedAgent}
-                            onSearch={this.searchForAgents}
-                            optionLabelProp="title"
-                            transitionName="none"
-                            value={this.state.queryText}
-                        >
-                            <Input
-                                type="search"
-                                autoFocus={
-                                    this.props.autoFocus !== false &&
-                                    this.state.queryText === ""
-                                }
-                                placeholder={placeholder}
-                            />
-                        </SearchInputWithAutoComplete>
-                    ) : (
-                        <SearchInput
+                    <SearchInputWithAutoComplete
+                        dataSource={asAutocompleteResults(this.state.results)}
+                        onSelect={this.goToSelectedAgent}
+                        onSearch={this.searchForAgents}
+                        optionLabelProp="title"
+                        transitionName="none"
+                        value={this.state.queryText}
+                    >
+                        <Input
                             type="search"
                             autoFocus={
                                 this.props.autoFocus !== false &&
                                 this.state.queryText === ""
                             }
                             placeholder={placeholder}
-                            onChange={(
-                                event: React.ChangeEvent<HTMLInputElement>
-                            ) => this.searchForAgents(event.target.value)}
                         />
-                    )}
+                    </SearchInputWithAutoComplete>
                     <Samples>
                         <SampleLabel>Try:</SampleLabel>{" "}
                         {SAMPLE_QUERIES.map((sample, idx) => (
@@ -147,46 +122,6 @@ export class SearchForm extends React.PureComponent<Props, State> {
                         ))}
                     </Samples>
                 </FormContainer>
-                {!this.props.autocomplete && this.state.results.length > 0 ? (
-                    <List
-                        bordered={false}
-                        dataSource={this.state.results}
-                        renderItem={agent => (
-                            <AgentListItem key={agent.cui} agent={agent}>
-                                <AgentListItemTitle>
-                                    <AgentLink agent={agent}>
-                                        <WithAgentDefinitionPopover
-                                            agent={agent}
-                                        >
-                                            {agent.preferred_name}
-                                        </WithAgentDefinitionPopover>
-                                    </AgentLink>
-                                    <InteractionCount>
-                                        {formatNumber(
-                                            agent.interacts_with_count
-                                        )}{" "}
-                                        {pluralize(
-                                            "Interaction",
-                                            agent.interacts_with_count
-                                        )}
-                                    </InteractionCount>
-                                </AgentListItemTitle>
-                                {agent.synonyms.length > 0 ? (
-                                    <AgentListItemContent>
-                                        <Synonyms synonyms={agent.synonyms} />
-                                    </AgentListItemContent>
-                                ) : null}
-                                <AgentLink agent={agent}>
-                                    View {agent.interacts_with_count}{" "}
-                                    {pluralize(
-                                        "Interaction",
-                                        agent.interacts_with_count
-                                    )}
-                                </AgentLink>
-                            </AgentListItem>
-                        )}
-                    />
-                ) : null}
             </React.Fragment>
         );
     }
@@ -244,12 +179,6 @@ const SearchInputWithAutoComplete = styled(AutoComplete)`
     }
 `;
 
-const SearchInput = styled(Input)`
-    line-height: 1.8 !important;
-    padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.md}`};
-    font-size: ${({ theme }) => theme.typography.body.fontSize};
-`;
-
 const AutoCompleteStyles = createGlobalStyle`
     // We style the autocomplete like so as using the styled() route doesn't
     // work with Ant's autocomplete options.
@@ -269,9 +198,4 @@ const AutoCompleteStyles = createGlobalStyle`
     .ant-select-dropdown-menu-item-active {
         font-weight: 700;
     }
-`;
-
-const InteractionCount = styled.div`
-    margin-left: auto;
-    white-space: nowrap;
 `;

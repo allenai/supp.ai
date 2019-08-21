@@ -36,7 +36,7 @@ export default class Home extends React.PureComponent<Props> {
                     purely derived from examining peer-reviewed research and is
                     free of any marketing or advertising driven agendas.
                 </p>
-                <SearchForm meta={this.props.meta} autocomplete />
+                <SearchForm meta={this.props.meta} />
             </DefaultLayout>
         );
     }

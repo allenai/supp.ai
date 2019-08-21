@@ -3,7 +3,6 @@ export * from "./Logo";
 export * from "./SearchForm";
 export * from "./Sentence";
 export * from "./DefaultLayout";
-export * from "./SearchResults";
 export * from "./AgentLink";
 export * from "./AgentList";
 export * from "./Synonyms";
