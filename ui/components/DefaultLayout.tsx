@@ -1,12 +1,12 @@
 import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
-import { Footer } from "@allenai/varnish/components/Footer";
 import {
     PaddedContent,
     Page,
-    WhiteBackground
-} from "@allenai/varnish/components/shared";
+    BackgroundLayout
+} from "@allenai/varnish/components/Layout";
+import { Footer } from "@allenai/varnish/components/Footer";
 import Link from "next/link";
 import Head from "next/head";
 
@@ -36,7 +36,7 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
                 </a>
             </Right>
         </Header>
-        <MainPane>
+        <MainPane color="white">
             <PaddedContent>
                 <MaxWidth>
                     <Page>{children}</Page>
@@ -87,7 +87,7 @@ const HeaderLink = styled.a`
     }
 `;
 
-const MainPane = styled(WhiteBackground)`
+const MainPane = styled(BackgroundLayout)`
     flex-grow: 1;
 `;
 
