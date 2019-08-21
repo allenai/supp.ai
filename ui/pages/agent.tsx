@@ -165,6 +165,7 @@ export default class AgentDetail extends React.PureComponent<Props> {
 }
 
 const AgentType = styled.div`
+    font-size: ${({ theme }) => theme.typography.bodySmall.fontSize};
     text-transform: uppercase;
 `;
 
