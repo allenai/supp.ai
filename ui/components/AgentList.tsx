@@ -21,6 +21,7 @@ export const AgentListItemTitle = styled.h3`
     margin: 0;
     display: flex;
     align-items: center;
+    line-height: 1.3333;
     font-family: ${({ theme }) => theme.typography.fontFamily};
     font-weight: 400;
 

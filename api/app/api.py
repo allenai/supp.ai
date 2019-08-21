@@ -63,7 +63,7 @@ def create_api(idx: InteractionIndex) -> Blueprint:
             page = int(request.args.get("p", default=0))
         except ValueError:
             return error("Invalid value for 'p'.", 400)
-        interactions_per_page = 10
+        interactions_per_page = 1000
         start = page * interactions_per_page
         end = start + interactions_per_page
         interactions = idx.get_interactions(agent)

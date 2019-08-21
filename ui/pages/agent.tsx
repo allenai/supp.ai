@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { DocumentContext } from "next/document";
 import Head from "next/head";
 import Router from "next/router";
-import { List } from "antd";
+import { Icon, List } from "antd";
 import { encode } from "querystring";
 
 import { fetchAgent, fetchIndexMeta, model, fetchInteractions } from "../api";
@@ -11,7 +11,6 @@ import {
     AgentListItem,
     AgentListItemTitle,
     AgentListItemContent,
-    AgentLink,
     DefaultLayout,
     SearchForm,
     WithAgentDefinitionPopover,
@@ -31,7 +30,15 @@ interface Props {
     interactionsPage: model.InteractionsPage;
 }
 
-export default class AgentDetail extends React.PureComponent<Props> {
+interface State {
+    expandedInteractionIds: Set<string>;
+}
+
+export default class AgentDetail extends React.PureComponent<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = { expandedInteractionIds: new Set() };
+    }
     static async getInitialProps(
         context: DocumentContext
     ): Promise<Props | undefined> {
@@ -85,6 +92,15 @@ export default class AgentDetail extends React.PureComponent<Props> {
     };
     render() {
         const canonicalUrl = `${this.props.origin}/a/${this.props.agent.slug}/${this.props.agent.cui}`;
+        let interactionLabel = null;
+        switch (this.props.agent.ent_type) {
+            case model.AgentType.SUPPLEMENT:
+                interactionLabel = " drug ";
+                break;
+            case model.AgentType.DRUG:
+                interactionLabel = " supplement ";
+                break;
+        }
         return (
             <DefaultLayout>
                 <Head>
@@ -115,8 +131,9 @@ export default class AgentDetail extends React.PureComponent<Props> {
                 <Section>
                     <h3>
                         {formatNumber(this.props.agent.interacts_with_count)}{" "}
+                        {interactionLabel}
                         {pluralize(
-                            "Interaction",
+                            "interaction",
                             this.props.agent.interacts_with_count
                         )}
                         :
@@ -131,32 +148,76 @@ export default class AgentDetail extends React.PureComponent<Props> {
                             hideOnSinglePage: true
                         }}
                         dataSource={this.props.interactionsPage.interactions}
-                        renderItem={interaction => (
-                            <AgentListItem
-                                key={`${interaction.agent.cui}`}
-                                agent={interaction.agent}
-                            >
-                                <AgentListItemTitle>
-                                    <AgentLink agent={interaction.agent}>
+                        renderItem={interaction => {
+                            const isExpanded = this.state.expandedInteractionIds.has(
+                                interaction.interaction_id
+                            );
+                            return (
+                                <AgentListItem
+                                    key={`${interaction.agent.cui}`}
+                                    agent={interaction.agent}
+                                >
+                                    <AgentListItemTitle>
                                         <WithAgentDefinitionPopover
                                             agent={interaction.agent}
                                         >
                                             {interaction.agent.preferred_name}
                                         </WithAgentDefinitionPopover>
-                                    </AgentLink>
-                                </AgentListItemTitle>
-                                {interaction.agent.synonyms.length > 0 ? (
-                                    <AgentListItemContent>
-                                        <Synonyms
-                                            synonyms={
-                                                interaction.agent.synonyms
-                                            }
-                                        />
-                                    </AgentListItemContent>
-                                ) : null}
-                                <EvidenceList interaction={interaction} />
-                            </AgentListItem>
-                        )}
+                                        <ToggleDetailsButton
+                                            onClick={() => {
+                                                this.setState(state => {
+                                                    const expandedIds = new Set(
+                                                        state.expandedInteractionIds
+                                                    );
+                                                    if (
+                                                        expandedIds.has(
+                                                            interaction.interaction_id
+                                                        )
+                                                    ) {
+                                                        expandedIds.delete(
+                                                            interaction.interaction_id
+                                                        );
+                                                    } else {
+                                                        expandedIds.add(
+                                                            interaction.interaction_id
+                                                        );
+                                                    }
+                                                    return {
+                                                        expandedInteractionIds: expandedIds
+                                                    };
+                                                });
+                                            }}
+                                        >
+                                            <Icon
+                                                type={
+                                                    isExpanded
+                                                        ? "minus"
+                                                        : "plus"
+                                                }
+                                            ></Icon>
+                                        </ToggleDetailsButton>
+                                    </AgentListItemTitle>
+                                    {isExpanded ? (
+                                        <React.Fragment>
+                                            {interaction.agent.synonyms.length >
+                                            0 ? (
+                                                <AgentListItemContent>
+                                                    <Synonyms
+                                                        synonyms={
+                                                            interaction.agent
+                                                                .synonyms
+                                                        }
+                                                    />
+                                                </AgentListItemContent>
+                                            ) : null}
+                                            <EvidenceList
+                                                interaction={interaction}
+                                            />
+                                        </React.Fragment>
+                                    ) : null}
+                                </AgentListItem>
+                            );
+                        }}
                     />
                 </Section>
             </DefaultLayout>
@@ -180,4 +241,20 @@ const AgentName = styled(PageHeader)`
 
 const Section = styled.section`
     margin: 0 0 ${({ theme }) => theme.spacing.lg};
+`;
+
+const ToggleDetailsButton = styled.button`
+    &&& {
+        appearance: none;
+        border: 1px solid ${({ theme }) => theme.palette.border.dark};
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 0;
+        font-size: 18px;
+        border-radius: none;
+        line-height: 30px;
+        margin-left: auto;
+    }
 `;
