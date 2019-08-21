@@ -9,6 +9,8 @@ import {
     PageHeader
 } from "../components";
 
+import { formatNumber } from "../util";
+
 interface Props {
     meta: model.IndexMeta;
 }
@@ -28,9 +30,11 @@ export default class Home extends React.PureComponent<Props> {
                 <Disclaimer />
                 <PageHeader>Discover supplement-drug interactions</PageHeader>
                 <p>
-                    We are a non-profit and do not receive any external
-                    compensation. This tool does not endorse any drugs or
-                    supplements, diagnose patients or recommend therapy.
+                    Search our AI curated corpus of{" "}
+                    {formatNumber(this.props.meta.interaction_count)}{" "}
+                    interactions and explore the related research. Our corpus is
+                    purely derived from examining peer-reviewed research and is
+                    free of any marketing or advertising driven agendas.
                 </p>
                 <SearchForm meta={this.props.meta} autocomplete />
             </DefaultLayout>
