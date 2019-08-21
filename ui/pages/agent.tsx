@@ -31,13 +31,13 @@ interface Props {
 }
 
 interface State {
-    expandedInteractionIds: Set<string>;
+    expandedInteractionIds: { [k: string]: boolean };
 }
 
 export default class AgentDetail extends React.PureComponent<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.state = { expandedInteractionIds: new Set() };
+        this.state = { expandedInteractionIds: {} };
     }
     static async getInitialProps(
         context: DocumentContext
@@ -149,9 +149,10 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                         }}
                         dataSource={this.props.interactionsPage.interactions}
                         renderItem={interaction => {
-                            const isExpanded = this.state.expandedInteractionIds.has(
-                                interaction.interaction_id
-                            );
+                            const isExpanded =
+                                this.state.expandedInteractionIds[
+                                    interaction.interaction_id
+                                ] === true;
                             return (
                                 <AgentListItem
                                     key={`${interaction.agent.cui}`}
@@ -165,26 +166,18 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                         </WithAgentDefinitionPopover>
                                         <ToggleDetailsButton
                                             onClick={() => {
-                                                this.setState(state => {
-                                                    const expandedIds = new Set(
-                                                        state.expandedInteractionIds
-                                                    );
-                                                    if (
-                                                        expandedIds.has(
-                                                            interaction.interaction_id
-                                                        )
-                                                    ) {
-                                                        expandedIds.delete(
-                                                            interaction.interaction_id
-                                                        );
-                                                    } else {
-                                                        expandedIds.add(
-                                                            interaction.interaction_id
-                                                        );
+                                                let delta: {
+                                                    [k: string]: boolean;
+                                                } = {};
+                                                delta[
+                                                    interaction.interaction_id
+                                                ] = !isExpanded;
+                                                this.setState({
+                                                    expandedInteractionIds: {
+                                                        ...this.state
+                                                            .expandedInteractionIds,
+                                                        ...delta
                                                     }
-                                                    return {
-                                                        expandedInteractionIds: expandedIds
-                                                    };
                                                 });
                                             }}
                                         >
