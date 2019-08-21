@@ -3,7 +3,8 @@ import styled from "styled-components";
 import { DocumentContext } from "next/document";
 import Head from "next/head";
 import Router from "next/router";
-import { Icon, List } from "antd";
+import { Icon, List, Radio } from "antd";
+import { RadioChangeEvent } from "antd/lib/radio";
 import { encode } from "querystring";
 
 import { fetchAgent, fetchIndexMeta, model, fetchInteractions } from "../api";
@@ -30,14 +31,23 @@ interface Props {
     interactionsPage: model.InteractionsPage;
 }
 
+enum ToggleAllState {
+    EXPAND_ALL,
+    COLLAPSE_ALL
+}
+
 interface State {
     expandedInteractionIds: { [k: string]: boolean };
+    toggleState: ToggleAllState;
 }
 
 export default class AgentDetail extends React.PureComponent<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.state = { expandedInteractionIds: {} };
+        this.state = {
+            expandedInteractionIds: {},
+            toggleState: ToggleAllState.COLLAPSE_ALL
+        };
     }
     static async getInitialProps(
         context: DocumentContext
@@ -90,6 +100,20 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
         );
         window.scrollTo(0, 0);
     };
+    onToggleAllChange = (event: RadioChangeEvent) => {
+        const toggleState: ToggleAllState = event.target.value;
+        const expandedInteractionIds: { [k: string]: boolean } = {};
+        switch (toggleState) {
+            case ToggleAllState.EXPAND_ALL:
+                this.props.interactionsPage.interactions.forEach(intr => {
+                    expandedInteractionIds[intr.interaction_id] = true;
+                });
+                break;
+            case ToggleAllState.COLLAPSE_ALL:
+                break;
+        }
+        this.setState({ expandedInteractionIds, toggleState });
+    };
     render() {
         const canonicalUrl = `${this.props.origin}/a/${this.props.agent.slug}/${this.props.agent.cui}`;
         let interactionLabel = null;
@@ -129,15 +153,31 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                     ) : null}
                 </Section>
                 <Section>
-                    <h3>
-                        {formatNumber(this.props.agent.interacts_with_count)}{" "}
-                        {interactionLabel}
-                        {pluralize(
-                            "interaction",
-                            this.props.agent.interacts_with_count
-                        )}
-                        :
-                    </h3>
+                    <Controls>
+                        <InteractionListTitle>
+                            {formatNumber(
+                                this.props.agent.interacts_with_count
+                            )}{" "}
+                            {interactionLabel}
+                            {pluralize(
+                                "interaction",
+                                this.props.agent.interacts_with_count
+                            )}
+                            :
+                        </InteractionListTitle>
+                        <Group
+                            size="large"
+                            value={this.state.toggleState}
+                            onChange={this.onToggleAllChange}
+                        >
+                            <Radio.Button value={ToggleAllState.EXPAND_ALL}>
+                                Expanded
+                            </Radio.Button>
+                            <Radio.Button value={ToggleAllState.COLLAPSE_ALL}>
+                                Collapsed
+                            </Radio.Button>
+                        </Group>
+                    </Controls>
                     <List
                         pagination={{
                             current: this.props.interactionsPage.page,
@@ -250,4 +290,28 @@ const ToggleDetailsButton = styled.button`
         line-height: 30px;
         margin-left: auto;
     }
+`;
+
+const Controls = styled.div`
+    display: grid;
+    align-items: flex-end;
+    grid-template-columns: auto min-content;
+    grid-gap: ${({ theme }) => theme.spacing.lg};
+`;
+
+const Group = styled(Radio.Group)`
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+
+    label {
+        padding: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.md}`};
+        font-size: ${({ theme }) => theme.typography.body.fontSize};
+        line-height: 1 !important;
+        height: auto !important;
+        font-weight: 700 !important;
+    }
+`;
+
+const InteractionListTitle = styled.h3`
+    margin: 0;
 `;
