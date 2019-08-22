@@ -21,6 +21,7 @@ interface Props {
 interface State {
     queryText: string;
     results: model.Agent[];
+    isLoading: boolean;
 }
 
 const SAMPLE_QUERIES = [
@@ -44,24 +45,25 @@ export class SearchForm extends React.PureComponent<Props, State> {
         super(props);
         this.state = {
             results: [],
-            queryText: props.defaultQueryText || ""
+            queryText: props.defaultQueryText || "",
+            isLoading: false
         };
     }
     searchForAgents = (value: SelectValue) => {
         if (typeof value === "string") {
             const queryText = value.trim();
             this.setState(
-                { queryText: value },
+                { queryText: value, isLoading: true },
                 debounce(async () => {
                     if (queryText === "") {
-                        this.setState({ results: [] });
+                        this.setState({ results: [], isLoading: false });
                     } else {
                         const resp = await fetchSuggestions(queryText);
                         this.setState(state => {
                             if (state.queryText !== resp.query.q) {
                                 return null;
                             }
-                            return { results: resp.results };
+                            return { results: resp.results, isLoading: false };
                         });
                     }
                 })
@@ -86,7 +88,10 @@ export class SearchForm extends React.PureComponent<Props, State> {
         let results;
         if (this.state.results.length > 0) {
             results = asAutocompleteResults(this.state.results);
-        } else if (this.state.queryText.trim().length > 0) {
+        } else if (
+            this.state.queryText.trim().length > 0 &&
+            !this.state.isLoading
+        ) {
             results = [
                 <AutoComplete.Option
                     value=""
