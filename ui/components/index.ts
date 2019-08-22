@@ -10,6 +10,9 @@ export * from "./WithAgentDefinitionPopover";
 export * from "./PaperInfo";
 export * from "./EvidenceList";
 export * from "./PageHeader";
+export * from "./Section";
+export * from "./AgentInfo";
+export * from "./OpengraphImage";
 
 import * as icon from "./icon";
 export { icon };

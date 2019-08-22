@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { DocumentContext } from "next/document";
 import Head from "next/head";
 import Router from "next/router";
+import Link from "next/link";
 import { Icon, List, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 import { encode } from "querystring";
@@ -18,8 +19,8 @@ import {
     EvidenceList,
     Disclaimer,
     Synonyms,
-    PageHeader,
-    icon
+    AgentInfo,
+    Section
 } from "../components";
 import { pluralize, formatNumber } from "../util";
 
@@ -119,10 +120,10 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
         let interactionLabel = null;
         switch (this.props.agent.ent_type) {
             case model.AgentType.SUPPLEMENT:
-                interactionLabel = " drug ";
+                interactionLabel = "drug ";
                 break;
             case model.AgentType.DRUG:
-                interactionLabel = " supplement ";
+                interactionLabel = "supplement ";
                 break;
         }
         return (
@@ -140,23 +141,15 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                     autoFocus={false}
                 />
                 <Section>
-                    <AgentType>{this.props.agent.ent_type}:</AgentType>
-                    <AgentName>
-                        <icon.AgentTypeIcon type={this.props.agent.ent_type} />
-                        <WithAgentDefinitionPopover agent={this.props.agent}>
-                            {this.props.agent.preferred_name}
-                        </WithAgentDefinitionPopover>
-                    </AgentName>
-                    {this.props.agent.synonyms.length > 0 ? (
-                        <Synonyms synonyms={this.props.agent.synonyms} />
-                    ) : null}
+                    <AgentInfo agent={this.props.agent} />
                 </Section>
                 <Section>
                     <Controls>
                         <InteractionListTitle>
                             {formatNumber(
                                 this.props.agent.interacts_with_count
-                            )}{" "}
+                            )}
+                            {" possible "}
                             {interactionLabel}
                             {pluralize(
                                 "interaction",
@@ -170,10 +163,10 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                             onChange={this.onToggleAllChange}
                         >
                             <Radio.Button value={ToggleAllState.EXPAND_ALL}>
-                                Expanded
+                                Expand
                             </Radio.Button>
                             <Radio.Button value={ToggleAllState.COLLAPSE_ALL}>
-                                Collapsed
+                                Collapse
                             </Radio.Button>
                         </Group>
                     </Controls>
@@ -198,11 +191,25 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                     agent={interaction.agent}
                                 >
                                     <AgentListItemTitle>
-                                        <WithAgentDefinitionPopover
-                                            agent={interaction.agent}
+                                        <Link
+                                            as={`/i/${interaction.slug}/${interaction.interaction_id}`}
+                                            href={`/interaction?${encode({
+                                                slug: interaction.slug,
+                                                interaction_id:
+                                                    interaction.interaction_id
+                                            })}`}
                                         >
-                                            {interaction.agent.preferred_name}
-                                        </WithAgentDefinitionPopover>
+                                            <a>
+                                                <WithAgentDefinitionPopover
+                                                    agent={interaction.agent}
+                                                >
+                                                    {
+                                                        interaction.agent
+                                                            .preferred_name
+                                                    }
+                                                </WithAgentDefinitionPopover>
+                                            </a>
+                                        </Link>
                                         <ToggleDetailsButton
                                             onClick={() => {
                                                 let delta: {
@@ -256,24 +263,6 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
         );
     }
 }
-
-const AgentType = styled.div`
-    font-size: ${({ theme }) => theme.typography.bodySmall.fontSize};
-    text-transform: uppercase;
-`;
-
-const AgentName = styled(PageHeader)`
-    margin: 0 0 ${({ theme }) => theme.spacing.xs};
-    display: grid;
-    grid-template-columns: min-content auto;
-    grid-gap: ${({ theme }) => theme.spacing.sm};
-    align-items: center;
-    line-height: 1.2;
-`;
-
-const Section = styled.section`
-    margin: 0 0 ${({ theme }) => theme.spacing.lg};
-`;
 
 const ToggleDetailsButton = styled.button`
     &&& {

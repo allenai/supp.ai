@@ -265,6 +265,7 @@ class InteractingAgent(NamedTuple):
     """
 
     interaction_id: str
+    slug: str
     agent: Agent
     evidence: List[Evidence]
 
@@ -293,10 +294,10 @@ class InteractionId(NamedTuple):
         return f"{l}-{r}"
 
     @staticmethod
-    def from_str(str: str) -> "InteractionId":
-        parts = str.upper().split("-")
+    def from_str(s: str) -> "InteractionId":
+        parts = s.upper().split("-")
         if len(parts) != 2:
-            raise RuntimeError(f"Malformed interaction id: {str}")
+            raise RuntimeError(f"Malformed interaction id: {s}")
         [first, second] = parts
         return InteractionId((first, second))
 
@@ -450,6 +451,15 @@ class InteractionIndex:
                 logger.warn(f"Paper id without metadata: ${paper_id}")
         return evidence
 
+    def get_interaction_id_slug(self, interaction_id: InteractionId) -> str:
+        def get_slug(cui: str) -> str:
+            a = self.get_agent(cui)
+            if a is None:
+                return ""
+            return a.slug
+
+        return "-".join(list(map(get_slug, interaction_id.cuis)))
+
     def get_interactions(self, agent: Agent) -> List[InteractingAgent]:
         """
         Returns the agents the provided agent interacts with.
@@ -466,6 +476,7 @@ class InteractionIndex:
                 if interacting_agent is not None:
                     agent_with_interaction = InteractingAgent(
                         str(interaction_id),
+                        self.get_interaction_id_slug(interaction_id),
                         interacting_agent,
                         sorted(
                             self.get_evidence(interaction_id),

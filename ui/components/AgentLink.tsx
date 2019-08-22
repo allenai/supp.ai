@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import styled from "styled-components";
 import { encode } from "querystring";
 
 import { model } from "../api";
@@ -23,7 +24,13 @@ export const AgentLink = ({ agent, children, query }: Props) => {
             href={`/agent?${encode({ ...args, ...queryArgs })}`}
             as={`/a/${agent.slug}/${agent.cui}${encodedQueryArgs}`}
         >
-            <a>{children}</a>
+            <A>{children}</A>
         </Link>
     );
 };
+
+const A = styled.a`
+    &:hover {
+        text-decoration: none;
+    }
+`;

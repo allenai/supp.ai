@@ -59,3 +59,13 @@ export async function fetchInteractions(
         )
         .then(resp => resp.data);
 }
+
+export async function fetchInteraction(
+    interaction_id: string
+): Promise<model.InteractionDefinition> {
+    return axios
+        .get<model.InteractionDefinition>(
+            `${API_ORIGIN}/api/interaction/${interaction_id}`
+        )
+        .then(resp => resp.data);
+}

@@ -38,6 +38,8 @@ def create_api(idx: InteractionIndex) -> Blueprint:
         first_agent_id, second_agent_id = interaction_id.cuis
         response = simplejson.dumps(
             {
+                "interaction_id": str(interaction_id),
+                "slug": idx.get_interaction_id_slug(interaction_id),
                 "agents": [
                     idx.get_agent(first_agent_id),
                     idx.get_agent(second_agent_id),

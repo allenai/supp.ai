@@ -12,6 +12,7 @@ import Head from "next/head";
 
 import { Logo } from "./Logo";
 import * as icon from "./icon";
+import { OpengraphImage } from "./OpengraphImage";
 
 export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
     <React.Fragment>
@@ -21,6 +22,7 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
                 type="image/x-icon"
                 href="/static/favicon.ico"
             />
+            <OpengraphImage />
         </Head>
         <LayoutOverrides />
         <Header>

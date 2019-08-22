@@ -62,6 +62,7 @@ export interface Evidence {
 
 export interface InteractingAgent {
     interaction_id: string;
+    slug: string;
     agent: Agent;
     evidence: Evidence[];
 }
@@ -89,4 +90,11 @@ export interface SuggestResponse {
     query: Query;
     total: number;
     results: Agent[];
+}
+
+export interface InteractionDefinition {
+    interaction_id: string;
+    slug: string;
+    agents: [Agent, Agent];
+    evidence: Evidence[];
 }

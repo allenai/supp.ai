@@ -9,10 +9,12 @@ import { PaperInfo } from "./PaperInfo";
 
 interface Props {
     interaction: model.InteractingAgent;
+    sentencePageSize?: number;
 }
 
-export const EvidenceList = ({ interaction }: Props) => {
-    const [visibleIdx, setVisibleIdx] = useState(3);
+export const EvidenceList = ({ interaction, sentencePageSize }: Props) => {
+    const pageSize = sentencePageSize !== undefined ? sentencePageSize : 3;
+    const [visibleIdx, setVisibleIdx] = useState(pageSize);
     const amountLeft = interaction.evidence.length - visibleIdx;
     const visibleEvidence = interaction.evidence.slice(0, visibleIdx);
 
@@ -39,7 +41,9 @@ export const EvidenceList = ({ interaction }: Props) => {
                 <BodySmall>
                     <ToggleShowAllButton
                         onClick={() =>
-                            setVisibleIdx(visibleIdx + Math.min(3, amountLeft))
+                            setVisibleIdx(
+                                visibleIdx + Math.min(pageSize, amountLeft)
+                            )
                         }
                     >
                         Show More
