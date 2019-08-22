@@ -126,6 +126,16 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                 interactionLabel = "supplement ";
                 break;
         }
+        const description =
+            `Explore the ${formatNumber(
+                this.props.agent.interacts_with_count
+            )} ` +
+            `possible ${interactionLabel} ${pluralize(
+                "interaction",
+                this.props.agent.interacts_with_count
+            )} ` +
+            `for ${this.props.agent.preferred_name} and the research papers that ` +
+            "mention these interactions.";
         return (
             <DefaultLayout>
                 <Head>
@@ -133,6 +143,7 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                         {this.props.agent.preferred_name} - SUPP.AI by AI2
                     </title>
                     <link rel="canonical" href={canonicalUrl} />
+                    <meta name="description" content={description} />
                 </Head>
                 <Disclaimer />
                 <SearchForm

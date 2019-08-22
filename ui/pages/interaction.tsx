@@ -13,6 +13,7 @@ import {
     AgentInfo
 } from "../components";
 import { model, fetchIndexMeta, fetchInteraction } from "../api";
+import { formatNumber, pluralize } from "../util";
 
 interface Props {
     meta: model.IndexMeta;
@@ -48,6 +49,13 @@ export default class InteractionDetail extends React.PureComponent<Props> {
     }
     render() {
         const [first, second] = this.props.interaction.agents;
+        const description =
+            `Explore the ${formatNumber(
+                this.props.interaction.evidence.length
+            )} ` +
+            `${pluralize("paper", this.props.interaction.evidence.length)} ` +
+            `that mention a possible interaction between ${first.preferred_name} ` +
+            `and ${second.preferred_name}.`;
         return (
             <DefaultLayout>
                 <Head>
@@ -55,6 +63,7 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                         Possible Interaction: {first.preferred_name} and{" "}
                         {second.preferred_name} - SUPP.AI by AI2
                     </title>
+                    <meta name="description" content={description} />
                 </Head>
                 <Disclaimer />
                 <SearchForm meta={this.props.meta} autoFocus={false} />
