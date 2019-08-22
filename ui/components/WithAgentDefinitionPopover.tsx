@@ -10,19 +10,22 @@ interface Props {
     children: React.ReactNode;
 }
 
-export const WithAgentDefinitionPopover = ({ agent, children }: Props) => (
-    <Container
-        placement="bottomLeft"
-        content={<Definition>{agent.definition}</Definition>}
-        trigger="hover"
-        transitionName="none"
-    >
-        {children}
-        <IconContainer>
-            <icon.Info width="19" height="19" />
-        </IconContainer>
-    </Container>
-);
+export const WithAgentDefinitionPopover = ({ agent, children }: Props) =>
+    agent.definition.trim().length > 0 ? (
+        <Container
+            placement="bottomLeft"
+            content={<Definition>{agent.definition}</Definition>}
+            trigger="hover"
+            transitionName="none"
+        >
+            {children}
+            <IconContainer>
+                <icon.Info width="19" height="19" />
+            </IconContainer>
+        </Container>
+    ) : (
+        <React.Fragment>{children}</React.Fragment>
+    );
 
 const Container = styled(Popover)`
     display: flex;
