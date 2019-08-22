@@ -13,6 +13,7 @@ export * from "./PageHeader";
 export * from "./Section";
 export * from "./AgentInfo";
 export * from "./OpengraphImage";
+export * from "./ShareButtons";
 
 import * as icon from "./icon";
 export { icon };

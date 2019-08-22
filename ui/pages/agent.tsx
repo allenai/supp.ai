@@ -10,6 +10,7 @@ import { encode } from "querystring";
 
 import { fetchAgent, fetchIndexMeta, model, fetchInteractions } from "../api";
 import {
+    ShareButtons,
     AgentListItem,
     AgentListItemTitle,
     AgentListItemContent,
@@ -27,6 +28,7 @@ import { pluralize, formatNumber } from "../util";
 interface Props {
     agent: model.Agent;
     origin: string;
+    canonicalUrl: string;
     meta: model.IndexMeta;
     defaultQueryText?: string;
     interactionsPage: model.InteractionsPage;
@@ -66,16 +68,6 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
             fetchInteractions(cui, maybeQuery ? maybeQuery.p : 0),
             fetchIndexMeta()
         ]);
-        if (agent.slug !== slug) {
-            const canonicalUrl = `/a/${agent.slug}/${agent.cui}`;
-            if (context.res) {
-                context.res.writeHead(301, { Location: canonicalUrl });
-                context.res.end();
-            } else {
-                Router.push(canonicalUrl);
-            }
-            return;
-        }
         const isClient = typeof window !== "undefined";
         const origin = !isClient
             ? process.env.SUPP_AI_CANONICAL_ORIGIN
@@ -85,11 +77,22 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                 "Invalid environment, missing SUPP_AI_CANONICAL_ORIGIN."
             );
         }
+        const canonicalUrl = `/a/${agent.slug}/${agent.cui}`;
+        if (agent.slug !== slug) {
+            if (context.res) {
+                context.res.writeHead(301, { Location: canonicalUrl });
+                context.res.end();
+            } else {
+                Router.push(canonicalUrl);
+            }
+            return;
+        }
         return {
             agent,
             interactionsPage,
             meta,
             origin,
+            canonicalUrl,
             defaultQueryText: maybeQuery ? maybeQuery.q : undefined
         };
     }
@@ -116,14 +119,14 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
         this.setState({ expandedInteractionIds, toggleState });
     };
     render() {
-        const canonicalUrl = `${this.props.origin}/a/${this.props.agent.slug}/${this.props.agent.cui}`;
+        const canonicalUrl = `${this.props.origin}${this.props.canonicalUrl}`;
         let interactionLabel = null;
         switch (this.props.agent.ent_type) {
             case model.AgentType.SUPPLEMENT:
-                interactionLabel = "drug ";
+                interactionLabel = "drug";
                 break;
             case model.AgentType.DRUG:
-                interactionLabel = "supplement ";
+                interactionLabel = "supplement";
                 break;
         }
         const description =
@@ -152,7 +155,12 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                     autoFocus={false}
                 />
                 <Section>
-                    <AgentInfo agent={this.props.agent} />
+                    <AgentInfoRow>
+                        <AgentInfo agent={this.props.agent} />
+                        <ShareButtons
+                            link={canonicalUrl}
+                            twitterMessage={description} />
+                    </AgentInfoRow>
                 </Section>
                 <Section>
                     <Controls>
@@ -161,7 +169,7 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                 this.props.agent.interacts_with_count
                             )}
                             {" possible "}
-                            {interactionLabel}
+                            {interactionLabel}{" "}
                             {pluralize(
                                 "interaction",
                                 this.props.agent.interacts_with_count
@@ -309,6 +317,12 @@ const Group = styled(Radio.Group)`
         height: auto !important;
         font-weight: 700 !important;
     }
+`;
+
+const AgentInfoRow = styled.div`
+    display: grid;
+    grid-gap: ${({ theme }) => theme.spacing.xs};
+    grid-template-columns: auto min-content;
 `;
 
 const InteractionListTitle = styled.h3`

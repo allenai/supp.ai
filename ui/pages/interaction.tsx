@@ -2,6 +2,7 @@ import React from "react";
 import { DocumentContext } from "next/document";
 import Head from "next/head";
 import Router from "next/router";
+import styled from "styled-components";
 
 import {
     Disclaimer,
@@ -10,13 +11,16 @@ import {
     PageHeader,
     EvidenceList,
     Section,
-    AgentInfo
+    AgentInfo,
+    ShareButtons
 } from "../components";
 import { model, fetchIndexMeta, fetchInteraction } from "../api";
 import { formatNumber, pluralize } from "../util";
 
 interface Props {
     meta: model.IndexMeta;
+    canonicalUrl: string;
+    origin: string;
     interaction: model.InteractionDefinition;
 }
 
@@ -35,8 +39,17 @@ export default class InteractionDetail extends React.PureComponent<Props> {
             fetchIndexMeta(),
             fetchInteraction(query.interaction_id)
         ]);
+        const isClient = typeof window !== "undefined";
+        const origin = !isClient
+            ? process.env.SUPP_AI_CANONICAL_ORIGIN
+            : document.location.origin;
+        if (!origin) {
+            throw new Error(
+                "Invalid environment, missing SUPP_AI_CANONICAL_ORIGIN."
+            );
+        }
+        const canonicalUrl = `/i/${interaction.slug}/${interaction.interaction_id}`;
         if (query.slug !== interaction.slug) {
-            const canonicalUrl = `/i/${interaction.slug}/${interaction.interaction_id}`;
             if (res) {
                 res.writeHead(301, { Location: canonicalUrl });
                 res.end();
@@ -45,7 +58,7 @@ export default class InteractionDetail extends React.PureComponent<Props> {
             }
             return;
         }
-        return { meta, interaction };
+        return { meta, interaction, origin, canonicalUrl };
     }
     render() {
         const [first, second] = this.props.interaction.agents;
@@ -68,10 +81,15 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                 <Disclaimer />
                 <SearchForm meta={this.props.meta} autoFocus={false} />
                 <Section>
-                    <PageHeader>
-                        Possible Interaction: {first.preferred_name} and{" "}
-                        {second.preferred_name}
-                    </PageHeader>
+                    <TitleRow>
+                        <PageHeader>
+                            Possible Interaction: {first.preferred_name} and{" "}
+                            {second.preferred_name}
+                        </PageHeader>
+                        <ShareButtons
+                            twitterMessage={description}
+                            link={`${this.props.origin}${this.props.canonicalUrl}`} />
+                    </TitleRow>
                 </Section>
                 <h3>Details</h3>
                 <Section>
@@ -94,3 +112,10 @@ export default class InteractionDetail extends React.PureComponent<Props> {
         );
     }
 }
+
+const TitleRow = styled.div`
+    display: grid;
+    grid-gap: ${({ theme }) => theme.spacing.xs};
+    grid-template-columns: auto min-content;
+`;
+

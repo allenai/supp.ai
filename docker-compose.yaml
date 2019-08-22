@@ -32,6 +32,7 @@ services:
             - './ui/api:/usr/local/src/skiff/app/ui/api'
             - './ui/util:/usr/local/src/skiff/app/ui/util'
             - './ui/components:/usr/local/src/skiff/app/ui/components'
+            - './ui/@types:/usr/local/src/skiff/app/ui/@types'
         command:
             - 'dev'
         environment:
