@@ -302,6 +302,11 @@ class InteractionId(NamedTuple):
         return InteractionId((first, second))
 
 
+class InteractionIdWithSlug(NamedTuple):
+    interaction_id: InteractionId
+    slug: str
+
+
 class SearchResults(NamedTuple):
     """
     Model for agent search results.
@@ -377,6 +382,12 @@ class InteractionIndex:
 
     def get_all_agents(self) -> List[Agent]:
         return list(self.agents_by_cui.values())
+
+    def get_all_interactions(self) -> List[InteractionIdWithSlug]:
+        return [
+            InteractionIdWithSlug(iid, self.get_interaction_id_slug(iid))
+            for iid in list(self.sentences_by_interaction_id)
+        ]
 
     def get_agent(self, raw_cui: str) -> Optional[Agent]:
         """

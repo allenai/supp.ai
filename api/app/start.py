@@ -39,20 +39,24 @@ def start(data_dir: str, port: int, prod: bool):
 
     logger.debug("Starting: generate sitemap...")
     agents = idx.get_all_agents()
-    # Google only allows up to 50000 urls in a single sitemap. If we have more
-    # than 50000 agents fail loudly.
-    if len(agents) > 50000:
-        raise RuntimeError(
-            f"There are {len(agents)} agents, which is more than the 50,000 per sitemap limit."
-        )
     origin = os.environ["SUPP_AI_CANONICAL_ORIGIN"]
-    urls = "\n".join(
-        [f"{origin}"]
-        + list(map(lambda agent: f"{origin}/a/{agent.slug}/{agent.cui}", agents))
+    agent_urls = list(map(lambda agent: f"{origin}/a/{agent.slug}/{agent.cui}", agents))
+    interactions = idx.get_all_interactions()
+    interaction_urls = list(
+        map(
+            lambda interaction: f"{origin}/i/{interaction.slug}/{str(interaction.interaction_id)}",
+            interactions,
+        )
     )
+    urls = [origin] + agent_urls + interaction_urls
+    # Google only allows up to 50000 urls in a single sitemap.
+    if len(urls) > 50000:
+        raise RuntimeError(
+            f"There are {len(urls)} urls, which is more than the 50,000 limit."
+        )
     static_dir = os.environ.get("SUPP_AI_STATIC_DIR", os.path.abspath("static"))
     with open(os.path.join(static_dir, "sitemap.txt"), "w+b") as fp:
-        fp.write(urls.encode("utf8"))
+        fp.write("\n".join(urls).encode("utf8"))
     logger.debug("Complete: generate sitemap....")
 
     app = Flask(__name__, static_folder=static_dir)
