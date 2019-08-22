@@ -29,7 +29,10 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
             <Link href="/">
                 <HeaderLink>
                     <Logo height="56" width="56" alt="supp.ai logo" />
-                    <HeaderTitle>supp.ai</HeaderTitle>
+                    <HeaderTitle>supp.ai:</HeaderTitle>
+                    <HeaderSubTitle>
+                        Discover Supplement-Drug Interactions
+                    </HeaderSubTitle>
                 </HeaderLink>
             </Link>
             <Right>
@@ -67,6 +70,13 @@ const LayoutOverrides = createGlobalStyle`
     footer {
         flex-grow: 0;
     }
+`;
+
+const HeaderSubTitle = styled.h2`
+    font-size: ${({ theme }) => theme.typography.h3.fontSize};
+    margin: 0 0 0 ${({ theme }) => theme.spacing.xs};
+    font-weight: 400;
+    padding-top: 5px;
 `;
 
 const Right = styled.div`

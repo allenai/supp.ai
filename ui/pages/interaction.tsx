@@ -71,7 +71,7 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                 <Section>
                     <AgentInfo agent={second} headerTag="h2" link />
                 </Section>
-                <h3>Mentions in Research Papers</h3>
+                <h3>Research Papers that Mention the Interaction</h3>
                 <EvidenceList
                     interaction={{
                         interaction_id: this.props.interaction.interaction_id,
