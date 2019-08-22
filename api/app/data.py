@@ -161,7 +161,9 @@ class SupportingSentence(NamedTuple):
         # Put together our sentence spans
         sentence: str = fields["sentence"]
         spans = [
-            SupportingSentenceSpan(sentence[0 : first.span[0] - 1], None),
+            SupportingSentenceSpan(
+                sentence[0 : first.span[0] - 1 if first.span[0] > 0 else 0], None
+            ),
             SupportingSentenceSpan(sentence[first.span[0] : first.span[1]], first.cui),
             SupportingSentenceSpan(sentence[first.span[1] : second.span[0]], None),
             SupportingSentenceSpan(
