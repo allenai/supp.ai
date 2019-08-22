@@ -11,7 +11,6 @@ declare module "react-social-sharing" {
     interface TwitterProps extends ShareButtonProps {
         link: string;
         message?: string;
-
     }
 
     interface FacebookProps extends ShareButtonProps {
@@ -25,4 +24,4 @@ declare module "react-social-sharing" {
     export const Twitter: React.FunctionComponent<TwitterProps>;
     export const Facebook: React.FunctionComponent<Facebook>;
     export const Reddit: React.FunctionComponent<RedditProps>;
-};
+}

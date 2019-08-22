@@ -159,7 +159,8 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                         <AgentInfo agent={this.props.agent} />
                         <ShareButtons
                             link={canonicalUrl}
-                            twitterMessage={description} />
+                            twitterMessage={description}
+                        />
                     </AgentInfoRow>
                 </Section>
                 <Section>

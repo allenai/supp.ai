@@ -88,7 +88,8 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                         </PageHeader>
                         <ShareButtons
                             twitterMessage={description}
-                            link={`${this.props.origin}${this.props.canonicalUrl}`} />
+                            link={`${this.props.origin}${this.props.canonicalUrl}`}
+                        />
                     </TitleRow>
                 </Section>
                 <h3>Details</h3>
@@ -118,4 +119,3 @@ const TitleRow = styled.div`
     grid-gap: ${({ theme }) => theme.spacing.xs};
     grid-template-columns: auto min-content;
 `;
-

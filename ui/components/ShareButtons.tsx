@@ -10,10 +10,7 @@ export const ShareButtons = ({ twitterMessage, link }: Props) => (
     <Row>
         <ShareTitle>Share:</ShareTitle>
         <ShareBg>
-            <Twitter
-                link={link}
-                message={twitterMessage}
-                simple />
+            <Twitter link={link} message={twitterMessage} simple />
         </ShareBg>
         <ShareBg>
             <Facebook link={link} simple />
@@ -35,7 +32,7 @@ const ShareTitle = styled.h5`
     font-weight: 700;
     margin: 0;
     color: ${({ theme }) => theme.color.N7};
-`
+`;
 
 const ShareBg = styled.div`
     background: ${({ theme }) => theme.color.B8};
@@ -46,7 +43,8 @@ const ShareBg = styled.div`
         margin: 0 !important;
     }
 
-    a, svg {
+    a,
+    svg {
         display: block;
     }
 

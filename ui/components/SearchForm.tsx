@@ -83,12 +83,26 @@ export class SearchForm extends React.PureComponent<Props, State> {
             "Enter the name of a supplement or drug to search " +
             `${formatNumber(this.props.meta.agent_count)} agents and ` +
             `${formatNumber(this.props.meta.interaction_count)} interactions…`;
+        let results;
+        if (this.state.results.length > 0) {
+            results = asAutocompleteResults(this.state.results);
+        } else if (this.state.queryText.trim().length > 0) {
+            results = [
+                <AutoComplete.Option
+                    value=""
+                    key="no-results"
+                    className="supp-autocomplete-option supp-autocomplete-no-results-option"
+                >
+                    No matching supplements or drugs.
+                </AutoComplete.Option>
+            ];
+        }
         return (
             <React.Fragment>
                 <FormContainer>
                     <AutoCompleteStyles />
                     <SearchInputWithAutoComplete
-                        dataSource={asAutocompleteResults(this.state.results)}
+                        dataSource={results}
                         onSelect={this.goToSelectedAgent}
                         onSearch={this.searchForAgents}
                         optionLabelProp="title"
@@ -197,5 +211,14 @@ const AutoCompleteStyles = createGlobalStyle`
 
     .ant-select-dropdown-menu-item-active {
         font-weight: 700;
+    }
+
+    .supp-autocomplete-no-results-option {
+        display: block;
+    }
+
+    .supp-autocomplete-no-results-option.ant-select-dropdown-menu-item-active {
+        background: #fff !important;
+        font-weight: 400 !important;
     }
 `;
