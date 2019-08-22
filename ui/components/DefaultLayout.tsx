@@ -29,7 +29,7 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
             <Link href="/">
                 <HeaderLink>
                     <Logo height="56" width="56" alt="supp.ai logo" />
-                    <HeaderTitle>supp.ai:</HeaderTitle>
+                    <HeaderTitle>supp.ai</HeaderTitle>
                     <HeaderSubTitle>
                         Discover Supplement-Drug Interactions
                     </HeaderSubTitle>
@@ -37,14 +37,16 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
             </Link>
             <Right>
                 <a href="https://www.semanticscholar.org">
-                    <icon.PoweredByS2 />
+                    <S2Logo>
+                        <icon.PoweredByS2 />
+                    </S2Logo>
                 </a>
             </Right>
         </Header>
         <MainPane color="white">
             <PaddedContent>
                 <MaxWidth>
-                    <Page>{children}</Page>
+                    <PageWithNoMinHeight>{children}</PageWithNoMinHeight>
                 </MaxWidth>
             </PaddedContent>
         </MainPane>
@@ -72,11 +74,32 @@ const LayoutOverrides = createGlobalStyle`
     }
 `;
 
+const PageWithNoMinHeight = styled(Page)`
+    min-height: 0;
+
+    > *:last-child {
+        margin-bottom: 0;
+    }
+`;
+
+const S2Logo = styled.div`
+    display: block;
+
+    @media screen and (max-width: 400px) {
+        width: 125px;
+        overflow: hidden;
+    }
+`;
+
 const HeaderSubTitle = styled.h2`
     font-size: ${({ theme }) => theme.typography.h3.fontSize};
     margin: 0 0 0 ${({ theme }) => theme.spacing.xs};
     font-weight: 400;
     padding-top: 5px;
+
+    @media screen and (max-width: 900px) {
+        display: none;
+    }
 `;
 
 const Right = styled.div`
