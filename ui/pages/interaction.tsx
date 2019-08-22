@@ -136,6 +136,11 @@ const TitleRow = styled.div`
     align-items: baseline;
     grid-gap: ${({ theme }) => theme.spacing.xs};
     grid-template-columns: auto min-content;
+
+    &,
+    * {
+        line-height: 1.244444 !important;
+    }
 `;
 
 const AgentInfoList = styled.div`

@@ -325,6 +325,11 @@ const AgentInfoRow = styled.div`
     display: grid;
     grid-gap: ${({ theme }) => theme.spacing.xs};
     grid-template-columns: auto min-content;
+
+    &,
+    * {
+        line-height: 1.244444 !important;
+    }
 `;
 
 const InteractionListTitle = styled.h3`
