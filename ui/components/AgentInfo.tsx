@@ -13,9 +13,10 @@ interface Props {
     agent: model.Agent;
     headerTag?: "h1" | "h2" | "h3";
     link?: boolean;
+    hideSyononyms?: boolean;
 }
 
-export const AgentInfo = ({ agent, headerTag, link }: Props) => {
+export const AgentInfo = ({ agent, headerTag, link, hideSyononyms }: Props) => {
     const name = (
         <AgentName as={headerTag || "h1"}>
             <icon.AgentTypeIcon type={agent.ent_type} />
@@ -28,7 +29,7 @@ export const AgentInfo = ({ agent, headerTag, link }: Props) => {
         <div>
             <AgentType>{agent.ent_type}:</AgentType>
             {link ? <AgentLink agent={agent}>{name}</AgentLink> : name}
-            {agent.synonyms.length > 0 ? (
+            {agent.synonyms.length > 0 && !hideSyononyms ? (
                 <Synonyms synonyms={agent.synonyms} />
             ) : null}
         </div>
@@ -45,6 +46,6 @@ const AgentName = styled(PageHeader)`
     display: grid;
     grid-template-columns: min-content auto;
     grid-gap: ${({ theme }) => theme.spacing.sm};
-    align-items: center;
+    align-items: baseline;
     line-height: 1.2;
 `;

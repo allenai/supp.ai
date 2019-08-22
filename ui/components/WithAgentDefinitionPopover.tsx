@@ -26,12 +26,12 @@ export const WithAgentDefinitionPopover = ({ agent, children }: Props) => (
 
 const Container = styled(Popover)`
     display: flex;
-    align-items: center;
+    align-items: baseline;
 `;
 
 const IconContainer = styled.span`
     display: flex;
-    align-items: center;
+    align-items: baseline;
     margin: 0 ${({ theme }) => theme.spacing.sm};
 `;
 

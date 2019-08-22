@@ -321,6 +321,7 @@ const Group = styled(Radio.Group)`
 `;
 
 const AgentInfoRow = styled.div`
+    align-items: baseline;
     display: grid;
     grid-gap: ${({ theme }) => theme.spacing.xs};
     grid-template-columns: auto min-content;

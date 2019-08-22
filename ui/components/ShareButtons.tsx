@@ -26,6 +26,10 @@ const Row = styled.div`
     grid-gap: ${({ theme }) => theme.spacing.xs};
     grid-template-columns: repeat(4, min-content);
     align-items: center;
+
+    @media screen and (max-width: 640px) {
+        display: none;
+    }
 `;
 
 const ShareTitle = styled.h5`

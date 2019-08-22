@@ -82,22 +82,35 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                 <SearchForm meta={this.props.meta} autoFocus={false} />
                 <Section>
                     <TitleRow>
-                        <PageHeader>
+                        <PageHeaderWithNoMargin>
                             Possible Interaction: {first.preferred_name} and{" "}
                             {second.preferred_name}
-                        </PageHeader>
+                        </PageHeaderWithNoMargin>
                         <ShareButtons
                             twitterMessage={description}
                             link={`${this.props.origin}${this.props.canonicalUrl}`}
                         />
                     </TitleRow>
                 </Section>
-                <h3>Details</h3>
                 <Section>
-                    <AgentInfo agent={first} headerTag="h2" link />
-                </Section>
-                <Section>
-                    <AgentInfo agent={second} headerTag="h2" link />
+                    <AgentInfoList>
+                        <AgentInfoListItem>
+                            <AgentInfo
+                                agent={first}
+                                headerTag="h2"
+                                link
+                                hideSyononyms
+                            />
+                        </AgentInfoListItem>
+                        <AgentInfoListItem>
+                            <AgentInfo
+                                agent={second}
+                                headerTag="h2"
+                                link
+                                hideSyononyms
+                            />
+                        </AgentInfoListItem>
+                    </AgentInfoList>
                 </Section>
                 <h3>Research Papers that Mention the Interaction</h3>
                 <EvidenceList
@@ -114,8 +127,30 @@ export default class InteractionDetail extends React.PureComponent<Props> {
     }
 }
 
+const PageHeaderWithNoMargin = styled(PageHeader)`
+    margin: 0;
+`;
+
 const TitleRow = styled.div`
     display: grid;
+    align-items: baseline;
     grid-gap: ${({ theme }) => theme.spacing.xs};
     grid-template-columns: auto min-content;
+`;
+
+const AgentInfoList = styled.div`
+    display: grid;
+    grid-gap: ${({ theme }) => theme.spacing.lg};
+    grid-template-columns: 1fr 1fr;
+    margin: 0 0 ${({ theme }) => theme.spacing.xxl};
+
+    @media screen and (max-width: 640px) {
+        grid-template-columns: auto;
+    }
+`;
+
+const AgentInfoListItem = styled.div`
+    padding: ${({ theme }) => theme.spacing.md};
+    border-radius: 4px;
+    border: 1px solid ${({ theme }) => theme.palette.border.main};
 `;
