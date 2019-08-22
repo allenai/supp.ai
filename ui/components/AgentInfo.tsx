@@ -47,5 +47,5 @@ const AgentName = styled(PageHeader)`
     grid-template-columns: min-content auto;
     grid-gap: ${({ theme }) => theme.spacing.sm};
     align-items: baseline;
-    line-height: 1.2;
+    line-height: 1.244444;
 `;
