@@ -107,13 +107,10 @@ class Paper(NamedTuple):
     doi: Optional[str]
     pmid: Optional[int]
     fields_of_study: List[str]
-    # Study types is one of "clinical trial", "case report", "survey",
-    # "animal study", "in-vitro", "etc"
-    # The UI currently interprets these as follows:
-    #   - "clinical trial", "case report" and "survey" map to "human"
-    #   - "animal study" maps to "animal"
-    #   - "in vitro" and "unknown" map to "other"
-    study_type: str
+    animal_study: str
+    human_study: str
+    retraction: str
+    clinical_study: str
 
     @staticmethod
     def from_json(fields: Dict) -> "Paper":
@@ -462,6 +459,21 @@ class InteractionIndex:
                 )
             else:
                 logger.warn(f"Paper id without metadata: ${paper_id}")
+
+        # sort evidence sentences by:
+        # 1) not retracted,
+        # 2) is clinical study,
+        # 3) is human study,
+        # 4) is animal study,
+        # 5) paper year recency
+        evidence.sort(
+            key=lambda e: (
+                e.paper.retraction,
+                not e.paper.clinical_study,
+                not e.paper.human_study,
+                not e.paper.animal_study,
+                -1 * e.paper.year
+            ))
         return evidence
 
     def get_interaction_id_slug(self, interaction_id: InteractionId) -> str:
