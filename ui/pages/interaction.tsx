@@ -57,7 +57,7 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                     </title>
                 </Head>
                 <Disclaimer />
-                <SearchForm meta={this.props.meta} autoFocus={true} />
+                <SearchForm meta={this.props.meta} autoFocus={false} />
                 <Section>
                     <PageHeader>
                         Possible Interaction: {first.preferred_name} and{" "}
