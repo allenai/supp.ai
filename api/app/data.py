@@ -107,13 +107,10 @@ class Paper(NamedTuple):
     doi: Optional[str]
     pmid: Optional[int]
     fields_of_study: List[str]
-    # Study types is one of "clinical trial", "case report", "survey",
-    # "animal study", "in-vitro", "etc"
-    # The UI currently interprets these as follows:
-    #   - "clinical trial", "case report" and "survey" map to "human"
-    #   - "animal study" maps to "animal"
-    #   - "in vitro" and "unknown" map to "other"
-    study_type: str
+    animal_study: str
+    human_study: str
+    retraction: str
+    clinical_study: str
 
     @staticmethod
     def from_json(fields: Dict) -> "Paper":
@@ -493,7 +490,14 @@ class InteractionIndex:
                         interacting_agent,
                         sorted(
                             self.get_evidence(interaction_id),
-                            key=lambda evd: evd.paper.title.lower(),
+                            key=lambda evd: (
+                                evd.paper.retraction,
+                                not evd.paper.human_study,
+                                not evd.paper.clinical_study,
+                                not evd.paper.animal_study,
+                                -1.0 * evd.paper.year if evd.paper.year else 0.0,
+                                evd.paper.title.lower(),
+                            ),
                         ),
                     )
                     interactions.append(agent_with_interaction)
