@@ -492,8 +492,8 @@ class InteractionIndex:
                             self.get_evidence(interaction_id),
                             key=lambda evd: (
                                 evd.paper.retraction,
-                                not evd.paper.human_study,
                                 not evd.paper.clinical_study,
+                                not evd.paper.human_study,
                                 not evd.paper.animal_study,
                                 -1.0 * evd.paper.year if evd.paper.year else 0.0,
                                 evd.paper.title.lower(),
