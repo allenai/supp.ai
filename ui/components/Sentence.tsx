@@ -5,23 +5,22 @@ import { model } from "../api";
 
 interface Props {
     sentence: model.SupportingSentence;
-    interactingAgent: model.Agent;
+    agentsById: { [k: string]: model.Agent };
 }
 
-export const Sentence = ({ sentence, interactingAgent }: Props) => {
+export const Sentence = ({ sentence, agentsById }: Props) => {
     return (
         <div>
             “
             {sentence.spans.map(({ text, cui }, idx) => {
-                const type =
-                    cui == interactingAgent.cui
-                        ? MentionType.INTERACTING
-                        : MentionType.SUBJECT;
+                const maybeAgent = cui ? agentsById[cui] : undefined;
                 return (
                     <React.Fragment key={`${text}-${idx}`}>
                         {idx > 0 ? " " : null}
-                        {cui ? (
-                            <MentionedAgent type={type}>{text}</MentionedAgent>
+                        {cui && maybeAgent ? (
+                            <MentionedAgent agentType={maybeAgent.ent_type}>
+                                {text}
+                            </MentionedAgent>
                         ) : (
                             text
                         )}
@@ -33,17 +32,12 @@ export const Sentence = ({ sentence, interactingAgent }: Props) => {
     );
 };
 
-enum MentionType {
-    SUBJECT,
-    INTERACTING
-}
-
-const MentionedAgent = styled.em<{ type: MentionType }>`
+const MentionedAgent = styled.em<{ agentType: model.AgentType }>`
     padding: 1px 3px;
     font-style: normal;
     border-radius: 4px;
-    color: ${({ type, theme }) =>
-        type == MentionType.SUBJECT ? theme.color.B8 : theme.color.G8};
-    background: ${({ type, theme }) =>
-        type == MentionType.SUBJECT ? theme.color.B1 : theme.color.G1};
+    color: ${({ agentType, theme }) =>
+        agentType == model.AgentType.DRUG ? theme.color.O6 : theme.color.G7};
+    background: ${({ agentType, theme }) =>
+        agentType == model.AgentType.DRUG ? theme.color.O1 : theme.color.G1};
 `;

@@ -69,6 +69,13 @@ export default class InteractionDetail extends React.PureComponent<Props> {
             `${pluralize("paper", this.props.interaction.evidence.length)} ` +
             `that mention a possible interaction between ${first.preferred_name} ` +
             `and ${second.preferred_name}.`;
+        const agentsById = this.props.interaction.agents.reduce(
+            (byId, agent) => {
+                byId[agent.cui] = agent;
+                return byId;
+            },
+            {} as { [k: string]: model.Agent }
+        );
         return (
             <DefaultLayout>
                 <Head>
@@ -94,7 +101,7 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                 </Section>
                 <Section>
                     <AgentInfoList>
-                        <AgentInfoListItem>
+                        <AgentInfoListItem agentType={first.ent_type}>
                             <AgentInfo
                                 agent={first}
                                 headerTag="h2"
@@ -102,7 +109,7 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                                 hideSyononyms
                             />
                         </AgentInfoListItem>
-                        <AgentInfoListItem>
+                        <AgentInfoListItem agentType={second.ent_type}>
                             <AgentInfo
                                 agent={second}
                                 headerTag="h2"
@@ -114,12 +121,8 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                 </Section>
                 <h3>Research Papers that Mention the Interaction</h3>
                 <EvidenceList
-                    interaction={{
-                        interaction_id: this.props.interaction.interaction_id,
-                        slug: this.props.interaction.slug,
-                        agent: second,
-                        evidence: this.props.interaction.evidence
-                    }}
+                    agentsById={agentsById}
+                    evidence={this.props.interaction.evidence}
                     sentencePageSize={10}
                 />
             </DefaultLayout>
@@ -154,8 +157,17 @@ const AgentInfoList = styled.div`
     }
 `;
 
-const AgentInfoListItem = styled.div`
+interface AgentInfoListItemProps {
+    agentType: model.AgentType;
+}
+
+const AgentInfoListItem = styled.div<AgentInfoListItemProps>`
     padding: ${({ theme }) => theme.spacing.md};
     border-radius: 4px;
     border: 1px solid ${({ theme }) => theme.palette.border.main};
+    border-top: 6px solid
+        ${({ theme, agentType }) =>
+            agentType === model.AgentType.SUPPLEMENT
+                ? theme.color.G7
+                : theme.color.O6};
 `;

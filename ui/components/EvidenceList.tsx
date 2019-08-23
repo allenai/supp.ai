@@ -8,15 +8,20 @@ import { Sentence } from "./Sentence";
 import { PaperInfo } from "./PaperInfo";
 
 interface Props {
-    interaction: model.InteractingAgent;
+    agentsById: { [k: string]: model.Agent };
+    evidence: model.Evidence[];
     sentencePageSize?: number;
 }
 
-export const EvidenceList = ({ interaction, sentencePageSize }: Props) => {
+export const EvidenceList = ({
+    agentsById,
+    evidence,
+    sentencePageSize
+}: Props) => {
     const pageSize = sentencePageSize !== undefined ? sentencePageSize : 3;
     const [visibleIdx, setVisibleIdx] = useState(pageSize);
-    const amountLeft = interaction.evidence.length - visibleIdx;
-    const visibleEvidence = interaction.evidence.slice(0, visibleIdx);
+    const amountLeft = evidence.length - visibleIdx;
+    const visibleEvidence = evidence.slice(0, visibleIdx);
 
     return (
         <Fragment>
@@ -29,7 +34,7 @@ export const EvidenceList = ({ interaction, sentencePageSize }: Props) => {
                             >
                                 <Sentence
                                     sentence={sentence}
-                                    interactingAgent={interaction.agent}
+                                    agentsById={agentsById}
                                 />
                             </AgentListItemContent>
                         ))}

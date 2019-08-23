@@ -205,6 +205,16 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                 this.state.expandedInteractionIds[
                                     interaction.interaction_id
                                 ] === true;
+                            const agentsById = [
+                                this.props.agent,
+                                interaction.agent
+                            ].reduce(
+                                (byId, agent) => {
+                                    byId[agent.cui] = agent;
+                                    return byId;
+                                },
+                                {} as { [k: string]: model.Agent }
+                            );
                             return (
                                 <AgentListItem
                                     key={`${interaction.agent.cui}`}
@@ -270,7 +280,8 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                                 </AgentListItemContent>
                                             ) : null}
                                             <EvidenceList
-                                                interaction={interaction}
+                                                agentsById={agentsById}
+                                                evidence={interaction.evidence}
                                             />
                                         </React.Fragment>
                                     ) : null}

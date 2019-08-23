@@ -14,7 +14,7 @@ function semanticScholarUrl(paper: model.Paper) {
 
 const StudyTypeIcon = ({ paper }: { paper: model.Paper }) => {
     if (paper.human_study) {
-        return <icon.Human />;
+        return <icon.Pose />;
     } else if (paper.animal_study) {
         return <icon.Animal />;
     } else {

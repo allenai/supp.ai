@@ -10,6 +10,7 @@ import humanSrc from "./human.svg";
 import closeSrc from "./close.svg";
 import s2Src from "./s2.svg";
 import smallPaperSrc from "./paper-small.svg";
+import poseSrc from "./pose.svg";
 
 import { model } from "../../api";
 
@@ -21,6 +22,7 @@ export const Info = styled.img.attrs(() => ({ src: infoSrc }))``;
 export const Animal = styled.img.attrs(() => ({ src: animalSrc }))``;
 export const OtherBullet = styled.img.attrs(() => ({ src: otherBulletSrc }))``;
 export const Human = styled.img.attrs(() => ({ src: humanSrc }))``;
+export const Pose = styled.img.attrs(() => ({ src: poseSrc }))``;
 export const Close = styled.img.attrs(() => ({ src: closeSrc }))``;
 export const PoweredByS2 = styled.img.attrs(() => ({ src: s2Src }))``;
 export const SmallPaperIcon = styled.img.attrs(() => ({
