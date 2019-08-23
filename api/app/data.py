@@ -495,7 +495,7 @@ class InteractionIndex:
                                 not evd.paper.human_study,
                                 not evd.paper.clinical_study,
                                 not evd.paper.animal_study,
-                                -1. * evd.paper.year if evd.paper.year else 0.,
+                                -1.0 * evd.paper.year if evd.paper.year else 0.0,
                                 evd.paper.title.lower(),
                             ),
                         ),
