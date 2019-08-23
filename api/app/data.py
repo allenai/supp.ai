@@ -459,6 +459,18 @@ class InteractionIndex:
                 )
             else:
                 logger.warn(f"Paper id without metadata: ${paper_id}")
+
+        evidence = sorted(
+            evidence,
+            key=lambda evd: (
+                evd.paper.retraction,
+                not evd.paper.clinical_study,
+                not evd.paper.human_study,
+                not evd.paper.animal_study,
+                -1.0 * evd.paper.year if evd.paper.year else 0.0,
+                evd.paper.title.lower(),
+            ),
+        )
         return evidence
 
     def get_interaction_id_slug(self, interaction_id: InteractionId) -> str:
@@ -488,17 +500,7 @@ class InteractionIndex:
                         str(interaction_id),
                         self.get_interaction_id_slug(interaction_id),
                         interacting_agent,
-                        sorted(
-                            self.get_evidence(interaction_id),
-                            key=lambda evd: (
-                                evd.paper.retraction,
-                                not evd.paper.clinical_study,
-                                not evd.paper.human_study,
-                                not evd.paper.animal_study,
-                                -1.0 * evd.paper.year if evd.paper.year else 0.0,
-                                evd.paper.title.lower(),
-                            ),
-                        ),
+                        self.get_evidence(interaction_id),
                     )
                     interactions.append(agent_with_interaction)
                 else:
