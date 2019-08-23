@@ -495,9 +495,9 @@ class InteractionIndex:
                                 not evd.paper.human_study,
                                 not evd.paper.clinical_study,
                                 not evd.paper.animal_study,
-                                -1 * evd.paper.year,
-                                evd.paper.title.lower()
-                            )
+                                -1. * evd.paper.year if evd.paper.year else 0.,
+                                evd.paper.title.lower(),
+                            ),
                         ),
                     )
                     interactions.append(agent_with_interaction)

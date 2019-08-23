@@ -12,10 +12,10 @@ function semanticScholarUrl(paper: model.Paper) {
     return `https://semanticscholar.org/paper/${paper.pid}`;
 }
 
-const StudyTypeIcon = ( { paper }: { paper: model.Paper } ) => {
-    if ( paper.animal_study ) {
+const StudyTypeIcon = ({ paper }: { paper: model.Paper }) => {
+    if (paper.animal_study) {
         return <icon.Animal />;
-    } else if ( paper.human_study ) {
+    } else if (paper.human_study) {
         return <icon.Human />;
     } else {
         return <icon.SmallPaperIcon />;
@@ -26,7 +26,7 @@ export const PaperInfo = ({ paper }: Props) => (
     <BodySmall>
         <PaperLinkRow>
             <PaperLink href={semanticScholarUrl(paper)}>
-                <StudyTypeIcon paper={paper}/> {paper.title}
+                <StudyTypeIcon paper={paper} /> {paper.title}
             </PaperLink>
         </PaperLinkRow>
         {[paper.venue, paper.year]
