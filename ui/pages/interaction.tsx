@@ -101,22 +101,18 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                 </Section>
                 <Section>
                     <AgentInfoList>
-                        <AgentInfoListItem agentType={first.ent_type}>
-                            <AgentInfo
-                                agent={first}
-                                headerTag="h2"
-                                link
-                                hideSyononyms
-                            />
-                        </AgentInfoListItem>
-                        <AgentInfoListItem agentType={second.ent_type}>
-                            <AgentInfo
-                                agent={second}
-                                headerTag="h2"
-                                link
-                                hideSyononyms
-                            />
-                        </AgentInfoListItem>
+                        <AgentInfo
+                            agent={first}
+                            headerTag="h2"
+                            link
+                            hideSyononyms
+                        />
+                        <AgentInfo
+                            agent={second}
+                            headerTag="h2"
+                            link
+                            hideSyononyms
+                        />
                     </AgentInfoList>
                 </Section>
                 <h3>Research Papers that Mention the Interaction</h3>
@@ -155,19 +151,4 @@ const AgentInfoList = styled.div`
     @media screen and (max-width: 640px) {
         grid-template-columns: auto;
     }
-`;
-
-interface AgentInfoListItemProps {
-    agentType: model.AgentType;
-}
-
-const AgentInfoListItem = styled.div<AgentInfoListItemProps>`
-    padding: ${({ theme }) => theme.spacing.md};
-    border-radius: 4px;
-    border: 1px solid ${({ theme }) => theme.palette.border.main};
-    border-top: 6px solid
-        ${({ theme, agentType }) =>
-            agentType === model.AgentType.SUPPLEMENT
-                ? theme.color.G7
-                : theme.color.O6};
 `;

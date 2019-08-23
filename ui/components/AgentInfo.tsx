@@ -26,15 +26,30 @@ export const AgentInfo = ({ agent, headerTag, link, hideSyononyms }: Props) => {
         </AgentName>
     );
     return (
-        <div>
+        <AgentInfoBox agentType={agent.ent_type}>
             <AgentType>{agent.ent_type}:</AgentType>
             {link ? <AgentLink agent={agent}>{name}</AgentLink> : name}
             {agent.synonyms.length > 0 && !hideSyononyms ? (
                 <Synonyms synonyms={agent.synonyms} />
             ) : null}
-        </div>
+        </AgentInfoBox>
     );
 };
+
+interface AgentInfoListItemProps {
+    agentType: model.AgentType;
+}
+
+const AgentInfoBox = styled.div<AgentInfoListItemProps>`
+    padding: ${({ theme }) => theme.spacing.md};
+    border-radius: 4px;
+    border: 1px solid ${({ theme }) => theme.palette.border.main};
+    border-top: 6px solid
+        ${({ theme, agentType }) =>
+            agentType === model.AgentType.SUPPLEMENT
+                ? theme.color.G7
+                : theme.color.O6};
+`;
 
 const AgentType = styled.div`
     font-size: ${({ theme }) => theme.typography.bodySmall.fontSize};

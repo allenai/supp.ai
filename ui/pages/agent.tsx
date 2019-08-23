@@ -155,13 +155,15 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                     autoFocus={false}
                 />
                 <Section>
-                    <AgentInfoRow>
-                        <AgentInfo agent={this.props.agent} />
+                    <ShareButtonsBox>
                         <ShareButtons
                             link={canonicalUrl}
                             twitterMessage={description}
                         />
-                    </AgentInfoRow>
+                    </ShareButtonsBox>
+                </Section>
+                <Section>
+                    <AgentInfo agent={this.props.agent} />
                 </Section>
                 <Section>
                     <Controls>
@@ -331,16 +333,9 @@ const Group = styled(Radio.Group)`
     }
 `;
 
-const AgentInfoRow = styled.div`
-    align-items: baseline;
-    display: grid;
-    grid-gap: ${({ theme }) => theme.spacing.xs};
-    grid-template-columns: auto min-content;
-
-    &,
-    * {
-        line-height: 1.244444 !important;
-    }
+const ShareButtonsBox = styled.div`
+    display: flex;
+    justify-content: flex-end;
 `;
 
 const InteractionListTitle = styled.h3`

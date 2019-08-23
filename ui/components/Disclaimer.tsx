@@ -46,8 +46,8 @@ export const Disclaimer = () => {
 
 const Warning = styled.div`
     margin: 0 0 ${({ theme }) => theme.spacing.lg};
-    background: ${({ theme }) => theme.color.O1};
-    border: 1px solid ${({ theme }) => theme.color.O2};
+    background: ${({ theme }) => theme.color.B1};
+    border: 1px solid ${({ theme }) => theme.color.B3};
     border-radius: 4px;
     padding: ${({ theme }) => theme.spacing.md};
 `;
@@ -56,6 +56,6 @@ const ToggleLink = styled.a`
     &,
     &:hover,
     &:active {
-        color: ${({ theme }) => theme.color.O8};
+        color: ${({ theme }) => theme.color.B6};
     }
 `;
