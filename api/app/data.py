@@ -218,7 +218,7 @@ class SupportingSentence(NamedTuple):
                 f"{prefix.text}{first_entity.text}", first_entity.cui
             )
             prefix = None  # type:ignore
-        if fullmatch(r"\W+", between.text):
+        if between.text != "…" and fullmatch(r"\W+", between.text):
             first_entity = SupportingSentenceSpan(
                 f"{first_entity.text}{between.text}", first_entity.cui
             )
