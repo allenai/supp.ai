@@ -170,14 +170,14 @@ class SupportingSentence(NamedTuple):
         ]
 
         # Some of the publishers S2 works with only allow us to display up to
-        # 149 words. Rather than try to figure out if a paper is subject to
+        # 49 words. Rather than try to figure out if a paper is subject to
         # those restrictions, we just make sure we never display > 149 words.
         all_words = list(
             filter(lambda token: len(token.strip()) > 0, split(r"\W+", sentence))
         )
         word_count = len(all_words)
-        if word_count > 149:
-            diff = word_count - 149
+        if word_count > 50:
+            diff = word_count - 50
             span_idx = 0
             span_count = len(spans)
             while diff > 0:
@@ -213,7 +213,7 @@ class SupportingSentence(NamedTuple):
         # entity collapse it with the bordering entity. Not doing so causes
         # weird wrapping issues in the UI.
         [prefix, first_entity, between, second_entity, tail] = spans
-        if fullmatch(r"\W+", prefix.text):
+        if prefix.text != "…" and fullmatch(r"\W+", prefix.text):
             first_entity = SupportingSentenceSpan(
                 f"{prefix.text}{first_entity.text}", first_entity.cui
             )
@@ -223,7 +223,7 @@ class SupportingSentence(NamedTuple):
                 f"{first_entity.text}{between.text}", first_entity.cui
             )
             between = None  # type:ignore
-        if fullmatch(r"\W+", tail.text):
+        if tail.text != "…" and fullmatch(r"\W+", tail.text):
             second_entity = SupportingSentenceSpan(
                 f"{second_entity.text}{tail.text}", second_entity.cui
             )
