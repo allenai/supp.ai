@@ -171,13 +171,13 @@ class SupportingSentence(NamedTuple):
 
         # Some of the publishers S2 works with only allow us to display up to
         # 49 words. Rather than try to figure out if a paper is subject to
-        # those restrictions, we just make sure we never display > 149 words.
+        # those restrictions, we just make sure we never display > 49 words.
         all_words = list(
             filter(lambda token: len(token.strip()) > 0, split(r"\W+", sentence))
         )
         word_count = len(all_words)
-        if word_count > 50:
-            diff = word_count - 50
+        if word_count > 49:
+            diff = word_count - 49
             span_idx = 0
             span_count = len(spans)
             while diff > 0:
