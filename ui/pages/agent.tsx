@@ -217,6 +217,7 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                 },
                                 {} as { [k: string]: model.Agent }
                             );
+                            const evidenceCount = interaction.evidence.length;
                             return (
                                 <AgentListItem
                                     key={`${interaction.agent.cui}`}
@@ -242,31 +243,40 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                                 </WithAgentDefinitionPopover>
                                             </a>
                                         </Link>
-                                        <ToggleDetailsButton
-                                            onClick={() => {
-                                                let delta: {
-                                                    [k: string]: boolean;
-                                                } = {};
-                                                delta[
-                                                    interaction.interaction_id
-                                                ] = !isExpanded;
-                                                this.setState({
-                                                    expandedInteractionIds: {
-                                                        ...this.state
-                                                            .expandedInteractionIds,
-                                                        ...delta
+                                        <FlexRight>
+                                            <PaperCount>
+                                                {formatNumber(evidenceCount)}{" "}
+                                                {pluralize(
+                                                    "Paper",
+                                                    evidenceCount
+                                                )}
+                                            </PaperCount>
+                                            <ToggleDetailsButton
+                                                onClick={() => {
+                                                    let delta: {
+                                                        [k: string]: boolean;
+                                                    } = {};
+                                                    delta[
+                                                        interaction.interaction_id
+                                                    ] = !isExpanded;
+                                                    this.setState({
+                                                        expandedInteractionIds: {
+                                                            ...this.state
+                                                                .expandedInteractionIds,
+                                                            ...delta
+                                                        }
+                                                    });
+                                                }}
+                                            >
+                                                <Icon
+                                                    type={
+                                                        isExpanded
+                                                            ? "minus"
+                                                            : "plus"
                                                     }
-                                                });
-                                            }}
-                                        >
-                                            <Icon
-                                                type={
-                                                    isExpanded
-                                                        ? "minus"
-                                                        : "plus"
-                                                }
-                                            ></Icon>
-                                        </ToggleDetailsButton>
+                                                ></Icon>
+                                            </ToggleDetailsButton>
+                                        </FlexRight>
                                     </AgentListItemTitle>
                                     {isExpanded ? (
                                         <React.Fragment>
@@ -297,6 +307,19 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
     }
 }
 
+const PaperCount = styled.div`
+    color: ${({ theme }) => theme.color.N6};
+    white-space: nowrap;
+    font-size: ${({ theme }) => theme.typography.bodySmall.fontSize};
+`;
+
+const FlexRight = styled.div`
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    padding-left: ${({ theme }) => theme.spacing.md};
+`;
+
 const ToggleDetailsButton = styled.button`
     &&& {
         appearance: none;
@@ -309,7 +332,7 @@ const ToggleDetailsButton = styled.button`
         font-size: 18px;
         border-radius: none;
         line-height: 30px;
-        margin-left: auto;
+        margin-left: ${({ theme }) => theme.spacing.md};
     }
 `;
 

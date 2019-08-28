@@ -36,6 +36,10 @@ const IconContainer = styled.span`
     display: flex;
     align-items: baseline;
     margin: 0 ${({ theme }) => theme.spacing.sm};
+
+    @media screen and (max-width: 640px) {
+        display: none;
+    }
 `;
 
 const Definition = styled.div`

@@ -30,6 +30,10 @@ export const AgentListItemTitle = styled.h3`
         color: ${({ theme }) => theme.palette.text.primary};
         text-decoration: none;
     }
+
+    @media screen and (max-width: 640px) {
+        font-size: ${({ theme }) => theme.typography.h4.fontSize};
+    }
 `;
 
 export const AgentListItemContent = styled.div`
