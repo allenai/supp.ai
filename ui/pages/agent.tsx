@@ -120,15 +120,10 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
     };
     render() {
         const canonicalUrl = `${this.props.origin}${this.props.canonicalUrl}`;
-        let interactionLabel = null;
-        switch (this.props.agent.ent_type) {
-            case model.AgentType.SUPPLEMENT:
-                interactionLabel = "drug";
-                break;
-            case model.AgentType.DRUG:
-                interactionLabel = "supplement";
-                break;
-        }
+        let interactionLabel =
+            this.props.agent.ent_type === model.AgentType.SUPPLEMENT
+                ? "drug"
+                : "supplement";
         const description =
             `Explore the ${formatNumber(
                 this.props.agent.interacts_with_count
@@ -172,11 +167,16 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                 this.props.agent.interacts_with_count
                             )}
                             {" possible "}
-                            {interactionLabel}{" "}
                             {pluralize(
                                 "interaction",
                                 this.props.agent.interacts_with_count
                             )}
+                            {` between ${
+                                this.props.agent.preferred_name
+                            } and the following ${pluralize(
+                                interactionLabel,
+                                this.props.agent.interacts_with_count
+                            )}`}
                             :
                         </InteractionListTitle>
                         <Group
@@ -323,6 +323,7 @@ const FlexRight = styled.div`
 const ToggleDetailsButton = styled.button`
     &&& {
         appearance: none;
+        background: #fff;
         border: 1px solid ${({ theme }) => theme.palette.border.dark};
         cursor: pointer;
         width: 30px;
@@ -341,6 +342,10 @@ const Controls = styled.div`
     align-items: flex-end;
     grid-template-columns: auto min-content;
     grid-gap: ${({ theme }) => theme.spacing.lg};
+
+    @media screen and (max-width: 640px) {
+        grid-template-columns: auto;
+    }
 `;
 
 const Group = styled(Radio.Group)`
@@ -353,6 +358,7 @@ const Group = styled(Radio.Group)`
         line-height: 1 !important;
         height: auto !important;
         font-weight: 700 !important;
+        text-align: center;
     }
 `;
 

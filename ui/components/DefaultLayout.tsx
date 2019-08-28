@@ -39,6 +39,7 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
                 <a href="https://www.semanticscholar.org">
                     <S2Logo>
                         <icon.PoweredByS2 />
+                        <icon.StackedPoweredByS2 />
                     </S2Logo>
                 </a>
             </Right>
@@ -83,11 +84,22 @@ const PageWithNoMinHeight = styled(Page)`
 `;
 
 const S2Logo = styled.div`
-    display: block;
+    > *:first-child {
+        display: block;
+    }
+
+    > *:last-child {
+        display: none;
+    }
 
     @media screen and (max-width: 400px) {
-        width: 125px;
-        overflow: hidden;
+        > *:first-child {
+            display: none;
+        }
+
+        > *:last-child {
+            display: block;
+        }
     }
 `;
 
