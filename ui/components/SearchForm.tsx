@@ -27,10 +27,7 @@ interface State {
 const SAMPLE_QUERIES = [
     { cui: "C3531686", slug: "ginkgo-biloba-whole", name: "Ginkgo" },
     { cui: "C1095869", slug: "echinacea", name: "Echinacea" },
-    { cui: "C0043031", slug: "warfarin", name: "Warfarin" },
-    { cui: "C0061202", slug: "genistein", name: "Genistein" },
-    { cui: "C0025677", slug: "methotrexate", name: "Methotrexate" },
-    { cui: "C0056077", slug: "coenzyme-q10", name: "CoQ10" }
+    { cui: "C0025677", slug: "methotrexate", name: "Methotrexate" }
 ];
 
 export class SearchForm extends React.PureComponent<Props, State> {
@@ -85,10 +82,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
         }
     };
     render() {
-        const placeholder =
-            "Enter the name of a supplement or drug to search " +
-            `${formatNumber(this.props.meta.agent_count)} agents and ` +
-            `${formatNumber(this.props.meta.interaction_count)} interactions…`;
+        const placeholder = "Enter the name of a supplement or drug";
         let results;
         if (this.state.results.length > 0) {
             results = asAutocompleteResults(this.state.results);

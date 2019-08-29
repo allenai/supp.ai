@@ -19,6 +19,7 @@ export default class Home extends React.PureComponent<Props> {
         const title = "SUPP.AI by AI2";
         const description =
             "Search our AI curated corpus of " +
+            `${formatNumber(this.props.meta.agent_count)} agents and ` +
             `${formatNumber(this.props.meta.interaction_count)} ` +
             "interactions and explore the related research. Our corpus is " +
             "purely derived from examining peer-reviewed research and is " +
@@ -30,8 +31,8 @@ export default class Home extends React.PureComponent<Props> {
                     <meta name="description" content={description} />
                 </Head>
                 <Disclaimer />
-                <p>{description}</p>
                 <SearchForm meta={this.props.meta} />
+                <p>{description}</p>
             </DefaultLayout>
         );
     }
