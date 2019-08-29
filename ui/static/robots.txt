@@ -3,4 +3,4 @@ Disallow: /
 Disallow: /api
 
 # TODO: Uncomment this.
-# Sitemap: http://supp.ai/sitemap.txt
+# Sitemap: https://supp.ai/sitemap/index.xml

@@ -2,9 +2,10 @@ import argparse
 import os
 import sys
 import logging
-from typing import Tuple, Iterable, Optional
+from typing import Tuple, Iterable, Optional, List
 from gevent.pywsgi import WSGIServer  # type: ignore
 from flask import Flask, Response, request, jsonify
+from jinja2 import Environment, FileSystemLoader
 from app.api import create_api
 from app.utils import StackdriverJsonFormatter
 from app.data import InteractionIndex
@@ -49,14 +50,40 @@ def start(data_dir: str, port: int, prod: bool):
         )
     )
     urls = [origin] + agent_urls + interaction_urls
-    # Google only allows up to 50000 urls in a single sitemap.
-    if len(urls) > 50000:
-        raise RuntimeError(
-            f"There are {len(urls)} urls, which is more than the 50,000 limit."
-        )
     static_dir = os.environ.get("SUPP_AI_STATIC_DIR", os.path.abspath("static"))
-    with open(os.path.join(static_dir, "sitemap.txt"), "w+b") as fp:
-        fp.write("\n".join(urls).encode("utf8"))
+    templates = Environment(
+        loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates"))
+    )
+    sitemap_files = []
+    url_batch = []
+    sitemap_tmpl = templates.get_template("sitemap.xml")
+
+    def write_sitemap(batch: List[str]):
+        filename = f"{len(sitemap_files)}.xml"
+        sitemap_files.append(f"{origin}/sitemap/{filename}")
+        file_path = os.path.join(static_dir, "sitemap", filename)
+        with open(file_path, "w+b") as fp:
+            xml = sitemap_tmpl.render({"urls": batch})
+            fp.write(xml.encode("utf8"))
+        logger.info(f"wrote {file_path}....")
+
+    for url in urls:
+        url_batch.append(url)
+        if len(url_batch) == 10000:
+            write_sitemap(url_batch)
+            url_batch = []
+    if len(url_batch) > 0:
+        write_sitemap(url_batch)
+
+    if len(sitemap_files) > 50000:
+        raise RuntimeError("Google only allows up to 50000 urls in a single file.")
+    sitemap_index_path = os.path.join(static_dir, "sitemap", "index.xml")
+    with open(sitemap_index_path, "w+b") as fp:
+        xml = templates.get_template("sitemap_index.xml").render(
+            {"sitemaps": sitemap_files}
+        )
+        fp.write(xml.encode("utf8"))
+    logger.info(f"wrote {sitemap_index_path}....")
     logger.debug("Complete: generate sitemap....")
 
     app = Flask(__name__, static_folder=static_dir)

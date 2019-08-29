@@ -21,7 +21,7 @@ COPY app app/
 
 # The API generates a sitemap, which we write to disk and serve from
 # the filesystem. We need to make sure there's a spot for it on disk.
-RUN mkdir static
+RUN mkdir -p static/sitemap
 
 # This enables the Flask debugger and activates code that restarts the
 # API as you make changes
