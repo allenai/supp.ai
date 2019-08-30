@@ -106,12 +106,14 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                             headerTag="h2"
                             link
                             hideSyononyms
+                            hideTradenames
                         />
                         <AgentInfo
                             agent={second}
                             headerTag="h2"
                             link
                             hideSyononyms
+                            hideTradenames
                         />
                     </AgentInfoList>
                 </Section>

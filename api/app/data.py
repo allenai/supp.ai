@@ -32,6 +32,7 @@ class Agent(NamedTuple):
     cui: str
     preferred_name: str
     synonyms: List[str]
+    tradenames: List[str]
     definition: str
     ent_type: str
     slug: str
@@ -47,6 +48,7 @@ class AgentWithInteractionCount(NamedTuple):
     cui: str
     preferred_name: str
     synonyms: List[str]
+    tradenames: List[str]
     definition: str
     ent_type: str
     slug: str
@@ -358,7 +360,14 @@ class InteractionIndex:
         # We define the list of searchable fields everytime the application
         # starts up. There's no indication that this is expensive to do.
         idx.set_settings(
-            {"searchableAttributes": ["preferred_name", "definition", "synonyms"]}
+            {
+                "searchableAttributes": [
+                    "preferred_name",
+                    "definition",
+                    "synonyms",
+                    "tradenames",
+                ]
+            }
         )
 
         # Only load data into the index if the index doesn't exist. This acts
@@ -512,7 +521,14 @@ class InteractionIndex:
                     f"Malformed interaction id: {interaction_id}, agent CUI: {agent.cui}"
                 )
 
-        return sorted(interactions, key=lambda intr: len(intr.evidence), reverse=True)
+        return sorted(
+            interactions,
+            key=lambda intr: (
+                intr.agent.ent_type != agent.ent_type,
+                len(intr.evidence),
+            ),
+            reverse=True,
+        )
 
     @staticmethod
     def from_data(archive_name: str, data_dir: str) -> "InteractionIndex":
@@ -571,7 +587,7 @@ class InteractionIndex:
     def build_agent_index(agents: Iterable[Agent]) -> Dict[str, List[str]]:
         cuis_by_name: Dict[str, List[str]] = {}
         for agent in agents:
-            for name in set([agent.preferred_name] + agent.synonyms):
+            for name in set([agent.preferred_name] + agent.synonyms + agent.tradenames):
                 normalized_name = name.strip().lower()
                 if normalized_name not in cuis_by_name:
                     cuis_by_name[normalized_name] = []

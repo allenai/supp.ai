@@ -20,6 +20,7 @@ import {
     EvidenceList,
     Disclaimer,
     Synonyms,
+    Tradenames,
     AgentInfo,
     Section
 } from "../components";
@@ -122,8 +123,8 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
         const canonicalUrl = `${this.props.origin}${this.props.canonicalUrl}`;
         let interactionLabel =
             this.props.agent.ent_type === model.AgentType.SUPPLEMENT
-                ? "drug"
-                : "supplement";
+                ? "drugs and supplements"
+                : "supplements";
         const description =
             `Explore the ${formatNumber(
                 this.props.agent.interacts_with_count
@@ -161,23 +162,24 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                 </Section>
                 <Section>
                     <Controls>
-                        <InteractionListTitle>
-                            {formatNumber(
-                                this.props.agent.interacts_with_count
-                            )}
-                            {" possible "}
-                            {pluralize(
-                                "interaction",
-                                this.props.agent.interacts_with_count
-                            )}
-                            {` between ${
-                                this.props.agent.preferred_name
-                            } and the following ${pluralize(
-                                interactionLabel,
-                                this.props.agent.interacts_with_count
-                            )}`}
-                            :
-                        </InteractionListTitle>
+                        {this.props.agent.interacts_with_count > 0 ? (
+                            <InteractionListTitle>
+                                {formatNumber(
+                                    this.props.agent.interacts_with_count
+                                )}
+                                {" possible "}
+                                {pluralize(
+                                    "interaction",
+                                    this.props.agent.interacts_with_count
+                                )}
+                                {` between ${this.props.agent.preferred_name} and the following ${interactionLabel}`}
+                                :
+                            </InteractionListTitle>
+                        ) : (
+                            <InteractionListTitle>
+                                No interactions found.
+                            </InteractionListTitle>
+                        )}
                         <Group
                             size="large"
                             value={this.state.toggleState}
@@ -286,6 +288,12 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                                         synonyms={
                                                             interaction.agent
                                                                 .synonyms
+                                                        }
+                                                    />
+                                                    <Tradenames
+                                                        tradenames={
+                                                            interaction.agent
+                                                                .tradenames
                                                         }
                                                     />
                                                 </AgentListItemContent>

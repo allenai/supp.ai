@@ -89,7 +89,7 @@ def create_api(idx: InteractionIndex) -> Blueprint:
         if query is None:
             return error("The q argument is required")
         search_results = idx.search_for_agents(
-            query, ["preferred_name", "synonyms"], num_per_page=size
+            query, ["preferred_name", "synonyms", "tradenames"], num_per_page=size
         )
         response = simplejson.dumps(
             {"query": {"q": search_results.query}, "results": search_results.results}

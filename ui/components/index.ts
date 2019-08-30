@@ -6,6 +6,7 @@ export * from "./DefaultLayout";
 export * from "./AgentLink";
 export * from "./AgentList";
 export * from "./Synonyms";
+export * from "./Tradenames";
 export * from "./WithAgentDefinitionPopover";
 export * from "./PaperInfo";
 export * from "./EvidenceList";

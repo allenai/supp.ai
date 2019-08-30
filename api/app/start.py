@@ -54,7 +54,7 @@ def start(data_dir: str, port: int, prod: bool):
     templates = Environment(
         loader=FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates"))
     )
-    sitemap_files = []
+    sitemap_files: List[str] = []
     url_batch = []
     sitemap_tmpl = templates.get_template("sitemap.xml")
 

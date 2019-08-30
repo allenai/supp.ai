@@ -3,6 +3,7 @@ import styled from "styled-components";
 import {
     icon,
     Synonyms,
+    Tradenames,
     WithAgentDefinitionPopover,
     PageHeader,
     AgentLink
@@ -14,9 +15,16 @@ interface Props {
     headerTag?: "h1" | "h2" | "h3";
     link?: boolean;
     hideSyononyms?: boolean;
+    hideTradenames?: boolean;
 }
 
-export const AgentInfo = ({ agent, headerTag, link, hideSyononyms }: Props) => {
+export const AgentInfo = ({
+    agent,
+    headerTag,
+    link,
+    hideSyononyms,
+    hideTradenames
+}: Props) => {
     const name = (
         <AgentName as={headerTag || "h1"}>
             <icon.AgentTypeIcon type={agent.ent_type} />
@@ -31,6 +39,9 @@ export const AgentInfo = ({ agent, headerTag, link, hideSyononyms }: Props) => {
             {link ? <AgentLink agent={agent}>{name}</AgentLink> : name}
             {agent.synonyms.length > 0 && !hideSyononyms ? (
                 <Synonyms synonyms={agent.synonyms} />
+            ) : null}
+            {agent.tradenames.length > 0 && !hideTradenames ? (
+                <Tradenames tradenames={agent.tradenames} />
             ) : null}
         </AgentInfoBox>
     );

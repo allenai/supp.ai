@@ -25,7 +25,7 @@ interface State {
 
 const SAMPLE_QUERIES = [
     { cui: "C3531686", slug: "ginkgo-biloba-whole", name: "Ginkgo" },
-    { cui: "C1095869", slug: "echinacea", name: "Echinacea" },
+    { cui: "C0813171", slug: "hypericum-perforatum", name: "St Johns Wort" },
     { cui: "C0025677", slug: "methotrexate", name: "Methotrexate" }
 ];
 

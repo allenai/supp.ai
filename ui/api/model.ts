@@ -19,6 +19,7 @@ export interface Agent {
     cui: string;
     preferred_name: string;
     synonyms: string[];
+    tradenames: string[];
     definition: string;
     slug: string;
     ent_type: AgentType;
