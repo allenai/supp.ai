@@ -14,7 +14,6 @@ import * as icon from "./icon";
 
 interface Props {
     defaultQueryText?: string;
-    autoFocus?: boolean;
     meta: model.IndexMeta;
 }
 
@@ -112,14 +111,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
                         transitionName="none"
                         value={this.state.queryText}
                     >
-                        <Input
-                            type="search"
-                            autoFocus={
-                                this.props.autoFocus !== false &&
-                                this.state.queryText === ""
-                            }
-                            placeholder={placeholder}
-                        />
+                        <Input type="search" placeholder={placeholder} />
                     </SearchInputWithAutoComplete>
                     <Samples>
                         <SampleLabel>Try:</SampleLabel>{" "}

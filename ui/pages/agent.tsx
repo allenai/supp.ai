@@ -147,7 +147,6 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                 <SearchForm
                     meta={this.props.meta}
                     defaultQueryText={this.props.defaultQueryText}
-                    autoFocus={false}
                 />
                 <Section>
                     <ShareButtonsBox>
