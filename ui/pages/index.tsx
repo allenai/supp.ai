@@ -21,9 +21,9 @@ export default class Home extends React.PureComponent<Props> {
             "Search our AI curated corpus of " +
             `${formatNumber(this.props.meta.agent_count)} agents and ` +
             `${formatNumber(this.props.meta.interaction_count)} ` +
-            "interactions and explore the related research. Our corpus is " +
-            "purely derived from examining peer-reviewed research and is " +
-            "free of any marketing or advertising driven agendas.";
+            "interactions and explore the related research. Our results " +
+            "are automatically derived from peer-reviewed research, and " +
+            "are not influenced by the supplement industry."
         return (
             <DefaultLayout>
                 <Head>
