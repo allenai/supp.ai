@@ -123,7 +123,7 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
         const canonicalUrl = `${this.props.origin}${this.props.canonicalUrl}`;
         let interactionLabel =
             this.props.agent.ent_type === model.AgentType.SUPPLEMENT
-                ? "drugs and supplements"
+                ? "drugs"
                 : "supplements";
         const description =
             `Explore the ${formatNumber(
