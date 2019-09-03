@@ -9,6 +9,8 @@ RUN pip install -r requirements.txt
 
 # Copy over the data that makes up the corpus
 WORKDIR /usr/local/data/skiff/
+# TODO: Once the data preparation process generates this, this can be removed
+COPY fakemeta.json meta.json
 ARG DATA_ARCHIVE=20190830_03.tar.gz
 ENV SUPPAI_DATA_ARCHIVE ${DATA_ARCHIVE}
 ADD https://storage.googleapis.com/supp-ai-data/${DATA_ARCHIVE} /usr/local/data/skiff

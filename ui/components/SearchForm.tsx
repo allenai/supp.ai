@@ -7,6 +7,7 @@ import { SelectValue } from "antd/lib/select";
 import { BodySmall } from "@allenai/varnish/components/typography";
 import { Input } from "@allenai/varnish/components/form";
 import Link from "next/link";
+import moment from "moment";
 
 import { debounce, formatNumber, pluralize } from "../util";
 import { model, fetchSuggestions } from "../api";
@@ -81,7 +82,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
         }
     };
     render() {
-        const placeholder = "Enter the name of a supplement or drug";
+        const placeholder = "Enter the name of a supplement or drug…";
         let results;
         if (this.state.results.length > 0) {
             results = asAutocompleteResults(this.state.results);
@@ -113,23 +114,28 @@ export class SearchForm extends React.PureComponent<Props, State> {
                     >
                         <Input type="search" placeholder={placeholder} />
                     </SearchInputWithAutoComplete>
-                    <Samples>
-                        <SampleLabel>Try:</SampleLabel>{" "}
-                        {SAMPLE_QUERIES.map((sample, idx) => (
-                            <React.Fragment key={sample.cui}>
-                                {idx === 0 ? " " : ", "}
-                                <Link
-                                    href={`/agent?${encode({
-                                        cui: sample.cui,
-                                        slug: sample.slug
-                                    })}`}
-                                    as={`/a/${sample.slug}/${sample.cui}`}
-                                >
-                                    <a>{sample.name}</a>
-                                </Link>
-                            </React.Fragment>
-                        ))}
-                    </Samples>
+                    <SearchExtras>
+                        <div>
+                            <SampleLabel>Try:</SampleLabel>{" "}
+                            {SAMPLE_QUERIES.map((sample, idx) => (
+                                <React.Fragment key={sample.cui}>
+                                    {idx === 0 ? " " : ", "}
+                                    <Link
+                                        href={`/agent?${encode({
+                                            cui: sample.cui,
+                                            slug: sample.slug
+                                        })}`}
+                                        as={`/a/${sample.slug}/${sample.cui}`}
+                                    >
+                                        <a>{sample.name}</a>
+                                    </Link>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                        <LastUpdated>
+                            <strong>Last Updated:</strong> {moment(this.props.meta.data_updated_on).fromNow()}
+                        </LastUpdated>
+                    </SearchExtras>
                 </FormContainer>
             </React.Fragment>
         );
@@ -156,11 +162,21 @@ function asAutocompleteResults(results: model.Agent[]) {
     ));
 }
 
-const Samples = styled.div`
-    margin: ${({ theme }) => theme.spacing.sm} 0;
-    font-size: 1rem;
-    padding: 0 ${({ theme }) => theme.spacing.md};
+const SearchExtras = styled.div`
+    display: grid;
+    grid-template-columns: auto min-content;
+    grid-gap: ${({ theme }) => theme.spacing.lg};
+    margin: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.md}`};
+
+    @media screen and (max-width: 640px) {
+        grid-template-columns: auto;
+        grid-row-gap: ${({ theme }) => theme.spacing.sm};
+    }
 `;
+
+const LastUpdated = styled.div`
+    white-space: nowrap;
+`
 
 const SampleLabel = styled.label`
     font-weight: 700;

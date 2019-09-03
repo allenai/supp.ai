@@ -2,6 +2,7 @@ export interface IndexMeta {
     version: string;
     interaction_count: number;
     agent_count: number;
+    data_updated_on: string;
 }
 
 export interface Query {

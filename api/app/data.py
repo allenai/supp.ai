@@ -321,6 +321,12 @@ class SearchResults(NamedTuple):
     num_per_page: int
 
 
+class IndexMetadata(NamedTuple):
+    """
+    Model for metadata about the index
+    """
+    data_updated_on: str
+
 class InteractionIndex:
     """
     This class provides an API for looking up agents and the agents they
@@ -334,6 +340,7 @@ class InteractionIndex:
         sentences_by_interaction_id: Dict[InteractionId, List[SupportingSentence]],
         interaction_ids_by_cui: Dict[str, List[InteractionId]],
         paper_metadata_by_id: Dict[str, Paper],
+        index_meta: IndexMetadata
     ):
         self.version = version
         self.agents_by_cui = agents_by_cui
@@ -348,6 +355,7 @@ class InteractionIndex:
             "PEUZR5B1FW", environ["SUPP_AI_ALGOLIA_API_KEY"]
         )
         self.index = self.init_algolia_index()
+        self.index_meta = index_meta
         self.paper_metadata_by_id = paper_metadata_by_id
 
     def init_algolia_index(self):
@@ -538,6 +546,7 @@ class InteractionIndex:
             InteractionIndex.load_sentences_by_interaction_id(data_dir),
             InteractionIndex.load_interaction_ids_by_cui(data_dir),
             InteractionIndex.load_paper_metadata(data_dir),
+            InteractionIndex.load_index_metadata(data_dir)
         )
 
     @staticmethod
@@ -604,3 +613,9 @@ class InteractionIndex:
                     raise RuntimeError(f"Duplicate paper: ${paper_id}")
                 papers_by_id[paper_id] = Paper.from_json({**paper, "pid": paper_id})
         return papers_by_id
+
+    @staticmethod
+    def load_index_metadata(data_dir: str) -> IndexMetadata:
+        with open(path.join(data_dir, "meta.json")) as fp:
+            raw = load(fp)
+            return IndexMetadata(raw["last_updated_on"])
