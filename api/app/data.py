@@ -325,7 +325,9 @@ class IndexMetadata(NamedTuple):
     """
     Model for metadata about the index
     """
+
     data_updated_on: str
+
 
 class InteractionIndex:
     """
@@ -340,7 +342,7 @@ class InteractionIndex:
         sentences_by_interaction_id: Dict[InteractionId, List[SupportingSentence]],
         interaction_ids_by_cui: Dict[str, List[InteractionId]],
         paper_metadata_by_id: Dict[str, Paper],
-        index_meta: IndexMetadata
+        index_meta: IndexMetadata,
     ):
         self.version = version
         self.agents_by_cui = agents_by_cui
@@ -546,7 +548,7 @@ class InteractionIndex:
             InteractionIndex.load_sentences_by_interaction_id(data_dir),
             InteractionIndex.load_interaction_ids_by_cui(data_dir),
             InteractionIndex.load_paper_metadata(data_dir),
-            InteractionIndex.load_index_metadata(data_dir)
+            InteractionIndex.load_index_metadata(data_dir),
         )
 
     @staticmethod

@@ -26,8 +26,8 @@ interface State {
 
 const SAMPLE_QUERIES = [
     { cui: "C3531686", slug: "ginkgo-biloba-whole", name: "Ginkgo" },
-    { cui: "C0813171", slug: "hypericum-perforatum", name: "St Johns Wort" },
-    { cui: "C0025677", slug: "methotrexate", name: "Methotrexate" }
+    { cui: "C0025677", slug: "methotrexate", name: "Methotrexate" },
+    { cui: "C0017718", slug: "glucosamine", name: "Glucosamine" }
 ];
 
 export class SearchForm extends React.PureComponent<Props, State> {
@@ -133,7 +133,8 @@ export class SearchForm extends React.PureComponent<Props, State> {
                             ))}
                         </div>
                         <LastUpdated>
-                            <strong>Last Updated:</strong> {moment(this.props.meta.data_updated_on).fromNow()}
+                            <strong>Last Updated:</strong>{" "}
+                            {moment(this.props.meta.data_updated_on).fromNow()}
                         </LastUpdated>
                     </SearchExtras>
                 </FormContainer>
@@ -176,7 +177,7 @@ const SearchExtras = styled.div`
 
 const LastUpdated = styled.div`
     white-space: nowrap;
-`
+`;
 
 const SampleLabel = styled.label`
     font-weight: 700;
