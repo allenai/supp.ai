@@ -125,6 +125,10 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
             this.props.agent.ent_type === model.AgentType.SUPPLEMENT
                 ? "drugs"
                 : "supplements";
+        let interactionLabelAgentPage =
+            this.props.agent.ent_type === model.AgentType.SUPPLEMENT
+                ? "drugs and supplements"
+                : "supplements";
         const description =
             `Explore the ${formatNumber(
                 this.props.agent.interacts_with_count
@@ -172,7 +176,7 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                     "interaction",
                                     this.props.agent.interacts_with_count
                                 )}
-                                {` between ${this.props.agent.preferred_name} and the following ${interactionLabel}`}
+                                {` between ${this.props.agent.preferred_name} and the following ${interactionLabelAgentPage}`}
                                 :
                             </InteractionListTitle>
                         ) : (
