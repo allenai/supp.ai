@@ -151,24 +151,72 @@ export class SearchForm extends React.PureComponent<Props, State> {
 }
 
 function asAutocompleteResults(results: model.Agent[]) {
-    return results.map(suggestion => (
-        <AutoComplete.Option
-            key={suggestion.cui}
-            value={suggestion.cui}
-            className="supp-autocomplete-option"
-            title={suggestion.preferred_name}
-        >
-            <span>
-                <icon.AgentTypeIcon type={suggestion.ent_type} />
-            </span>
-            <span>{suggestion.preferred_name}</span>
-            <BodySmall>
-                {formatNumber(suggestion.interacts_with_count)}{" "}
-                {pluralize("interaction", suggestion.interacts_with_count)}
-            </BodySmall>
-        </AutoComplete.Option>
-    ));
+    return results.map(suggestion => {
+        const nonPreferredNameMatches = Object.keys(suggestion.matches).reduce(
+            (matches: string[], fieldName) => {
+                if (fieldName !== "preferred_name") {
+                    return matches.concat([suggestion.matches[fieldName]]);
+                }
+                return matches;
+            },
+            []
+        );
+
+        return (
+            <AutoComplete.Option
+                key={suggestion.cui}
+                value={suggestion.cui}
+                className="supp-autocomplete-option"
+                title={suggestion.preferred_name}
+            >
+                <span>
+                    <icon.AgentTypeIcon type={suggestion.ent_type} />
+                </span>
+                <span style={{ minWidth: 0 }}>
+                    {suggestion.matches["preferred_name"] ? (
+                        <span
+                            dangerouslySetInnerHTML={{
+                                __html: suggestion.matches["preferred_name"]
+                            }}
+                        />
+                    ) : (
+                        <span>{suggestion.preferred_name}</span>
+                    )}
+                    {nonPreferredNameMatches ? (
+                        <SuggestionMatches>
+                            {nonPreferredNameMatches.map((match, idx) => (
+                                <React.Fragment key={`${match}-${idx}`}>
+                                    {idx > 0 ? ", " : null}
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: match
+                                        }}
+                                    />
+                                </React.Fragment>
+                            ))}
+                        </SuggestionMatches>
+                    ) : null}
+                </span>
+                <BodySmall>
+                    {formatNumber(suggestion.interacts_with_count)}{" "}
+                    {pluralize("interaction", suggestion.interacts_with_count)}
+                </BodySmall>
+            </AutoComplete.Option>
+        );
+    });
 }
+
+const SuggestionMatches = styled(BodySmall)`
+    display: block;
+    color: ${({ theme }) => theme.color.N8};
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &,
+    em {
+        font-style: italic;
+    }
+`;
 
 const SearchExtras = styled.div`
     display: grid;
@@ -220,16 +268,17 @@ const AutoCompleteStyles = createGlobalStyle`
         display: grid;
         grid-template-columns: min-content auto min-content;
         grid-gap: 8px;
-        align-items: center;
+        align-items: baseline;
+
+        em {
+            font-weight: 900;
+            font-style: normal;
+        }
 
         img {
             width: 16px;
             height: 16px;
         }
-    }
-
-    .ant-select-dropdown-menu-item-active {
-        font-weight: 700;
     }
 
     .supp-autocomplete-no-results-option {

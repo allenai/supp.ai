@@ -53,6 +53,7 @@ class AgentWithInteractionCount(NamedTuple):
     ent_type: str
     slug: str
     interacts_with_count: int
+    matches: Dict[str, List[str]]
 
 
 class SupportingSentenceArg(NamedTuple):
@@ -418,13 +419,13 @@ class InteractionIndex:
         return self.agents_by_cui[cui]
 
     def get_agent_with_interaction_count(
-        self, cui: str
+        self, cui: str, matches: Dict[str, str] = {}
     ) -> Optional[AgentWithInteractionCount]:
         agent = self.get_agent(cui)
         if agent is None:
             return None
         interactions = self.get_interactions(agent)
-        args = list(agent._asdict().values()) + [len(interactions)]
+        args = list(agent._asdict().values()) + [len(interactions), matches]
         return AgentWithInteractionCount(*args)
 
     def search_for_agents(
@@ -441,7 +442,16 @@ class InteractionIndex:
         default_params = {"hitsPerPage": num_per_page, "page": page}
         resp = self.index.search(query, {**default_params, **params})
         for hit in resp["hits"]:
-            agent = self.get_agent_with_interaction_count(hit["cui"])
+            matches = {}
+            for field_name, highlights in hit["_highlightResult"].items():
+                if not isinstance(highlights, list):
+                    highlights = [highlights]
+                for highlight in highlights:
+                    if highlight["matchLevel"] != "none":
+                        if field_name not in matches:
+                            matches[field_name] = []
+                        matches[field_name].append(highlight["value"])
+            agent = self.get_agent_with_interaction_count(hit["cui"], matches)
             if agent is not None:
                 agents.append(agent)
             else:

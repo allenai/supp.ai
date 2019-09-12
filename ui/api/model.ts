@@ -25,6 +25,7 @@ export interface Agent {
     slug: string;
     ent_type: AgentType;
     interacts_with_count: number;
+    matches: { [fieldName: string]: string };
 }
 
 export interface SupportingSentenceSpan {
