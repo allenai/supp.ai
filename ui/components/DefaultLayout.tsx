@@ -1,6 +1,7 @@
 import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
+import { Button } from "@allenai/varnish/components/button";
 import {
     PaddedContent,
     Page,
@@ -45,11 +46,26 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
             </Right>
         </Header>
         <MainPane color="white">
-            <PaddedContent>
+            <StyledPaddedContent>
                 <MaxWidth>
-                    <PageWithNoMinHeight>{children}</PageWithNoMinHeight>
+                    <PageWithNoMinHeight>
+                        {children}
+                        <FeedbackRow>
+                            <span>
+                                Help us improve <strong>supp.ai</strong>, we'd
+                                love to hear your feedback:
+                            </span>
+                            <Button
+                                href="mailto:supp-ai-feedback@allenai.org"
+                                variant="primary"
+                                size="small"
+                            >
+                                Submit Feedback
+                            </Button>
+                        </FeedbackRow>
+                    </PageWithNoMinHeight>
                 </MaxWidth>
-            </PaddedContent>
+            </StyledPaddedContent>
         </MainPane>
         <NeutralBackground>
             <Centered>
@@ -72,6 +88,24 @@ const LayoutOverrides = createGlobalStyle`
 
     footer {
         flex-grow: 0;
+    }
+`;
+
+const FeedbackRow = styled.div`
+    display: grid;
+    grid-template-columns: auto min-content;
+    grid-gap: ${({ theme }) => theme.spacing.md};
+    align-items: center;
+    margin: ${({ theme }) => `${theme.spacing.xl} 0 0`};
+
+    @media screen and (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+        grid-template-columns: auto;
+    }
+`;
+
+const StyledPaddedContent = styled(PaddedContent)`
+    && {
+        padding: 0 ${({ theme }) => theme.spacing.lg};
     }
 `;
 
