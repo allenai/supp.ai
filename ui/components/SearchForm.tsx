@@ -172,7 +172,7 @@ function asAutocompleteResults(results: model.Agent[]) {
                 <span>
                     <icon.AgentTypeIcon type={suggestion.ent_type} />
                 </span>
-                <span style={{ minWidth: 0 }}>
+                <SuggestionName>
                     {suggestion.matches["preferred_name"] ? (
                         <span
                             dangerouslySetInnerHTML={{
@@ -196,7 +196,7 @@ function asAutocompleteResults(results: model.Agent[]) {
                             ))}
                         </SuggestionMatches>
                     ) : null}
-                </span>
+                </SuggestionName>
                 <BodySmall>
                     {formatNumber(suggestion.interacts_with_count)}{" "}
                     {pluralize("interaction", suggestion.interacts_with_count)}
@@ -206,11 +206,15 @@ function asAutocompleteResults(results: model.Agent[]) {
     });
 }
 
-const SuggestionMatches = styled(BodySmall)`
-    display: block;
-    color: ${({ theme }) => theme.color.N8};
+const SuggestionName = styled.span`
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
+`;
+
+const SuggestionMatches = styled(BodySmall)`
+    margin-left: ${({ theme }) => theme.spacing.xs};
+    color: ${({ theme }) => theme.color.N8};
 
     &,
     em {
