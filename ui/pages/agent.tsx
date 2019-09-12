@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Icon, List, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 import { encode } from "querystring";
+import { Input } from "@allenai/varnish/components/form";
 
 import { fetchAgent, fetchIndexMeta, model, fetchInteractions } from "../api";
 import {
@@ -24,7 +25,7 @@ import {
     AgentInfo,
     Section
 } from "../components";
-import { pluralize, formatNumber } from "../util";
+import { pluralize, formatNumber, debounce } from "../util";
 
 interface Props {
     agent: model.Agent;
@@ -32,6 +33,7 @@ interface Props {
     canonicalUrl: string;
     meta: model.IndexMeta;
     defaultQueryText?: string;
+    defaultInteractionQueryText?: string;
     interactionsPage: model.InteractionsPage;
 }
 
@@ -64,9 +66,18 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
             throw new Error("CUI must be set.");
         }
         const maybeQuery = SearchForm.queryFromQueryString(context.query);
+        const interactionsQuery = context.query.iq
+            ? Array.isArray(context.query.iq)
+                ? context.query.iq[0]
+                : context.query.iq
+            : undefined;
         const [agent, interactionsPage, meta] = await Promise.all([
             fetchAgent(cui),
-            fetchInteractions(cui, maybeQuery ? maybeQuery.p : 0),
+            fetchInteractions(
+                cui,
+                maybeQuery ? maybeQuery.p : 0,
+                interactionsQuery
+            ),
             fetchIndexMeta()
         ]);
         const isClient = typeof window !== "undefined";
@@ -94,14 +105,17 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
             meta,
             origin,
             canonicalUrl,
-            defaultQueryText: maybeQuery ? maybeQuery.q : undefined
+            defaultQueryText: maybeQuery ? maybeQuery.q : undefined,
+            defaultInteractionQueryText: interactionsQuery
         };
     }
     onInteractionPageChanged = async (p: number) => {
         const { slug, cui } = this.props.agent;
+        const q = this.props.defaultQueryText;
+        const iq = this.props.defaultInteractionQueryText;
         await Router.push(
-            `/agent?${encode({ slug, cui, p })}`,
-            `/a/${slug}/${cui}?${encode({ p })}`
+            `/agent?${encode({ slug, cui, p, q, iq })}`,
+            `/a/${slug}/${cui}?${encode({ p, q, iq })}`
         );
         window.scrollTo(0, 0);
     };
@@ -119,6 +133,16 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
         }
         this.setState({ expandedInteractionIds, toggleState });
     };
+    onInteractionsQueryChange = debounce((query: string) => {
+        const { slug, cui } = this.props.agent;
+        const p = 1;
+        const q = this.props.defaultQueryText;
+        const iq = query;
+        Router.push(
+            `/agent?${encode({ slug, cui, p, q, iq })}`,
+            `/a/${slug}/${cui}?${encode({ p, q, iq })}`
+        );
+    });
     render() {
         const canonicalUrl = `${this.props.origin}${this.props.canonicalUrl}`;
         let interactionLabel =
@@ -165,25 +189,38 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                     <AgentInfo agent={this.props.agent} />
                 </Section>
                 <Section>
+                    {this.props.agent.interacts_with_count > 0 ? (
+                        <InteractionListTitle>
+                            {formatNumber(
+                                this.props.agent.interacts_with_count
+                            )}
+                            {" possible "}
+                            {pluralize(
+                                "interaction",
+                                this.props.agent.interacts_with_count
+                            )}
+                            {` between ${this.props.agent.preferred_name} and the following ${interactionLabelAgentPage}`}
+                            :
+                        </InteractionListTitle>
+                    ) : (
+                        <InteractionListTitle>
+                            No interactions found.
+                        </InteractionListTitle>
+                    )}
                     <Controls>
-                        {this.props.agent.interacts_with_count > 0 ? (
-                            <InteractionListTitle>
-                                {formatNumber(
-                                    this.props.agent.interacts_with_count
-                                )}
-                                {" possible "}
-                                {pluralize(
-                                    "interaction",
-                                    this.props.agent.interacts_with_count
-                                )}
-                                {` between ${this.props.agent.preferred_name} and the following ${interactionLabelAgentPage}`}
-                                :
-                            </InteractionListTitle>
-                        ) : (
-                            <InteractionListTitle>
-                                No interactions found.
-                            </InteractionListTitle>
-                        )}
+                        <Input
+                            size="small"
+                            placeholder="Filter interactions…"
+                            defaultValue={
+                                this.props.defaultInteractionQueryText
+                            }
+                            onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                                const text = event.currentTarget.value.trim();
+                                this.onInteractionsQueryChange(text);
+                            }}
+                        />
                         <Group
                             size="large"
                             value={this.state.toggleState}
@@ -200,7 +237,7 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                     <List
                         pagination={{
                             current: this.props.interactionsPage.page,
-                            total: this.props.agent.interacts_with_count,
+                            total: this.props.interactionsPage.total,
                             onChange: this.onInteractionPageChanged,
                             pageSize: this.props.interactionsPage
                                 .interactions_per_page,
@@ -378,6 +415,4 @@ const ShareButtonsBox = styled.div`
     justify-content: flex-end;
 `;
 
-const InteractionListTitle = styled.h3`
-    margin: 0;
-`;
+const InteractionListTitle = styled.h3``;

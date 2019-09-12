@@ -48,14 +48,17 @@ export async function fetchSuggestions(
 
 export async function fetchInteractions(
     cui: string,
-    p: number = 0
+    p: number = 0,
+    q: string | undefined = undefined
 ): Promise<model.InteractionsPage> {
+    const params: { p: number; q?: string } = { p };
+    if (q !== undefined) {
+        params.q = q;
+    }
     return axios
         .get<model.InteractionsPage>(
             `${API_ORIGIN}/api/agent/${cui}/interactions`,
-            {
-                params: { p }
-            }
+            { params }
         )
         .then(resp => resp.data);
 }

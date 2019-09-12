@@ -213,8 +213,10 @@ const SuggestionName = styled.span`
 `;
 
 const SuggestionMatches = styled(BodySmall)`
-    margin-left: ${({ theme }) => theme.spacing.xs};
+    display: block;
     color: ${({ theme }) => theme.color.N8};
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &,
     em {
@@ -283,6 +285,10 @@ const AutoCompleteStyles = createGlobalStyle`
             width: 16px;
             height: 16px;
         }
+    }
+
+    .supp-autocomplete-option.ant-select-dropdown-menu-item-active {
+        background: ${({ theme }: any) => theme.color.B2} !important;
     }
 
     .supp-autocomplete-no-results-option {

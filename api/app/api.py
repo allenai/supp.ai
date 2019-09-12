@@ -62,20 +62,32 @@ def create_api(idx: InteractionIndex) -> Blueprint:
         if agent is None:
             return error("Not Found", 404)
         try:
-            page = int(request.args.get("p", default=0))
+            # The page parameter starts at 1 on the client, and 0 on the
+            # server.
+            page = int(request.args.get("p", default=1)) - 1
         except ValueError:
             return error("Invalid value for 'p'.", 400)
-        interactions_per_page = 1000
+        all_interactions = idx.get_interactions(agent)
+        q = request.args.get("q", default="").lower().strip()
+        if q != "":
+            matches = []
+            for interaction in all_interactions:
+                if interaction.agent.preferred_name.lower().startswith(q) > 0:
+                    matches.append(interaction)
+            interactions = matches
+        else:
+            interactions = all_interactions
+        interactions_per_page = 50
         start = page * interactions_per_page
         end = start + interactions_per_page
-        interactions = idx.get_interactions(agent)
-        interactions_page = interactions[start:end]
+        interactions_page = interactions[start : min(len(interactions), end)]
         return Response(
             simplejson.dumps(
                 {
-                    "page": page,
-                    "interactions": interactions,
+                    "page": page + 1,
+                    "interactions": interactions_page,
                     "interactions_per_page": interactions_per_page,
+                    "total": len(interactions),
                 }
             ),
             200,

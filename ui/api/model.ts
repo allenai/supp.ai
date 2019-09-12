@@ -73,6 +73,7 @@ export interface InteractionsPage {
     page: number;
     interactions: InteractingAgent[];
     interactions_per_page: number;
+    total: number;
 }
 
 export interface SearchResponse {

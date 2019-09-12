@@ -419,7 +419,7 @@ class InteractionIndex:
         return self.agents_by_cui[cui]
 
     def get_agent_with_interaction_count(
-        self, cui: str, matches: Dict[str, str] = {}
+        self, cui: str, matches: Dict[str, List[str]] = {}
     ) -> Optional[AgentWithInteractionCount]:
         agent = self.get_agent(cui)
         if agent is None:
@@ -442,7 +442,7 @@ class InteractionIndex:
         default_params = {"hitsPerPage": num_per_page, "page": page}
         resp = self.index.search(query, {**default_params, **params})
         for hit in resp["hits"]:
-            matches = {}
+            matches: Dict[str, List[str]] = {}
             for field_name, highlights in hit["_highlightResult"].items():
                 if not isinstance(highlights, list):
                     highlights = [highlights]
