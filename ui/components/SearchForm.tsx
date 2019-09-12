@@ -56,7 +56,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
             this.setState(
                 { queryText: value, isLoading: true },
                 debounce(async () => {
-                    if (queryText === "") {
+                    if (queryText === "" || queryText.trim().length < 2) {
                         this.setState({ results: [], isLoading: false });
                     } else {
                         const resp = await fetchSuggestions(queryText);
@@ -91,7 +91,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
         if (this.state.results.length > 0) {
             results = asAutocompleteResults(this.state.results);
         } else if (
-            this.state.queryText.trim().length > 0 &&
+            this.state.queryText.trim().length > 1 &&
             !this.state.isLoading
         ) {
             results = [
