@@ -543,11 +543,7 @@ class InteractionIndex:
 
         return sorted(
             interactions,
-            key=lambda intr: (
-                intr.agent.ent_type != agent.ent_type,
-                len(intr.evidence),
-            ),
-            reverse=True,
+            key=lambda intr: (-1 * len(intr.evidence), intr.agent.preferred_name),
         )
 
     @staticmethod
