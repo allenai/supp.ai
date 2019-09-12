@@ -22,8 +22,9 @@ export default class Home extends React.PureComponent<Props> {
             `${formatNumber(this.props.meta.agent_count)} agents and ` +
             `${formatNumber(this.props.meta.interaction_count)} ` +
             "interactions and explore the related research. Our results " +
-            "are automatically derived from peer-reviewed research, and " +
-            "are not influenced by the supplement industry.";
+            "are automatically derived from peer-reviewed publications, and " +
+            "are not influenced by third parties. This tool is offered as a " +
+            "free service to all users.";
         return (
             <DefaultLayout>
                 <Head>
@@ -31,8 +32,8 @@ export default class Home extends React.PureComponent<Props> {
                     <meta name="description" content={description} />
                 </Head>
                 <Disclaimer />
-                <SearchForm meta={this.props.meta} />
                 <p>{description}</p>
+                <SearchForm meta={this.props.meta} />
             </DefaultLayout>
         );
     }
