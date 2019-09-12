@@ -77,7 +77,11 @@ export class SearchForm extends React.PureComponent<Props, State> {
                 suggestion => suggestion.cui === cui
             );
             if (selected) {
-                Router.push(`/a/${selected.slug}/${selected.cui}`);
+                Router.push(
+                    `/a/${selected.slug}/${selected.cui}?${encode({
+                        q: this.state.queryText
+                    })}`
+                );
             }
         }
     };
@@ -107,6 +111,9 @@ export class SearchForm extends React.PureComponent<Props, State> {
                     <SearchInputWithAutoComplete
                         dataSource={results}
                         onSelect={this.goToSelectedAgent}
+                        onFocus={() =>
+                            this.searchForAgents(this.state.queryText)
+                        }
                         onSearch={this.searchForAgents}
                         optionLabelProp="title"
                         transitionName="none"
