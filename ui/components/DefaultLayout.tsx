@@ -1,13 +1,13 @@
 import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
-import { Button } from "@allenai/varnish/components/button";
 import {
     PaddedContent,
     Page,
     BackgroundLayout
 } from "@allenai/varnish/components/Layout";
 import { Footer } from "@allenai/varnish/components/Footer";
+import { ExternalLink } from "@allenai/varnish/components/link/ExternalLink";
 import Link from "next/link";
 import Head from "next/head";
 
@@ -50,19 +50,15 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
                 <MaxWidth>
                     <PageWithNoMinHeight>
                         {children}
-                        <FeedbackRow>
+                        <Feedback>
                             <span>
                                 Help us improve <strong>supp.ai</strong>, we'd
                                 love to hear your feedback:
-                            </span>
-                            <Button
-                                href="mailto:supp-ai-feedback@allenai.org"
-                                variant="primary"
-                                size="small"
-                            >
+                            </span>{" "}
+                            <ExternalLink href="mailto:supp-ai-feedback@allenai.org">
                                 Submit Feedback
-                            </Button>
-                        </FeedbackRow>
+                            </ExternalLink>
+                        </Feedback>
                     </PageWithNoMinHeight>
                 </MaxWidth>
             </StyledPaddedContent>
@@ -91,16 +87,8 @@ const LayoutOverrides = createGlobalStyle`
     }
 `;
 
-const FeedbackRow = styled.div`
-    display: grid;
-    grid-template-columns: auto min-content;
-    grid-gap: ${({ theme }) => theme.spacing.md};
-    align-items: center;
+const Feedback = styled.div`
     margin: ${({ theme }) => `${theme.spacing.xl} 0 0`};
-
-    @media screen and (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-        grid-template-columns: auto;
-    }
 `;
 
 const StyledPaddedContent = styled(PaddedContent)`
