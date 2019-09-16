@@ -3,6 +3,7 @@ import Head from "next/head";
 
 import { model, fetchIndexMeta } from "../api";
 import { Disclaimer, SearchForm, DefaultLayout } from "../components";
+import { AuthorList } from "../components/AuthorList";
 
 import { formatNumber } from "../util";
 
@@ -31,9 +32,25 @@ export default class Home extends React.PureComponent<Props> {
                     <title>{title}</title>
                     <meta name="description" content={description} />
                 </Head>
-                <Disclaimer />
+                <p>
+                    Dietary and herbal supplements are taken by a large
+                    percentage of the population. In some cases, supplements can
+                    interact or interfere with the action of prescription or
+                    over-the-counter medications. Currently, it can be difficult
+                    to find accurate and timely scientific evidence for these
+                    interactions.
+                </p>
+                <p>
+                    Our goal is to automatically detect and extract evidence of
+                    supplement and drug interactions from the scientific
+                    literature, and present this information in one place. We
+                    hope that users can leverage this evidence to make the most
+                    informed decisions and recommendations about supplement use.
+                </p>
                 <p>{description}</p>
+                <Disclaimer />
                 <SearchForm meta={this.props.meta} />
+                <AuthorList />
             </DefaultLayout>
         );
     }
