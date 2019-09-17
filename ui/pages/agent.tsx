@@ -173,10 +173,12 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                     <meta name="description" content={description} />
                 </Head>
                 <Disclaimer />
-                <SearchForm
-                    meta={this.props.meta}
-                    defaultQueryText={this.props.defaultQueryText}
-                />
+                <Section>
+                    <SearchForm
+                        meta={this.props.meta}
+                        defaultQueryText={this.props.defaultQueryText}
+                    />
+                </Section>
                 <Section>
                     <ShareButtonsBox>
                         <ShareButtons
@@ -184,8 +186,6 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                             twitterMessage={description}
                         />
                     </ShareButtonsBox>
-                </Section>
-                <Section>
                     <AgentInfo agent={this.props.agent} />
                 </Section>
                 <Section>
@@ -413,6 +413,7 @@ const Group = styled(Radio.Group)`
 const ShareButtonsBox = styled.div`
     display: flex;
     justify-content: flex-end;
+    margin: 0 0 ${({ theme }) => theme.spacing.md};
 `;
 
 const InteractionListTitle = styled.h3``;

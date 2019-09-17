@@ -12,6 +12,7 @@ import s2Src from "./s2.svg";
 import s2StackedSrc from "./s2-stacked.svg";
 import smallPaperSrc from "./paper-small.svg";
 import poseSrc from "./pose.svg";
+import captionSrc from "./caption.svg";
 
 import { model } from "../../api";
 
@@ -26,6 +27,7 @@ export const Human = styled.img.attrs(() => ({ src: humanSrc }))``;
 export const Pose = styled.img.attrs(() => ({ src: poseSrc }))``;
 export const Close = styled.img.attrs(() => ({ src: closeSrc }))``;
 export const PoweredByS2 = styled.img.attrs(() => ({ src: s2Src }))``;
+export const Caption = styled.img.attrs(() => ({ src: captionSrc }))``;
 export const StackedPoweredByS2 = styled.img.attrs(() => ({
     src: s2StackedSrc
 }))``;

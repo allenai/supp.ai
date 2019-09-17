@@ -137,6 +137,8 @@ def create_api(idx: InteractionIndex) -> Blueprint:
                     "version": idx.version,
                     "interaction_count": idx.interaction_count,
                     "agent_count": idx.agent_count,
+                    "supp_count": idx.supp_count,
+                    "drug_count": idx.drug_count,
                     **idx.index_meta._asdict(),
                 }
             ),

@@ -15,6 +15,7 @@ export * from "./Section";
 export * from "./AgentInfo";
 export * from "./OpengraphImage";
 export * from "./ShareButtons";
+export * from "./Feedback";
 
 import * as icon from "./icon";
 export { icon };

@@ -1,8 +1,9 @@
 import React from "react";
 import Head from "next/head";
+import styled from "styled-components";
 
 import { model, fetchIndexMeta } from "../api";
-import { Disclaimer, SearchForm, DefaultLayout } from "../components";
+import { Disclaimer, SearchForm, DefaultLayout, Feedback, Section } from "../components";
 import { AuthorList } from "../components/AuthorList";
 
 import { formatNumber } from "../util";
@@ -18,40 +19,63 @@ export default class Home extends React.PureComponent<Props> {
     }
     render() {
         const title = "SUPP.AI by AI2";
+        /* TODO: Query agent count by type. */
         const description =
             "Search our AI curated corpus of " +
-            `${formatNumber(this.props.meta.agent_count)} agents and ` +
+            `${formatNumber(this.props.meta.supp_count)} supplements, ` +
+            `${formatNumber(this.props.meta.drug_count)} drugs and ` +
             `${formatNumber(this.props.meta.interaction_count)} ` +
-            "interactions and explore the related research. Our results " +
-            "are automatically derived from peer-reviewed publications, and " +
-            "are not influenced by third parties. This tool is offered as a " +
-            "free service to all users.";
+            "interactions and explore the related research. Our work " +
+            "is not influenced by third parties. Supp.AI is a free service " +
+            "of the non-profit Allen Institute for AI.";
         return (
-            <DefaultLayout>
+            <DefaultLayout hideFeedback={true} hideSubtitle={true}>
                 <Head>
                     <title>{title}</title>
                     <meta name="description" content={description} />
                 </Head>
-                <p>
-                    Dietary and herbal supplements are taken by a large
-                    percentage of the population. In some cases, supplements can
-                    interact or interfere with the action of prescription or
-                    over-the-counter medications. Currently, it can be difficult
-                    to find accurate and timely scientific evidence for these
-                    interactions.
-                </p>
-                <p>
-                    Our goal is to automatically detect and extract evidence of
-                    supplement and drug interactions from the scientific
-                    literature, and present this information in one place. We
-                    hope that users can leverage this evidence to make the most
-                    informed decisions and recommendations about supplement use.
-                </p>
-                <p>{description}</p>
-                <Disclaimer />
-                <SearchForm meta={this.props.meta} />
+                <Section>
+                    <H1>Discover Supplement-Drug Interactions</H1>
+                    <p>{description}</p>
+                    <Disclaimer />
+                </Section>
+                <Section>
+                    <H2>Search</H2>
+                    <SearchForm meta={this.props.meta} />
+                    <Feedback />
+                </Section>
+                <Section>
+                    <H2>About</H2>
+                    <p>
+                        Dietary and herbal supplements are popular but unregulated.
+                        Supplements can interact or interfere with the action of
+                        prescription or over-the-counter medications. Currently, is
+                        difficult to find accurate and timely scientific evidence
+                        for these interactions.
+                    </p>
+                    <p>
+                        To solve this problem, Supp.AI automatically extracts evidence
+                        of supplement and drug interactions from the scientific
+                        literature and presents them here.
+                    </p>
+                </Section>
+                <H2>Team</H2>
                 <AuthorList />
             </DefaultLayout>
         );
     }
 }
+
+/*
+
+*/
+
+const H1 = styled.h1`
+    font-size: ${({ theme }) => theme.typography.h2.fontSize};
+    line-height: ${({ theme }) => theme.typography.h2.lineHeight};
+`;
+
+const H2 = styled.h2`
+    font-size: ${({ theme }) => theme.typography.h3.fontSize};
+    line-height: ${({ theme }) => theme.typography.h3.lineHeight};
+`;

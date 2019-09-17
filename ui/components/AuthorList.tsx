@@ -1,3 +1,4 @@
+import * as React from "react";
 import styled from "styled-components";
 import { ExternalLink } from "@allenai/varnish/components/link/ExternalLink";
 
@@ -9,6 +10,7 @@ import samImg from "./images/sam.jpg";
 import carissaImg from "./images/carissa.jpg";
 import nickImg from "./images/nick.jpg";
 import waleedImg from "./images/waleed.jpg";
+import orenImg from "./images/oren.jpg";
 
 const authors = [
     {
@@ -50,11 +52,16 @@ const authors = [
         name: "Waleed Ammar",
         url: "https://wammar.github.io/",
         img: waleedImg
+    },
+    {
+        name: "Oren Etzioni",
+        url: "https://allenai.org/team/orene/",
+        img: orenImg
     }
 ];
 
 export const AuthorList = () => (
-    <Section>
+    <React.Fragment>
         <p>
             SUPP.AI is developed at{" "}
             <ExternalLink href="https://allenai.org">AI2</ExternalLink> by the
@@ -75,15 +82,8 @@ export const AuthorList = () => (
                 </ListItem>
             ))}
         </List>
-    </Section>
+    </React.Fragment>
 );
-
-const Section = styled.section`
-    min-width: 100%;
-    border-top: 1px solid ${({ theme }) => theme.palette.border.main};
-    padding: ${({ theme }) => `${theme.spacing.xl} 0 0`};
-    margin: ${({ theme }) => `${theme.spacing.xl} 0 0`};
-`;
 
 const List = styled.ul`
     margin: 0;
@@ -95,8 +95,7 @@ const List = styled.ul`
     min-width: 100%;
 
     @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
-        display: block;
-        margin: 0;
+        justify-content: center;
     }
 `;
 
@@ -104,18 +103,13 @@ const ListItem = styled.li`
     margin: ${({ theme }) => theme.spacing.sm};
     text-align: center;
 
-    @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
-        margin-left: 0;
-        margin-right: 0;
+    a {
+        display: block;
     }
 `;
 
 const ProfileImg = styled.img`
     display: block;
-    margin: ${({ theme }) => `0 0 ${theme.spacing.md}`};
-
-    @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
-        width: 100%;
-        height: auto;
-    }
+    margin: ${({ theme }) => `0 auto ${theme.spacing.md}`};
+    border: 1px solid ${({ theme }) => theme.palette.border.main};
 `;

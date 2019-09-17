@@ -106,7 +106,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
         }
         return (
             <React.Fragment>
-                <FormContainer>
+                <div>
                     <AutoCompleteStyles />
                     <SearchInputWithAutoComplete
                         dataSource={results}
@@ -144,7 +144,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
                             {moment(this.props.meta.data_updated_on).fromNow()}
                         </LastUpdated>
                     </SearchExtras>
-                </FormContainer>
+                </div>
             </React.Fragment>
         );
     }
@@ -228,7 +228,7 @@ const SearchExtras = styled.div`
     display: grid;
     grid-template-columns: auto min-content;
     grid-gap: ${({ theme }) => theme.spacing.lg};
-    margin: ${({ theme }) => `${theme.spacing.sm} ${theme.spacing.md}`};
+    margin: ${({ theme }) => `${theme.spacing.sm} 0`};
 
     @media screen and (max-width: 640px) {
         grid-template-columns: auto;
@@ -246,10 +246,6 @@ const SampleLabel = styled.label`
     && {
         font-size: 1rem;
     }
-`;
-
-const FormContainer = styled.div`
-    margin: ${({ theme }) => theme.spacing.lg} 0;
 `;
 
 const SearchInputWithAutoComplete = styled(AutoComplete)`

@@ -98,8 +98,6 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                             link={`${this.props.origin}${this.props.canonicalUrl}`}
                         />
                     </TitleRow>
-                </Section>
-                <Section>
                     <AgentInfoList>
                         <AgentInfo
                             agent={first}
@@ -137,6 +135,7 @@ const TitleRow = styled.div`
     align-items: baseline;
     grid-gap: ${({ theme }) => theme.spacing.xs};
     grid-template-columns: auto min-content;
+    margin: 0 0 ${({ theme }) => theme.spacing.md};
 
     &,
     * {

@@ -348,6 +348,13 @@ class InteractionIndex:
         self.version = version
         self.agents_by_cui = agents_by_cui
         self.agent_count = len(self.agents_by_cui)
+        self.supp_count = 0
+        self.drug_count = 0
+        for agent in agents_by_cui.values():
+            if agent.ent_type == "supplement":
+                self.supp_count += 1
+            elif agent.ent_type == "drug":
+                self.drug_count += 1
         self.sentences_by_interaction_id = sentences_by_interaction_id
         self.interaction_count = len(self.sentences_by_interaction_id)
         self.interaction_ids_by_cui = interaction_ids_by_cui

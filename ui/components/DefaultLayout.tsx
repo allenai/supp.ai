@@ -7,15 +7,21 @@ import {
     BackgroundLayout
 } from "@allenai/varnish/components/Layout";
 import { Footer } from "@allenai/varnish/components/Footer";
-import { ExternalLink } from "@allenai/varnish/components/link/ExternalLink";
 import Link from "next/link";
 import Head from "next/head";
 
 import { Logo } from "./Logo";
 import * as icon from "./icon";
+import { Feedback } from "./Feedback";
 import { OpengraphImage } from "./OpengraphImage";
 
-export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
+interface Props {
+    children: React.ReactNode;
+    hideFeedback?: boolean;
+    hideSubtitle?: boolean;
+}
+
+export const DefaultLayout = ({ children, hideFeedback, hideSubtitle }: Props) => (
     <React.Fragment>
         <Head>
             <link
@@ -31,9 +37,11 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
                 <HeaderLink>
                     <Logo height="56" width="56" alt="supp.ai logo" />
                     <HeaderTitle>supp.ai</HeaderTitle>
-                    <HeaderSubTitle>
-                        Discover Supplement-Drug Interactions
-                    </HeaderSubTitle>
+                    {!hideSubtitle ? (
+                        <HeaderSubTitle>
+                            Discover Supplement-Drug Interactions
+                        </HeaderSubTitle>
+                    ) : null}
                 </HeaderLink>
             </Link>
             <Right>
@@ -50,15 +58,11 @@ export const DefaultLayout = ({ children }: { children: React.ReactNode }) => (
                 <MaxWidth>
                     <PageWithNoMinHeight>
                         {children}
-                        <Feedback>
-                            <span>
-                                Help us improve <strong>supp.ai</strong>, we'd
-                                love to hear your feedback:
-                            </span>{" "}
-                            <ExternalLink href="mailto:supp-ai-feedback@allenai.org">
-                                Submit Feedback
-                            </ExternalLink>
-                        </Feedback>
+                        {!hideFeedback ? (
+                            <FeedbackSection>
+                                <Feedback />
+                            </FeedbackSection>
+                        ) : null}
                     </PageWithNoMinHeight>
                 </MaxWidth>
             </StyledPaddedContent>
@@ -87,7 +91,7 @@ const LayoutOverrides = createGlobalStyle`
     }
 `;
 
-const Feedback = styled.div`
+const FeedbackSection = styled.div`
     margin: ${({ theme }) => `${theme.spacing.xl} 0 0`};
 `;
 

@@ -2,6 +2,8 @@ export interface IndexMeta {
     version: string;
     interaction_count: number;
     agent_count: number;
+    drug_count: number;
+    supp_count: number;
     data_updated_on: string;
 }
 
