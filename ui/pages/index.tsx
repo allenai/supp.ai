@@ -41,7 +41,7 @@ export default class Home extends React.PureComponent<Props> {
                 </Section>
                 <Section>
                     <H2>Search</H2>
-                    <SearchForm meta={this.props.meta} />
+                    <SearchForm meta={this.props.meta} autofocus={true} />
                     <Feedback />
                 </Section>
                 <Section>

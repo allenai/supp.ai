@@ -16,6 +16,7 @@ import * as icon from "./icon";
 interface Props {
     defaultQueryText?: string;
     meta: model.IndexMeta;
+    autofocus?: boolean;
 }
 
 interface State {
@@ -109,6 +110,7 @@ export class SearchForm extends React.PureComponent<Props, State> {
                 <div>
                     <AutoCompleteStyles />
                     <SearchInputWithAutoComplete
+                        autoFocus={this.props.autofocus}
                         dataSource={results}
                         onSelect={this.goToSelectedAgent}
                         onFocus={() =>
