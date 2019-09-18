@@ -27,7 +27,7 @@ export default class Home extends React.PureComponent<Props> {
             `${formatNumber(this.props.meta.interaction_count)} ` +
             "interactions and explore the related research. Our work " +
             "is not influenced by third parties. Supp.AI is a free service " +
-            "of the non-profit Allen Institute for AI.";
+            "of the non-profit";
         return (
             <DefaultLayout hideFeedback={true} hideSubtitle={true}>
                 <Head>
@@ -36,7 +36,7 @@ export default class Home extends React.PureComponent<Props> {
                 </Head>
                 <Section>
                     <H1>Discover Supplement-Drug Interactions</H1>
-                    <p>{description}</p>
+                    <p>{description} <a href="https://allenai.org">Allen Institute for AI</a>.</p>
                     <Disclaimer />
                 </Section>
                 <Section>

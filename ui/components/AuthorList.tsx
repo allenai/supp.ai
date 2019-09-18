@@ -63,9 +63,7 @@ const authors = [
 export const AuthorList = () => (
     <React.Fragment>
         <p>
-            SUPP.AI is developed at{" "}
-            <ExternalLink href="https://allenai.org">AI2</ExternalLink> by the
-            following team:
+            SUPP.AI is developed by the following team:
         </p>
         <List>
             {authors.map(author => (
