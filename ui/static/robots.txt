@@ -1,6 +1,4 @@
 User-agent: *
-Disallow: /
 Disallow: /api
 
-# TODO: Uncomment this.
-# Sitemap: https://supp.ai/sitemap/index.xml
+Sitemap: https://supp.ai/sitemap/index.xml

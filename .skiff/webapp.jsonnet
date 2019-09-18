@@ -19,7 +19,7 @@ function(
     local topLevelDomain = '.apps.allenai.org';
     local hosts = [
         if env == 'prod' then
-            config.appName + topLevelDomain
+            [ 'supp.ai', 'supplement-interactions.info', config.appName + topLevelDomain ]
         else
             config.appName + '.' + env + topLevelDomain
     ];
@@ -29,7 +29,7 @@ function(
     // In all other environments we run a single instance to save money.
     local replicas = (
         if env == 'prod' then
-            2
+            3
         else
             1
     );

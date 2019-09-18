@@ -86,7 +86,9 @@ export default class InteractionDetail extends React.PureComponent<Props> {
                     <meta name="description" content={description} />
                 </Head>
                 <Disclaimer />
-                <SearchForm meta={this.props.meta} />
+                <Section>
+                    <SearchForm meta={this.props.meta} />
+                </Section>
                 <Section>
                     <TitleRow>
                         <PageHeaderWithNoMargin>

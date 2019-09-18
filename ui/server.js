@@ -29,7 +29,49 @@ morgan.format('json', JSON.stringify({
 app.prepare().then(() => {
     const format = process.env.SUPPAIR_LOG_FORMAT || (isNotProd ? 'tiny' : 'json');
     const port = process.env.SUPPAI_UI_PORT || 3000;
+    const { host: canonicalHost } = url.parse(process.env.SUPP_AI_CANONICAL_ORIGIN || 'localhost:8080');
+    if (!canonicalHost) {
+        throw new Error("Invalid or missing environment variable: SUPP_AI_CANONICAL_ORIGIN");
+    }
+
     server.use(morgan(format));
+
+    server.use((req, res, next) => {
+        //
+        // Parse the "Forwarded" HTTP header, which is set by the proxy, as
+        // to verify that the user is using the canonical site url.
+        //
+        // We skip this check if the user-agent is that of the Kubernetes
+        // probe (as to allow for health-checks).
+        //
+        // See: https://tools.ietf.org/html/rfc7239
+        //
+        if (
+            !req.headers["user-agent"].startsWith("kube-probe")
+            && req.headers["forwarded"]
+        ) {
+            const valuesByName = (
+                req.headers["forwarded"].split(";")
+                    .map(pair => pair.split("="))
+                    .reduce((byName, [ name, value ]) => {
+                        byName[name] = value;
+                        return byName;
+                    }, {})
+            );
+            const host = valuesByName["host"];
+            const proto = valuesByName["proto"] || "https";
+            if (host.trim().length > 0 && proto) {
+                if (host && host !== canonicalHost) {
+                    const requestUrl = url.parse(req.url);
+                    requestUrl.protocol = proto;
+                    requestUrl.host = canonicalHost;
+                    res.redirect(`${url.format(requestUrl)}`, 301);
+                    return;
+                }
+            }
+        }
+        next();
+    });
 
     // Serve the robots.txt when it's requested from the root.
     server.get('/robots.txt', (req, res) => {
