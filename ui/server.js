@@ -86,17 +86,13 @@ app.prepare().then(() => {
 
     // NextJS requires that dynamic urls be configured with a bit of extra
     // magic. This sets up the routing required for detail pages.
-    server.get('/a/:cui', async (req, res) => {
-        const parsed = url.parse(req.url, true);
-        return app.render(req, res, '/agent-redirect', { ...req.params, ...parsed.query });
-    });
     server.get('/a/:slug/:cui', (req, res) => {
         const parsed = url.parse(req.url, true);
-        return app.render(req, res, '/agent', { ...req.params, ...parsed.query });
+        app.render(req, res, '/agent', { ...req.params, ...parsed.query });
     });
     server.get('/i/:slug/:interaction_id', (req, res) => {
         const parsed = url.parse(req.url, true);
-        return app.render(req, res, '/interaction', { ...req.params, ...parsed.query });
+        app.render(req, res, '/interaction', { ...req.params, ...parsed.query });
     });
 
     server.use(app.getRequestHandler());
