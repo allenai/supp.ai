@@ -62,9 +62,7 @@ const authors = [
 
 export const AuthorList = () => (
     <React.Fragment>
-        <p>
-            SUPP.AI is developed by the following team:
-        </p>
+        <p>SUPP.AI is developed by the following team:</p>
         <List>
             {authors.map(author => (
                 <ListItem key={author.name}>

@@ -21,7 +21,11 @@ interface Props {
     hideSubtitle?: boolean;
 }
 
-export const DefaultLayout = ({ children, hideFeedback, hideSubtitle }: Props) => (
+export const DefaultLayout = ({
+    children,
+    hideFeedback,
+    hideSubtitle
+}: Props) => (
     <React.Fragment>
         <Head>
             <link

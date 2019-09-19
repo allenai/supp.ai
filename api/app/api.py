@@ -112,19 +112,25 @@ def create_api(idx: InteractionIndex) -> Blueprint:
         results_with_interactions = []
         results_without_interactions = []
         for result in search_results.results:
-            names = set([ result.preferred_name.lower() ] + list(map(lambda s : s.lower(), result.synonyms)))
+            names = set(
+                [result.preferred_name.lower()]
+                + list(map(lambda s: s.lower(), result.synonyms))
+            )
             if query in names:
                 exact_match_results.append(result)
             elif result.interacts_with_count == 0:
                 results_without_interactions.append(result)
             else:
                 results_with_interactions.append(result)
-        sorted_results = exact_match_results + results_with_interactions + results_without_interactions
+        sorted_results = (
+            exact_match_results
+            + results_with_interactions
+            + results_without_interactions
+        )
         response = simplejson.dumps(
             {"query": {"q": search_results.query}, "results": sorted_results}
         )
         return Response(response, 200, content_type="application/json")
-
 
     @api.route("/agent/search", methods=["GET"])
     def search_agents() -> Response:
