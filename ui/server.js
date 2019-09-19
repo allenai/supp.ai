@@ -47,7 +47,10 @@ app.prepare().then(() => {
         // See: https://tools.ietf.org/html/rfc7239
         //
         if (
-            !req.headers["user-agent"].startsWith("kube-probe")
+            (
+                !req.headers["user-agent"] ||
+                !req.headers["user-agent"].startsWith("kube-probe")
+            )
             && req.headers["forwarded"]
         ) {
             const valuesByName = (
