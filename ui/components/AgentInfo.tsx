@@ -27,7 +27,9 @@ export const AgentInfo = ({
 }: Props) => {
     const name = (
         <AgentName as={headerTag || "h1"}>
-            <icon.AgentTypeIcon type={agent.ent_type} />
+            <AgentIcon>
+                <icon.AgentTypeIcon type={agent.ent_type} />
+            </AgentIcon>
             <WithAgentDefinitionPopover agent={agent}>
                 {agent.preferred_name}
             </WithAgentDefinitionPopover>
@@ -72,6 +74,11 @@ const AgentName = styled(PageHeader)`
     display: grid;
     grid-template-columns: min-content auto;
     grid-gap: ${({ theme }) => theme.spacing.sm};
-    align-items: baseline;
     line-height: 1.244444;
+`;
+
+const AgentIcon = styled.span`
+    height: 44px;
+    display: flex;
+    align-items: center;
 `;
