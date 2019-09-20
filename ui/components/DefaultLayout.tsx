@@ -58,6 +58,13 @@ export const DefaultLayout = ({
             </Right>
         </Header>
         <MainPane color="white">
+            <NoScript>
+                <Warning>
+                    <WarningContent as="div">
+                        Please enable JavaScript to use this application.
+                    </WarningContent>
+                </Warning>
+            </NoScript>
             <StyledPaddedContent>
                 <MaxWidth>
                     <PageWithNoMinHeight>
@@ -182,3 +189,23 @@ const NeutralBackground = styled.div`
         padding: ${({ theme }) => theme.spacing.lg} !important;
     }
 `;
+
+const NoScript = styled.noscript`
+    position: fixed;
+    width: 100%;
+`;
+
+const Warning = styled.div`
+    background: ${({ theme }) => theme.palette.background.warning};
+    color: ${({ theme }) => theme.color.O8};
+    display: flex;
+    justify-content: center;
+`;
+
+const WarningContent = styled(StyledPaddedContent)`
+    && {
+        padding-top: ${({ theme }) => theme.spacing.xs};
+        padding-bottom: ${({ theme }) => theme.spacing.xs};
+        font-weight: bold;
+    }
+`;``
