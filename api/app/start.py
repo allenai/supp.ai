@@ -59,7 +59,7 @@ def start(data_dir: str, port: int, prod: bool):
     sitemap_tmpl = templates.get_template("sitemap.xml")
 
     def write_sitemap(batch: List[str]):
-        filename = f"{len(sitemap_files)}.xml"
+        filename = f"sitemap-{len(sitemap_files)}.xml"
         sitemap_files.append(f"{origin}/sitemap/{filename}")
         file_path = os.path.join(static_dir, "sitemap", filename)
         with open(file_path, "w+b") as fp:
