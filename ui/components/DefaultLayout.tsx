@@ -74,6 +74,10 @@ export const DefaultLayout = ({
                                 <Feedback />
                             </FeedbackSection>
                         ) : null}
+                        <DatasetLicenseSection>
+                            Usage of the site's data is subject to Semantic Scholar's
+                            {" "}<a href="https://api.semanticscholar.org/corpus/legal/">Dataset License Agreement.</a>
+                        </DatasetLicenseSection>
                     </PageWithNoMinHeight>
                 </MaxWidth>
             </StyledPaddedContent>
@@ -103,6 +107,10 @@ const LayoutOverrides = createGlobalStyle`
 `;
 
 const FeedbackSection = styled.div`
+    margin: ${({ theme }) => `${theme.spacing.xl} 0 0`};
+`;
+
+const DatasetLicenseSection = styled.div`
     margin: ${({ theme }) => `${theme.spacing.xl} 0 0`};
 `;
 
