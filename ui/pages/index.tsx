@@ -76,16 +76,20 @@ export default class Home extends React.PureComponent<Props> {
                         .
                     </p>
                 </Section>
-                <H2>Team</H2>
-                <AuthorList />
+                <Section>
+                    <H2>Team</H2>
+                    <AuthorList />
+                </Section>
+                <Section>
+                    <H2>Our Data</H2>
+                    Our dataset is public and available for download
+                    {" "}<a href="https://api.semanticscholar.org/supp/legal/">here.</a>
+                </Section>
             </DefaultLayout>
         );
     }
 }
 
-/*
-
-*/
 
 const H1 = styled.h1`
     font-size: ${({ theme }) => theme.typography.h2.fontSize};
