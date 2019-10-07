@@ -115,6 +115,7 @@ def create_api(idx: InteractionIndex) -> Blueprint:
             names = set(
                 [result.preferred_name.lower()]
                 + list(map(lambda s: s.lower(), result.synonyms))
+                + list(map(lambda s: s.lower(), result.tradenames))
             )
             if query in names:
                 exact_match_results.append(result)

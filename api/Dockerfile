@@ -9,10 +9,8 @@ RUN pip install -r requirements.txt
 
 # Copy over the data that makes up the corpus
 WORKDIR /usr/local/data/skiff/
-# TODO: Once the data preparation process generates this, this can be removed
-COPY fakemeta.json meta.json
 COPY download_data.py .
-ARG DATA_ARCHIVE=20190904_01.tar.gz
+ARG DATA_ARCHIVE=20190925_07.tar.gz
 ENV SUPPAI_DATA_ARCHIVE ${DATA_ARCHIVE}
 RUN python download_data.py -a ${DATA_ARCHIVE} -d /usr/local/data/skiff/
 RUN tar -xvf ${DATA_ARCHIVE} && rm ${DATA_ARCHIVE}
