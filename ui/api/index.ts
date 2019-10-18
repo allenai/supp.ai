@@ -13,11 +13,13 @@ const API_ORIGIN = isClient
 
 export { model };
 
-const clientId = 'supp-ai-ui';
+const clientId = "supp-ai-ui";
 
 export async function fetchIndexMeta(): Promise<model.IndexMeta> {
     return axios
-        .get<model.IndexMeta>(`${API_ORIGIN}/api/meta`)
+        .get<model.IndexMeta>(`${API_ORIGIN}/api/meta`, {
+            params: { clientId }
+        })
         .then(resp => resp.data);
 }
 
@@ -55,7 +57,7 @@ export async function fetchInteractions(
     p: number = 0,
     q: string | undefined = undefined
 ): Promise<model.InteractionsPage> {
-    const params: { p: number; q?: string, clientId: string } = { p, clientId };
+    const params: { p: number; q?: string; clientId: string } = { p, clientId };
     if (q !== undefined) {
         params.q = q;
     }
