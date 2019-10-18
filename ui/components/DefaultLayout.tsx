@@ -208,4 +208,5 @@ const WarningContent = styled(StyledPaddedContent)`
         padding-bottom: ${({ theme }) => theme.spacing.xs};
         font-weight: bold;
     }
-`;``
+`;
+``;

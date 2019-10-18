@@ -16,21 +16,21 @@ export default class AppWithVarnishTheme extends App {
             // is that of the previous page.
             setTimeout(() => {
                 if (window.gtag && window.googleAnalyticsId) {
-                    window.gtag('config', window.googleAnalyticsId, {
-                        page_title : document.title,
+                    window.gtag("config", window.googleAnalyticsId, {
+                        page_title: document.title,
                         page_path: path
                     });
                 }
             }, 0);
         } else {
-            console.log('Page change not tracked - analytics disabled.');
+            console.log("Page change not tracked - analytics disabled.");
         }
     }
     componentDidMount() {
-        Router.events.on('routeChangeComplete', this.trackPageView);
+        Router.events.on("routeChangeComplete", this.trackPageView);
     }
     componentWillUnmount() {
-        Router.events.off('routeChangeComplete', this.trackPageView);
+        Router.events.off("routeChangeComplete", this.trackPageView);
     }
     render() {
         const { Component, pageProps } = this.props;
