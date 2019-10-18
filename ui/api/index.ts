@@ -13,6 +13,8 @@ const API_ORIGIN = isClient
 
 export { model };
 
+const clientId = 'supp-ai-ui';
+
 export async function fetchIndexMeta(): Promise<model.IndexMeta> {
     return axios
         .get<model.IndexMeta>(`${API_ORIGIN}/api/meta`)
@@ -21,7 +23,9 @@ export async function fetchIndexMeta(): Promise<model.IndexMeta> {
 
 export async function fetchAgent(cui: string): Promise<model.Agent> {
     return axios
-        .get<model.Agent>(`${API_ORIGIN}/api/agent/${cui}`)
+        .get<model.Agent>(`${API_ORIGIN}/api/agent/${cui}`, {
+            params: { clientId }
+        })
         .then(resp => resp.data);
 }
 
@@ -31,7 +35,7 @@ export async function searchForAgents(
 ): Promise<model.SearchResponse> {
     return axios
         .get<model.SearchResponse>(`${API_ORIGIN}/api/agent/search`, {
-            params: { q, p }
+            params: { q, p, clientId }
         })
         .then(resp => resp.data);
 }
@@ -41,7 +45,7 @@ export async function fetchSuggestions(
 ): Promise<model.SuggestResponse> {
     return axios
         .get<model.SuggestResponse>(`${API_ORIGIN}/api/agent/suggest`, {
-            params: { q }
+            params: { q, clientId }
         })
         .then(resp => resp.data);
 }
@@ -51,7 +55,7 @@ export async function fetchInteractions(
     p: number = 0,
     q: string | undefined = undefined
 ): Promise<model.InteractionsPage> {
-    const params: { p: number; q?: string } = { p };
+    const params: { p: number; q?: string, clientId: string } = { p, clientId };
     if (q !== undefined) {
         params.q = q;
     }
@@ -68,7 +72,8 @@ export async function fetchInteraction(
 ): Promise<model.InteractionDefinition> {
     return axios
         .get<model.InteractionDefinition>(
-            `${API_ORIGIN}/api/interaction/${interaction_id}`
+            `${API_ORIGIN}/api/interaction/${interaction_id}`,
+            { params: { clientId } }
         )
         .then(resp => resp.data);
 }
