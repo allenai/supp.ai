@@ -77,15 +77,19 @@ export default class Home extends React.PureComponent<Props> {
                     </p>
                 </Section>
                 <Section>
-                    <H2>Team</H2>
-                    <AuthorList />
+                    <H2>Data & API</H2>
+                    <p>
+                        Our dataset is public and available for download{" "}
+                        <a href="https://api.semanticscholar.org/supp/legal/">
+                            here
+                        </a>
+                        . An API is also available <a href="docs/api">here</a>{" "}
+                        for automated data access.
+                    </p>
                 </Section>
                 <Section>
-                    <H2>Our Data</H2>
-                    Our dataset is public and available for download{" "}
-                    <a href="https://api.semanticscholar.org/supp/legal/">
-                        here.
-                    </a>
+                    <H2>Team</H2>
+                    <AuthorList />
                 </Section>
             </DefaultLayout>
         );
