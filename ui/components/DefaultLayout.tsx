@@ -1,10 +1,7 @@
 import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
-import {
-    Layout,
-    Content
-} from "@allenai/varnish/components/Layout";
+import { Layout, Content } from "@allenai/varnish/components/Layout";
 import { Footer } from "@allenai/varnish/components/Footer";
 import Link from "next/link";
 import Head from "next/head";
