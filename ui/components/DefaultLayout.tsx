@@ -2,9 +2,8 @@ import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { Header, HeaderTitle } from "@allenai/varnish/components/Header";
 import {
-    PaddedContent,
-    Page,
-    BackgroundLayout
+    Layout,
+    Content
 } from "@allenai/varnish/components/Layout";
 import { Footer } from "@allenai/varnish/components/Footer";
 import Link from "next/link";
@@ -36,55 +35,53 @@ export const DefaultLayout = ({
             <OpengraphImage />
         </Head>
         <LayoutOverrides />
-        <Header>
-            <Link href="/">
-                <HeaderLink>
-                    <Logo height="56" width="56" alt="supp.ai logo" />
-                    <HeaderTitle>supp.ai</HeaderTitle>
-                    {!hideSubtitle ? (
-                        <HeaderSubTitle>
-                            Discover Supplement-Drug Interactions
-                        </HeaderSubTitle>
-                    ) : null}
-                </HeaderLink>
-            </Link>
-            <Right>
-                <a href="https://www.semanticscholar.org">
-                    <S2Logo>
-                        <icon.PoweredByS2 />
-                        <icon.StackedPoweredByS2 />
-                    </S2Logo>
-                </a>
-            </Right>
-        </Header>
-        <MainPane color="white">
-            <NoScript>
-                <Warning>
-                    <WarningContent as="div">
-                        Please enable JavaScript to use this application.
-                    </WarningContent>
-                </Warning>
-            </NoScript>
-            <StyledPaddedContent>
-                <MaxWidth>
-                    <PageWithNoMinHeight>
-                        {children}
-                        {!hideFeedback ? (
-                            <FeedbackSection>
-                                <Feedback />
-                            </FeedbackSection>
+        <Layout bgcolor="white">
+            <Header>
+                <Link href="/">
+                    <HeaderLink>
+                        <Logo height="56" width="56" alt="supp.ai logo" />
+                        <HeaderTitle>supp.ai</HeaderTitle>
+                        {!hideSubtitle ? (
+                            <HeaderSubTitle>
+                                Discover Supplement-Drug Interactions
+                            </HeaderSubTitle>
                         ) : null}
-                    </PageWithNoMinHeight>
-                </MaxWidth>
-            </StyledPaddedContent>
-        </MainPane>
-        <NeutralBackground>
-            <Centered>
+                    </HeaderLink>
+                </Link>
+                <Right>
+                    <a href="https://www.semanticscholar.org">
+                        <S2Logo>
+                            <icon.PoweredByS2 />
+                            <icon.StackedPoweredByS2 />
+                        </S2Logo>
+                    </a>
+                </Right>
+            </Header>
+            <MainPane color="white">
+                <noscript>
+                    <Warning>
+                        <WarningContent as="div">
+                            Please enable JavaScript to use this application.
+                        </WarningContent>
+                    </Warning>
+                </noscript>
                 <MaxWidth>
-                    <Footer />
+                    {children}
+                    {!hideFeedback ? (
+                        <FeedbackSection>
+                            <Feedback />
+                        </FeedbackSection>
+                    ) : null}
                 </MaxWidth>
-            </Centered>
-        </NeutralBackground>
+            </MainPane>
+            <NeutralBackground>
+                <Centered>
+                    <MaxWidth>
+                        <Footer />
+                    </MaxWidth>
+                </Centered>
+            </NeutralBackground>
+        </Layout>
     </React.Fragment>
 );
 
@@ -104,20 +101,6 @@ const LayoutOverrides = createGlobalStyle`
 
 const FeedbackSection = styled.div`
     margin: ${({ theme }) => `${theme.spacing.xl} 0 0`};
-`;
-
-const StyledPaddedContent = styled(PaddedContent)`
-    && {
-        padding: 0 ${({ theme }) => theme.spacing.lg};
-    }
-`;
-
-const PageWithNoMinHeight = styled(Page)`
-    min-height: 0;
-
-    > *:last-child {
-        margin-bottom: 0;
-    }
 `;
 
 const S2Logo = styled.div`
@@ -171,7 +154,7 @@ const HeaderLink = styled.a`
     }
 `;
 
-const MainPane = styled(BackgroundLayout)`
+const MainPane = styled(Content)`
     flex-grow: 1;
 `;
 
@@ -190,19 +173,15 @@ const NeutralBackground = styled.div`
     }
 `;
 
-const NoScript = styled.noscript`
-    position: fixed;
-    width: 100%;
-`;
-
 const Warning = styled.div`
     background: ${({ theme }) => theme.palette.background.warning};
     color: ${({ theme }) => theme.color.O8};
     display: flex;
     justify-content: center;
+    margin: 0 0 ${({ theme }) => theme.spacing.lg};
 `;
 
-const WarningContent = styled(StyledPaddedContent)`
+const WarningContent = styled.div`
     && {
         padding-top: ${({ theme }) => theme.spacing.xs};
         padding-bottom: ${({ theme }) => theme.spacing.xs};
