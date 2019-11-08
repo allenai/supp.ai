@@ -45,7 +45,7 @@ export default class AppWithVarnishTheme extends App {
             <React.Fragment>
                 <Head>
                     <link
-                        href="https://cdn.jsdelivr.net/npm/@allenai/varnish@0.3.18/theme.css"
+                        href="https://cdn.jsdelivr.net/npm/@allenai/varnish@0.5.8/dist/theme.min.css"
                         rel="stylesheet"
                     />
                     {process.env.NODE_ENV === "production" ? (
