@@ -59,6 +59,7 @@ export default class AppWithVarnishTheme extends App {
                             />
                         </React.Fragment>
                     ) : null}
+                    <meta name="google-site-verification" content="buGfEXA0lN1WmGCBLa7WohFGxmYJ51OXzmZBQLTwtf4" />
                 </Head>
                 <Container>
                     <ThemeProvider>
