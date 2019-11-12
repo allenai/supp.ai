@@ -8,6 +8,7 @@ import { Icon, List, Radio } from "antd";
 import { RadioChangeEvent } from "antd/lib/radio";
 import { encode } from "querystring";
 import { Input } from "@allenai/varnish/components/form";
+import { Button } from "@allenai/varnish/components/button";
 
 import { fetchAgent, fetchIndexMeta, model, fetchInteractions } from "../api";
 import {
@@ -342,7 +343,20 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                                             <EvidenceList
                                                 agentsById={agentsById}
                                                 evidence={interaction.evidence}
+                                                max={3}
                                             />
+                                            <Link
+                                                as={`/i/${interaction.slug}/${interaction.interaction_id}`}
+                                                href={`/interaction?${encode({
+                                                    slug: interaction.slug,
+                                                    interaction_id:
+                                                        interaction.interaction_id
+                                                })}`}
+                                            >
+                                                <Button>
+                                                    See More Mentions
+                                                </Button>
+                                            </Link>
                                         </React.Fragment>
                                     ) : null}
                                 </AgentListItem>
