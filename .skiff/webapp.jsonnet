@@ -19,7 +19,7 @@ function(
     local topLevelDomain = '.apps.allenai.org';
     local hosts =
         if env == 'prod' then
-            [ 'supp.ai', 'www.supp.ai', 'supplement-interactions.info', 'www.supplement-interactions.info', 'smartsupp.ai', 'www.smartsupp.ai', config.appName + topLevelDomain ]
+            [ 'supp.ai', 'www.supp.ai', 'supplement-interactions.info', 'www.supplement-interactions.info', 'smartsupp.ai', 'www.smartsupp.ai', 'smartsupp.info', 'www.smartsupp.info', config.appName + topLevelDomain ]
         else
             [ config.appName + '.' + env + topLevelDomain ];
 
