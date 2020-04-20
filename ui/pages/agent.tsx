@@ -253,13 +253,10 @@ export default class AgentDetail extends React.PureComponent<Props, State> {
                             const agentsById = [
                                 this.props.agent,
                                 interaction.agent
-                            ].reduce(
-                                (byId, agent) => {
-                                    byId[agent.cui] = agent;
-                                    return byId;
-                                },
-                                {} as { [k: string]: model.Agent }
-                            );
+                            ].reduce((byId, agent) => {
+                                byId[agent.cui] = agent;
+                                return byId;
+                            }, {} as { [k: string]: model.Agent });
                             const evidenceCount = interaction.evidence.length;
                             return (
                                 <AgentListItem
