@@ -10,7 +10,7 @@ RUN pip install -r requirements.txt
 # Copy over the data that makes up the corpus
 WORKDIR /usr/local/data/skiff/
 COPY download_data.py .
-ARG DATA_ARCHIVE=20200302_01.tar.gz
+ARG DATA_ARCHIVE=20200706_01.tar.gz
 ENV SUPPAI_DATA_ARCHIVE ${DATA_ARCHIVE}
 RUN python download_data.py -a ${DATA_ARCHIVE} -d /usr/local/data/skiff/
 RUN tar -xvf ${DATA_ARCHIVE} && rm ${DATA_ARCHIVE}
