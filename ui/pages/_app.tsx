@@ -48,6 +48,7 @@ export default class AppWithVarnishTheme extends App {
                         href="https://cdn.jsdelivr.net/npm/@allenai/varnish@0.5.8/dist/theme.min.css"
                         rel="stylesheet"
                     />
+                    <script src="https://stats.allenai.org/init.min.js" data-spa="true" data-app-name="supp-ai" async />
                     {process.env.NODE_ENV === "production" ? (
                         <React.Fragment>
                             <script
