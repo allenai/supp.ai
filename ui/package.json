@@ -36,5 +36,8 @@
     "react-social-sharing": "^3.0.1",
     "styled-components": "^4.3.2",
     "typescript": "^3.5.3"
+  },
+  "resolutions": {
+    "node-fetch": "^2.6.1"
   }
 }
