@@ -29,7 +29,7 @@ export const DefaultLayout = ({
                 type="image/x-icon"
                 href="/static/favicon.ico"
             />
-            <OpengraphImage />
+            {OpengraphImage()}
         </Head>
         <LayoutOverrides />
         <Layout bgcolor="white">
