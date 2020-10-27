@@ -1,5 +1,5 @@
 import * as React from "react";
-import App, { Container } from "next/app";
+import App from "next/app";
 import Head from "next/head";
 import { ThemeProvider } from "@allenai/varnish/theme";
 
@@ -27,11 +27,9 @@ export default class AppWithVarnishTheme extends App {
                         content="buGfEXA0lN1WmGCBLa7WohFGxmYJ51OXzmZBQLTwtf4"
                     />
                 </Head>
-                <Container>
-                    <ThemeProvider>
-                        <Component {...pageProps} />
-                    </ThemeProvider>
-                </Container>
+                <ThemeProvider>
+                    <Component {...pageProps} />
+                </ThemeProvider>
                 <style global jsx>{`
                     html {
                         background: #08426c !important;
