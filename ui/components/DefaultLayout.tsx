@@ -29,6 +29,7 @@ export const DefaultLayout = ({
                 type="image/x-icon"
                 href="/static/favicon.ico"
             />
+            {/* odd issue, see: https://github.com/vercel/next.js/issues/17721#issuecomment-708687518 */}
             {OpengraphImage()}
         </Head>
         <LayoutOverrides />
