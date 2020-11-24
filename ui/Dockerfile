@@ -1,4 +1,4 @@
-FROM node:10.16.1-alpine
+FROM node:14.15.1-alpine3.12
 
 WORKDIR /usr/local/src/skiff/app/ui/
 

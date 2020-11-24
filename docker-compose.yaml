@@ -41,3 +41,6 @@ services:
         build: ./proxy
         ports:
             - '8080:80'
+        depends_on:
+            - ui
+            - api
