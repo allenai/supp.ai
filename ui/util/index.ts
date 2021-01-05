@@ -2,7 +2,7 @@ export function debounce<A extends any[]>(
     callback: (...args: A) => void,
     delay: number = 100
 ): (...args: A) => void {
-    let tmr: number | undefined = undefined;
+    let tmr: NodeJS.Timeout | undefined = undefined;
     const delayExecution = (...args: A) => {
         if (tmr !== undefined) {
             clearTimeout(tmr);
