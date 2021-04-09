@@ -9,7 +9,7 @@ interface Props {
 }
 
 function semanticScholarUrl(paper: model.Paper) {
-    return `https://semanticscholar.org/paper/${paper.pid}`;
+    return `https://api.semanticscholar.org/CorpusId:${paper.pid}`;
 }
 
 const StudyTypeIcon = ({ paper }: { paper: model.Paper }) => {

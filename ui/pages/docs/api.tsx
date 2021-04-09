@@ -242,7 +242,7 @@ const dataTypes = [
             {
                 name: "pid",
                 type: "string",
-                description: "Unique identifier for a paper."
+                description: "Semantic Scholar corpus identifier for a paper."
             },
             {
                 name: "title",
@@ -256,7 +256,7 @@ const dataTypes = [
                         List[<a href={`#${DataTypeIds.Author}`}>Author</a>]
                     </React.Fragment>
                 ),
-                description: "Authors of paper."
+                description: "Authors of paper (currently an empty list)."
             },
             {
                 name: "year",
