@@ -56,6 +56,11 @@ function(
         env: env
     };
 
+    local selectorLabels = {
+        app: config.appName,
+        env: env
+    };
+
     // Annotations carry additional information about your deployment that
     // we use for auditing, debugging and administrative purposes
     local annotations = {
@@ -160,7 +165,7 @@ function(
             revisionHistoryLimit: 3,
             replicas: replicas,
             selector: {
-                matchLabels: labels
+                matchLabels: selectorLabels,
             },
             template: {
                 metadata: {
@@ -262,7 +267,7 @@ function(
             annotations: annotations
         },
         spec: {
-            selector: labels,
+            selector: selectorLabels,
             ports: [
                 {
                     port: proxyPort,
