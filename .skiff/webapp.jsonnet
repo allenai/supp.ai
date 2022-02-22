@@ -28,7 +28,7 @@ function(
     // In all other environments we run a single instance to save money.
     local replicas = (
         if env == 'prod' then
-            3
+            2
         else
             1
     );
