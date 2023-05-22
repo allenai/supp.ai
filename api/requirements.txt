@@ -15,7 +15,7 @@ MarkupSafe==1.1.1
 mypy==0.720
 mypy-extensions==0.4.1
 python-json-logger==0.1.10
-requests==2.22.0
+requests==2.31.0
 simplejson==3.16.0
 six==1.12.0
 toml==0.10.0
