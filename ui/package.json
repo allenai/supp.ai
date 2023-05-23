@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "main": "src/index.js",
   "repository": "https://github.com/allenai/whatsupp",
-  "author": "S2 Research <s2-research@allenai.org>",
-  "license": "UNLICENSED",
+  "author": "AI2 <ai2-info@allenai.org>",
+  "license": "Apache 2.0",
   "private": true,
   "scripts": {
     "dev": "node server.js",
