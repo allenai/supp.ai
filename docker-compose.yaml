@@ -36,7 +36,7 @@ services:
         command:
             - 'dev'
         environment:
-            - 'SUPP_AI_CANONICAL_ORIGIN=http://localhost:8080'
+            - SUPP_AI_CANONICAL_ORIGIN=${SUPP_AI_CANONICAL_ORIGIN:-"http://localhost:8080"}
     proxy:
         build: ./proxy
         ports:
