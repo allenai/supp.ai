@@ -4,6 +4,8 @@ services:
         build: ./sonar
     api:
         build: ./api
+        ports:
+            - '8000:8000'
         volumes:
             - './api/app:/usr/local/src/skiff/app/api/app'
             - './api/requirements.txt:/usr/local/src/skiff/app/api/requirements.txt'
@@ -16,6 +18,8 @@ services:
             - 'SUPP_AI_CANONICAL_ORIGIN=http://localhost:8080'
     ui:
         build: ./ui
+        ports:
+            - '3000:3000'
         # We can't mount the entire UI directory, since the `node_modules`
         # by default live at that location. Instead we mount the specific
         # collection of files that should propagate from the host to the
