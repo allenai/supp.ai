@@ -5,7 +5,7 @@ from os import path
 def download(archive: str, dest: str) -> None:
     full_path = path.join(dest, archive)
     request.urlretrieve(
-        f"https://storage.googleapis.com/supp-ai-data/{archive}",
+        f"https://storage.googleapis.com/uw-supp-ai-data/{archive}",
         full_path
     )
     print(f"✨ downloaded {full_path}")
