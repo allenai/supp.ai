@@ -2,6 +2,7 @@ version: '3'
 services:
     sonar:
         build: ./sonar
+        restart: always
     api:
         build: ./api
         volumes:
@@ -13,7 +14,9 @@ services:
             - 'PYTHONUNBUFFERED=1'
             - 'LOG_LEVEL=DEBUG'
             - 'SUPP_AI_ALGOLIA_API_KEY=${SUPP_AI_ALGOLIA_API_KEY}'
-            - SUPP_AI_CANONICAL_ORIGIN=${SUPP_AI_CANONICAL_ORIGIN:-"http://localhost:8080"}
+            # - SUPP_AI_CANONICAL_ORIGIN=${SUPP_AI_CANONICAL_ORIGIN:-"http://localhost:8080"}
+            - 'SUPP_AI_CANONICAL_ORIGIN=https://supp.ai'
+        restart: always
     ui:
         build: ./ui
         # We can't mount the entire UI directory, since the `node_modules`
@@ -36,11 +39,14 @@ services:
         command:
             - 'dev'
         environment:
-            - SUPP_AI_CANONICAL_ORIGIN=${SUPP_AI_CANONICAL_ORIGIN:-"http://localhost:8080"}
+            # - SUPP_AI_CANONICAL_ORIGIN=${SUPP_AI_CANONICAL_ORIGIN:-"http://localhost:8080"}
+            - 'SUPP_AI_CANONICAL_ORIGIN=https://supp.ai'
+        restart: always
     proxy:
         build: ./proxy
         ports:
-            - '8080:80'
+            - '127.0.0.1:8080:80'
         depends_on:
             - ui
             - api
+        restart: always

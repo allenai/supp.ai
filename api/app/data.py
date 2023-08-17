@@ -362,7 +362,7 @@ class InteractionIndex:
             self.agents_by_cui.values()
         )
         self.algolia_client = SearchClient.create(
-            "PEUZR5B1FW", environ["SUPP_AI_ALGOLIA_API_KEY"]
+            "83W1GN1RWB", environ["SUPP_AI_ALGOLIA_API_KEY"]
         )
         self.index = self.init_algolia_index()
         self.index_meta = index_meta
